@@ -4,6 +4,11 @@
 
 (use-package counsel)
 
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode-on)
+  (yas-minor-mode . (lambda () (diminish 'yas-minor-mode))))
+(use-package yasnippet-snippets)
+
 (use-package ivy :demand
   :diminish nil
   :config
