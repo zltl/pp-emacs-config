@@ -1,6 +1,9 @@
 ;;; init-editor.el --- setting about editor
-
+;;; Commentary:
 ;;; Code:
+
+;; font size
+(set-face-attribute 'default nil :height 170)
 
 ;; parens
 (use-package smartparens
