@@ -66,10 +66,31 @@ file `ff-find-related-file` (`M-/`) first, then you can use `M-.` to jump to the
 implementation point. It's not always work, in that case, open `.c/.cc/.cpp`
 files that related to current work first.
 
-```
+
+```bash
 apt install clangd
 # or
 apt install ccls
+```
+
+Install `cpplint`:
+
+```bash
+pip install cpplint
+```
+
+Install `clang-format` for `lsp-format-buffer`:
+
+```bash
+apt install clang-format
+```
+
+## Python
+
+Install `pylint` any way:
+
+```bash
+pip install pylint
 ```
 
 ## Searching Tools
