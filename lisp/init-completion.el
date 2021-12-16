@@ -3,18 +3,13 @@
 ;;; Code:
 
 (use-package counsel)
+(diminish 'ivy-mode)
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode-on)
   (yas-minor-mode . (lambda () (diminish 'yas-minor-mode))))
 (use-package yasnippet-snippets)
 
-(use-package ivy :demand
-  :diminish nil
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-        ivy-count-format "%d/%d "))
 (use-package company
   :ensure t
   :diminish company-mode
