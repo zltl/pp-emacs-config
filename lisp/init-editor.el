@@ -95,7 +95,19 @@
 (setq-default tab-always-indent nil)
 
 ;; as linux source code do
-(setq-default fill-column 80)
+(defconst my-column-limit 80 "Max column number for each line.")
+(setq-default fill-column my-column-limit)
+(use-package whitespace
+  :diminish nil
+  :hook (prog-mode . whitespace-mode)
+  :config
+  (setq whitespace-line-column my-column-limit
+        whitespace-style '(face lines-tail)))
+(require 'column-marker)
+(add-hook 'prog-mode-hook (lambda () (interactive) (column-marker-1 80)))
+
+;; Show colume number
+(setq-default column-number-mode t)
 
 (setq-default word-wrap t)
 
