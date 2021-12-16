@@ -34,6 +34,7 @@
   :defer t
   :init (load-theme 'spacemacs-dark t))
 
+
 (require 'init-editor)
 (require 'init-recentf)
 (require 'init-help)
@@ -43,6 +44,11 @@
 (require 'init-search)
 ;; find file, switch buffer
 (require 'init-ido)
+
+
+;; Projectile is a really nifty package, that “teaches” Emacs the concept of
+;; project.
+(require 'init-projectile)
 
 ;; git
 (use-package magit)
@@ -54,10 +60,7 @@
 
 (require 'init-undo)
 
-;; f8 to view tree strucure of folder
-(use-package neotree
-  :config
-  (global-set-key [f8] 'neotree-toggle))
+(require 'init-neotree)
 
 (require 'init-keybind)
 

@@ -37,6 +37,23 @@ To drive lsp-mode, we need gopls:
 go install golang.org/x/tools/gopls@latest
 ```
 
+## Searching Tools
+
+It’s recommended to install the following command-line tools:
+
+- `ag` (a.k.a. the_silver_searcher, a powerful alternative to `grep`).
+- `fd` a super-fast alternative to `find`
+
+!TODO: You should also install the Emacs packages ag, ripgrep or rg if you want
+to make sure of Projectile’s commands projectile-ag and projectile-ripgrep.
+
+```
+apt-get install silversearcher-ag
+apt install fd-find
+```
+    
+
+
 # Installation
 
 To install, clone this repo to `~/.emacs.d`, i.e. ensure that the `init.el`
