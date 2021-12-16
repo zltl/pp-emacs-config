@@ -37,6 +37,41 @@ To drive lsp-mode, we need gopls:
 go install golang.org/x/tools/gopls@latest
 ```
 
+## C/C++
+
+In order to generate `compile_commands.json` for Emacs itself I have found that
+[Bear](https://github.com/rizsotto/Bear) works fine.
+
+
+```bash
+apt-get install bear
+```
+
+To generate `compile_commands.json`:
+
+```bash
+bear -- <your-build-command>
+```
+
+For cmake, You don't need to use Bear for that. Just pass
+`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` flag when you call `cmake`.
+
+Install a language server, `ccls` or `clangd`. `clangd` works faster, and
+sometimes works abnormally. I recommend `ccls` if you have a costly computer.
+
+By using `clangd`, you cannot use `lsp-find-implementation`, and
+`lsp-find-definition` will go to header files if the implementation file not
+open yet. If `M-.` jump to the header file, try switch to the implementation
+file `ff-find-related-file` (`M-/`) first, then you can use `M-.` to jump to the
+implementation point. It's not always work, in that case, open `.c/.cc/.cpp`
+files that related to current work first.
+
+```
+apt install clangd
+# or
+apt install ccls
+```
+
 ## Searching Tools
 
 It’s recommended to install the following command-line tools:
@@ -44,15 +79,10 @@ It’s recommended to install the following command-line tools:
 - `ag` (a.k.a. the_silver_searcher, a powerful alternative to `grep`).
 - `fd` a super-fast alternative to `find`
 
-!TODO: You should also install the Emacs packages ag, ripgrep or rg if you want
-to make sure of Projectile’s commands projectile-ag and projectile-ripgrep.
-
 ```
 apt-get install silversearcher-ag
 apt install fd-find
 ```
-    
-
 
 # Installation
 

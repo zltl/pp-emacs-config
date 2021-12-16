@@ -1,5 +1,5 @@
 ;;; init.el --- Load the full configuration
-
+;;; Commentary:
 ;;; Code:
 
 ;; add ./lisp folder into load-path, so we can split the configure files
@@ -26,14 +26,14 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (require 'init-package)
-;; hide eldoc-mode
+;; hide eldoc-mode, abbrev-mode
 (diminish 'eldoc-mode)
+(diminish 'abbrev-mode)
 
 ;; theme
 (use-package spacemacs-theme
   :defer t
   :init (load-theme 'spacemacs-dark t))
-
 
 (require 'init-editor)
 (require 'init-recentf)
@@ -44,7 +44,6 @@
 (require 'init-search)
 ;; find file, switch buffer
 (require 'init-ido)
-
 
 ;; Projectile is a really nifty package, that “teaches” Emacs the concept of
 ;; project.
@@ -57,6 +56,7 @@
 
 (require 'init-lsp)
 (require 'init-golang)
+(require 'init-cc)
 
 (require 'init-undo)
 
