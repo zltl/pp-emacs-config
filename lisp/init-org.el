@@ -21,15 +21,11 @@
   (setq org-todo-keywords
       '(
         (sequence "IDEA(i)" "TODO(t)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)")
-        (sequence "|" "CANCELED(c)" "DELEGATED(l)" "SOMEDAY(f)")
-        ))
-
-  )
+        (sequence "|" "CANCELED(c)" "DELEGATED(l)" "SOMEDAY(f)"))))
 
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode))
-
 
 (provide 'init-org)
 ;;; init-org.el ends here
