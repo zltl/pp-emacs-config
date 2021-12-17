@@ -22,9 +22,6 @@
 ;; Import some common lisp functions and macros
 (require 'cl-lib)
 
-;; set custom.el as local configure, it should not commit to git repo.
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
 (require 'init-package)
 ;; hide eldoc-mode, abbrev-mode
 (diminish 'eldoc-mode)
@@ -65,10 +62,6 @@
 (require 'init-neotree)
 
 (require 'init-keybind)
-
-;; load custom.el
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 (provide 'init)
 ;;; init.el ends here
