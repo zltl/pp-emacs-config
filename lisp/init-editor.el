@@ -2,8 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
-;; font size
+;; font size, for wslg
 (set-face-attribute 'default nil :height 170)
+
+;; Case-insensitive pass over `auto-mode-alist' is time wasted, and
+;; indicates misconfiguration (don't rely on case insensitivity for file names).
+(setq auto-mode-case-fold nil)
 
 ;; parens
 (use-package smartparens
@@ -13,7 +17,6 @@
   :ensure smartparens
   :config (progn (show-smartparens-global-mode t)))
 (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-(add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
 (use-package paren
   :config
   (setq show-paren-delay 0.1
