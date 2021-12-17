@@ -6,6 +6,8 @@
 ;; into this directory.
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
+(setq custom-file (locate-user-emacs-file "custom.el"))
+
 (require 'init-cachedir)
 
 (require 'init-coding)
@@ -55,19 +57,10 @@
 
 (require 'init-keybind)
 
+;; Variables configured via the interactive 'customize' interface
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 (provide 'init)
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (company-box eldoc-box company-quickhelp company-quick-help ace-window yasnippet-snippets xterm-color which-key use-package undo-tree spacemacs-theme smartparens rust-mode rainbow-delimiters pyenv-mode pip-requirements org-bullets neotree modern-cpp-font-lock magit lsp-ui ido-vertical-mode ibuffer-projectile helpful google-c-style go-mode flycheck-google-cpplint fill-column-indicator elpy diminish counsel-projectile company-jedi cmake-mode ccls anaconda-mode ag))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
