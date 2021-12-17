@@ -57,6 +57,8 @@
 (require 'init-lsp)
 (require 'init-golang)
 (require 'init-cc)
+(require 'init-python)
+(require 'init-rust)
 
 (require 'init-undo)
 

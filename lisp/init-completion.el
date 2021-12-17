@@ -7,8 +7,12 @@
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode-on)
-  (yas-minor-mode . (lambda () (diminish 'yas-minor-mode))))
+  (text-mode . yas-minor-mode-on)
+  (yas-minor-mode . (lambda () (diminish 'yas-minor-mode)))
+  :config
+  (yas-reload-all))
 (use-package yasnippet-snippets)
+
 
 ;; Add yasnippet support for all company backends
 ;; https://github.com/syl20bnr/spacemacs/pull/179

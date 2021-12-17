@@ -66,9 +66,9 @@ file `ff-find-related-file` (`M-/`) first, then you can use `M-.` to jump to the
 implementation point. It's not always work, in that case, open `.c/.cc/.cpp`
 files that related to current work first.
 
-
 ```bash
-apt install clangd
+# use =apt search clangd= to search the latest version
+apt install clangd-12 && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-12 100
 # or
 apt install ccls
 ```
@@ -82,7 +82,9 @@ pip install cpplint
 Install `clang-format` for `lsp-format-buffer`:
 
 ```bash
-apt install clang-format
+# user =apt search clang-format= to search the latest versoin
+# https://clangd.llvm.org/installation.html
+apt install clang-format-12 && update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-12 100
 ```
 
 ## Python
@@ -91,6 +93,45 @@ Install `pylint` any way:
 
 ```bash
 pip install pylint
+```
+
+## Rust
+
+[Install Rust] (https://www.rust-lang.org/tools/install) first.
+
+For Chinese mainlan user, change cargo mirror as below in file 
+`~/.cargo/config`:
+
+
+```toml
+# https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/
+[source.crates-io]
+registry = "https://github.com/rust-lang/crates.io-index"
+
+replace-with = 'tuna'
+[source.tuna]
+registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+
+[net]
+git-fetch-with-cli = true
+```
+
+`(use-package rustic)` not work for me, so clone it.
+
+```bash
+git clone --depth=1 git@github.com:brotzeit/rustic.git ~/.emacs.d/vendor/rustic
+```
+
+I recomand `rust-analyzer` then `rls`, Make sure that ~/.local/bin is listed in
+the $PATH variable and use the appropriate URL if you’re not on a x86-64 system.
+
+```bash
+mkdir -p ~/.local/bin
+curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-x86_64-unknown-linux-gnu.gz | gunzip -c - > ~/.local/bin/rust-analyzer
+chmod +x ~/.local/bin/rust-analyzer
+
+# put this into ~/.bashrc
+# export PATH=$PATH:~/.local/bin
 ```
 
 ## Searching Tools
