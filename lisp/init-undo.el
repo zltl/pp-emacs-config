@@ -10,6 +10,7 @@
 (use-package undo-tree
   :diminish nil
   :config
+  (global-undo-tree-mode)
   (setq undo-tree-auto-save-history t)
   (setq undo-tree-history-directory-alist
 	(cons (cons "." my-undo-cache-dir) ())))
