@@ -2,6 +2,7 @@
 /cache
 /elpa*
 /.lsp*
+/custom.el
 *~
 /transient
 /projectile*
