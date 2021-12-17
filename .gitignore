@@ -1,7 +1,6 @@
 /auto-save-list
 /cache
 /elpa*
-/custom.el
 /.lsp*
 *~
 /transient
