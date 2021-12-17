@@ -61,6 +61,8 @@
 ;; oh my freaking god, just take my damn answer
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+(require 'init-cachedir)
+
 ;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
 ;; as a buffer is unsaved, backups create copies once, when the file is first
 ;; written, and never again until it is killed and reopened. This is better
@@ -151,6 +153,12 @@
 (setq auto-revert-verbose t
       auto-revert-use-notify nil
       auto-revert-stop-on-user-input nil)
+
+;; switch window fast
+(use-package ace-window
+  :bind ("C-x o" . ace-window))
+
+(diminish 'abbrev-mode)
 
 (provide 'init-editor)
 ;;; init-editor.el ends here

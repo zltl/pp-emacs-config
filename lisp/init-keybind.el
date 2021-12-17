@@ -1,5 +1,5 @@
 ;;; init-keybind.el --- define key bindings
-
+;;; Commentary:
 ;;; Code:
 
 (use-package which-key
@@ -17,7 +17,6 @@
 ;; counsel
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
-
 
 (provide 'init-keybind)
 ;;; init-keybind.el ends here

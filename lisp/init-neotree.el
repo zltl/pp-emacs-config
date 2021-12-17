@@ -2,8 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-
-(use-package neotree
+(use-package neotree  
   :config
   ;; f8 to view tree strucure of folder
   (defun neotree-project-dir ()
@@ -20,6 +19,7 @@
         (message "Could not find git project root."))))
   (global-set-key [f8] 'neotree-project-dir)
   ;; switch with projectile
+  (use-package projectile)
   (setq projectile-switch-project-action 'neotree-projectile-action))
 
 (provide 'init-neotree)

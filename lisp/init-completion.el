@@ -1,18 +1,19 @@
 ;;; init-completion.el --- complection config
-
+;;; Commentary:
 ;;; Code:
 
 (use-package counsel)
+
 (diminish 'ivy-mode)
 
 (use-package yasnippet
-  :hook (prog-mode . yas-minor-mode-on)
+  :hook
+  (prog-mode . yas-minor-mode-on)
   (text-mode . yas-minor-mode-on)
   (yas-minor-mode . (lambda () (diminish 'yas-minor-mode)))
   :config
-  (yas-reload-all))
+  (yas-global-mode 1))
 (use-package yasnippet-snippets)
-
 
 ;; Add yasnippet support for all company backends
 ;; https://github.com/syl20bnr/spacemacs/pull/179
@@ -28,8 +29,8 @@
 (use-package company
   :ensure t
   :diminish company-mode
-  :hook (prog-mode . company-mode)
   :config
+  (add-hook 'after-init-hook 'global-company-mode)
   (setq company-idle-delay 0.2
         company-tooltip-align-annotations t
         company-tooltip-limit 20
@@ -37,6 +38,9 @@
         company-minimum-prefix-length 1)
   (setq company-backends
 	(mapcar #'company-mode/backend-with-yas company-backends)))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 (provide 'init-completion)
 ;;; init-completion.el ends here

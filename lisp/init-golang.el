@@ -1,4 +1,6 @@
 ;;; init-golang.el --- golang config
+;;; Commentary:
+;;; Code:
 
 ;; install golang:
 ;;   https://go.dev/doc/install

@@ -1,20 +1,24 @@
 ;;; init-package.el --- Settings for package.el, and use-package
-
+;;; Commentary:
 ;;; Code:
 
 (require 'package)
 
-;; Install into separate package dirs for each Emacs version, to prevent bytecode incompatibility
+(require 'init-cachedir)
+;; Install into separate package dirs for each Emacs version, to prevent
+;; bytecode incompatibility
 (let ((versioned-package-dir
-       (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version)
+       (expand-file-name (format "elpa-%s.%s" emacs-major-version
+				 emacs-minor-version)
 			 my-cache-dir)))
   (setq package-user-dir versioned-package-dir))
 
 ;; Fast mirror for Chinese mainland
-(setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-                         ("org-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
-                         ("org"    . "https://orgmode.org/elpa")))
+(setq package-archives
+      '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+	("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+	("org-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+	("org"    . "https://orgmode.org/elpa")))
 
 (setq package-enable-at-startup nil)
 (package-initialize)

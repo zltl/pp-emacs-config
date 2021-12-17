@@ -1,4 +1,7 @@
-;;; init-ido.el --- Interactively do things is a very convenient way to find files and switch buffers
+;;; init-ido.el --- Interactively do things is a very convenient way to find
+;;; files and switch buffers
+
+;;; Commentary:
 
 ;;; Code:
 
@@ -7,6 +10,7 @@
   (ido-mode 1)
   )
 
+(require 'init-cachedir)
 (use-package ido-vertical-mode
   :config
   (ido-vertical-mode 1)

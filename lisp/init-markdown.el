@@ -1,5 +1,5 @@
 ;;; init-markdown.el --- markdown config
-
+;;; Commentary:
 ;;; Code:
 
 (use-package markdown-mode

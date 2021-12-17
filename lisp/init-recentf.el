@@ -4,6 +4,7 @@
 
 (require 'recentf)
 
+(require 'init-cachedir)
 (setq recentf-save-file (expand-file-name "recentf" my-cache-dir))
 
 (defun my/recentf-save-list-silence ()

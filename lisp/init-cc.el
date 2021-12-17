@@ -12,21 +12,22 @@
   ;; (before-save-hook . lsp-format-buffer)
   ;; (before-save-hook . lsp-organize-imports)
   :config
-  (define-key c-mode-base-map (kbd "M-/") 'ff-find-related-file))
-                                        
-
-;; Open a header file in C++ mode by defaults
-(add-auto-mode 'c++-mode "\\.h\\'")
+  (define-key c-mode-base-map (kbd "M-/") 'ff-find-related-file)
+  ;; Open a header file in C++ mode by defaults
+  (add-auto-mode 'c++-mode "\\.h\\'"))
 
 (use-package cmake-mode
   :init
-  (setq auto-mode-alist
-        (append '(("CMakeLists\\.txt\\'" . cmake-mode)
-                  ("\\.cmake\\'" . cmake-mode))
-                auto-mode-alist)))
+  :mode (("CMakeLists\\.txt\\'" . cmake-mode)
+	 ("\\.cmake\\'" . cmake-mode)))
 
 ;; C++20 highlighting
-(use-package modern-cpp-font-lock)
+(use-package modern-cpp-font-lock
+  :diminish nil
+  :hook
+  (c++-mode . modern-c++-font-lock-mode)
+  (modern-c++-font-lock-mode . (lambda () (diminish
+					   'modern-c++-font-lock-mode))))
 
 ;; google cpplint
 (use-package flycheck-google-cpplint
@@ -53,7 +54,6 @@
 
 (use-package google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style-with-4-indent)
-
 
 (provide 'init-cc)
 ;;; init-cc.el ends here

@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-;;(setq undo-tree-history-directory-alist '(("." . (expand-file-name "undo" user-emacs-directory))))
+(require 'init-cachedir)
 
 (defvar my-undo-cache-dir (expand-file-name "undo" my-cache-dir)
   "Undotree cache location.")

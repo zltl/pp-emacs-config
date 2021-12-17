@@ -1,5 +1,5 @@
 ;;; init-search.el --- searching setting
-
+;;; Commentary:
 ;;; Code:
 
 ;; use swiper to replace i-search

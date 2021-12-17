@@ -1,5 +1,5 @@
 ;;; init-help.el --- config help that provides much more contextual information
-
+;;; Commentary:
 ;;; Code:
 
 (use-package helpful
