@@ -14,7 +14,9 @@
   :hook
   (go-mode . lsp-deferred)
   (before-save-hook . lsp-format-buffer)
-  (before-save-hook . lsp-organize-imports))
+  (before-save-hook . lsp-organize-imports)
+  :config
+  (eval-after-load 'go-mode (setq-default tab-width 4)))
 
 (provide 'init-golang)
 ;;; init-golang.el ends here
