@@ -9,8 +9,10 @@
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
-  (setq lsp-enable-file-watchers t)
-  (lsp-enable-which-key-integration t))
+  (eval-after-load 'whichkey
+    (progn
+    (setq lsp-enable-file-watchers t)
+    (lsp-enable-which-key-integration t))))
 
 ;; Optional - provides fancier overlays.
 (use-package lsp-ui

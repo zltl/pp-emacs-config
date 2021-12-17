@@ -2,7 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package counsel)
+(use-package counsel
+  :config
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "M-y") 'counsel-yank-pop))
 
 (diminish 'ivy-mode)
 

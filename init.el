@@ -26,6 +26,12 @@
   :defer t
   :init (load-theme 'spacemacs-dark t))
 
+;; feel free to forget shortkeys
+(use-package which-key
+  :diminish which-key-mode
+  :config
+  (which-key-mode))
+
 (require 'init-editor)
 (require 'init-recentf)
 (require 'init-help)
@@ -54,8 +60,6 @@
 (require 'init-undo)
 
 (require 'init-neotree)
-
-(require 'init-keybind)
 
 ;; Variables configured via the interactive 'customize' interface
 (when (file-exists-p custom-file)
