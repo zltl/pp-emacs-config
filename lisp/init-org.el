@@ -1,12 +1,13 @@
 ;;; init-org.el --- config org-mode
-
+;;; Commentary:
 ;;; Code:
 
-(defun my/org-mode-setup
-  (org-indent-mode)
-  (variable-pitch-mode 1)
-  (auto-fill-mode 0)
-  (visual-line-mode 1))
+(defun my/org-mode-setup ()
+    "Setup orgmode."
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (auto-fill-mode 0)
+    (visual-line-mode 1))
 
 (use-package org
   :hook (org-mode . my/org-mode-setup)
