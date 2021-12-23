@@ -15,8 +15,8 @@
   :mode "\\.go\\'"
   :hook
   (go-mode . lsp-deferred)
-  (before-save-hook . lsp-format-buffer)
-  (before-save-hook . lsp-organize-imports)
+  (before-save . lsp-format-buffer)
+  (before-save . lsp-organize-imports)
   :config
   (eval-after-load 'go-mode (setq-default tab-width 4)))
 

@@ -56,6 +56,10 @@
 (require 'init-cc)
 (require 'init-python)
 (require 'init-rust)
+(require 'init-protobuf)
+(require 'init-yaml)
+
+(require 'init-docker)
 
 (require 'init-undo)
 
