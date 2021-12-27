@@ -35,6 +35,11 @@ then `fc-cache -f -v`:
 </fontconfig>
 ```
 
+Install [all-the-icons](https://github.com/domtronn/all-the-icons.el) fonts 
+manual if you wan fancy modeline. Just copy `all-the-icons/fonts/*.tty` into 
+`~/.local/share/fonts/` then `fc-cache -f -v`. If you work on windows, Right 
+click `*.tty` then select "Install for all users."
+
 ## Golang
 Go to [Golang Installation Page](https://go.dev/doc/install) to install the
 language. 

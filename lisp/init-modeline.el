@@ -9,12 +9,12 @@
     nil))
 
 (use-package all-the-icons
-  :config
-  ;; Install fonts after load package on linux.
-  ;; Windows user need to download fonts and install them into system.
-  (when (and (eq system-type 'gnu/linux)
-			 (not (my/font-installed-p "all-the-icons")))
-	(all-the-icons-install-fonts t)))
+;;  :config
+;; INSTAL FONT MANUAL!
+;;  (when (and (eq system-type 'gnu/linux)
+;;			 (not (my/font-installed-p "all-the-icons")))
+;; 	(all-the-icons-install-fonts t))
+  )
 
 (defun my/start-doom-modeline-only-graphic ()
   "Start doom-modeline only in graphic window."
