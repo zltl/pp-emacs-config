@@ -130,7 +130,9 @@ registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
 git-fetch-with-cli = true
 ```
 
-`(use-package rustic)` not work for me, so clone it.
+`(use-package rustic)` not work for me, so clone it from github. Restart emacs
+after clone, rustic will be loaded if `~/.emacs.d/vendor/rustic/rustic.el`
+exists.
 
 ```bash
 git clone --depth=1 git@github.com:brotzeit/rustic.git ~/.emacs.d/vendor/rustic
@@ -176,7 +178,6 @@ Upon starting up Emacs for the first time, further third-party packages will be
 automatically downloaded and installed. If you encounter any errors at that
 stage, try restarting Emacs, and possibly running `M-x package-refresh-contents`
 before doing so.
-
 
 # Updates
 
