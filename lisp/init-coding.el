@@ -1,6 +1,5 @@
 ;;; init-coding.el -- coding system (unicode utf-8)
-
-
+;;; Commentary:
 ;;; Code:
 
 ;; make UTF-8 the default coding system

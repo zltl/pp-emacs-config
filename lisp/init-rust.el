@@ -16,7 +16,6 @@
     (setq rustic-format-on-save t)
     (add-hook 'rustic-mode-hook 'lsp-deferred))
 
-
 (when (file-exists-p rustic-load-file)
   (my/rustic-load-config))
 

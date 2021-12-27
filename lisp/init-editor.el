@@ -29,14 +29,6 @@
       (set-fontset-font (frame-parameter nil 'font) charset
                         (font-spec :family (car (cdr fonts))))))
 
-
-
-
-
-;(when (member "Source Code Pro" (font-family-list))
-;  (add-to-list 'initial-frame-alist '(font . "Source Code Pro-15"))
-;  (add-to-list 'default-frame-alist '(font . "Source Code Pro-15")))
-
 ;; Case-insensitive pass over `auto-mode-alist' is time wasted, and
 ;; indicates misconfiguration (don't rely on case insensitivity for file names).
 (setq auto-mode-case-fold nil)
