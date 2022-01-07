@@ -33,6 +33,7 @@
   (which-key-mode))
 
 (require 'init-editor)
+(require 'init-modeline)
 (require 'init-recentf)
 (require 'init-help)
 
@@ -64,8 +65,6 @@
 (require 'init-undo)
 
 (require 'init-neotree)
-
-(require 'init-modeline)
 
 ;; Variables configured via the interactive 'customize' interface
 (when (file-exists-p custom-file)
