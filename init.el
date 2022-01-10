@@ -6,8 +6,6 @@
 ;; into this directory.
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-(setq custom-file (locate-user-emacs-file "custom.el"))
-
 (require 'init-cachedir)
 
 (require 'init-coding)
@@ -26,7 +24,8 @@
   :config
   (with-eval-after-load 'recentf
 	(add-to-list 'recentf-exclude no-littering-var-directory)
-	(add-to-list 'recentf-exclude no-littering-etc-directory)))
+	(add-to-list 'recentf-exclude no-littering-etc-directory))
+  (setq custom-file (no-littering-expand-etc-file-name "custom.el")))
 
 ;; theme
 (use-package spacemacs-theme
@@ -72,10 +71,6 @@
 (require 'init-undo)
 
 (require 'init-neotree)
-
-;; Variables configured via the interactive 'customize' interface
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 (provide 'init)
 ;;; init.el ends here

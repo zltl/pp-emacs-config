@@ -85,8 +85,6 @@
 ;; oh my freaking god, just take my damn answer
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(require 'init-cachedir)
-
 ;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
 ;; as a buffer is unsaved, backups create copies once, when the file is first
 ;; written, and never again until it is killed and reopened. This is better
@@ -99,8 +97,7 @@
       backup-by-copying t   ; instead of renaming current file (clobbers links)
       delete-old-versions t ; clean up after itself
       kept-old-versions 5
-      kept-new-versions 5
-      backup-directory-alist (list (cons "." (concat my-cache-dir "backup/"))))
+      kept-new-versions 5)
 ;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
 ;; Use `recover-file' or `recover-session' to recover them.
 (setq auto-save-default t
@@ -108,9 +105,7 @@
       ;; the purpose of a failsafe. This adds the risk of losing the data we
       ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
       auto-save-include-big-deletions t
-      ;; Keep it out of `doom-emacs-dir' or the local directory.
-      auto-save-list-file-prefix (concat my-cache-dir "autosave/")
-      auto-save-file-name-transforms
+	  auto-save-file-name-transforms
       (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
                   ;; Prefix tramp autosaves to prevent conflicts with local ones
                   (concat auto-save-list-file-prefix "tramp-\\2") t)

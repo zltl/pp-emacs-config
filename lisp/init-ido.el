@@ -10,15 +10,12 @@
   (ido-mode 1)
   )
 
-(require 'init-cachedir)
 (use-package ido-vertical-mode
   :config
   (ido-vertical-mode 1)
   (setq ido-vertical-define-keys 'C-n-and-C-p-only)
   (setq ido-vertical-show-count t)
   (setq ido-use-faces t)
-  (setq ido-save-directory-list-file (concat my-cache-dir
-                                           "ido.last"))
   (set-face-attribute 'ido-vertical-first-match-face nil
                       :background nil
                       :foreground "orange")
