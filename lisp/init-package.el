@@ -19,6 +19,9 @@
 	("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
 	("org-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")))
 
+(unless (file-exists-p (expand-file-name "elpa" user-emacs-directory))
+  (package-refresh-contents))
+
 (setq package-enable-at-startup nil)
 (package-initialize)
 
