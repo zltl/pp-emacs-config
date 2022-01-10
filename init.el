@@ -21,6 +21,13 @@
 
 (require 'init-package)
 
+;; no litterint, keep .emacs.d clean
+(use-package no-littering
+  :config
+  (with-eval-after-load 'recentf
+	(add-to-list 'recentf-exclude no-littering-var-directory)
+	(add-to-list 'recentf-exclude no-littering-etc-directory)))
+
 ;; theme
 (use-package spacemacs-theme
   :defer t
