@@ -24,7 +24,9 @@
   :config
   (with-eval-after-load 'recentf
 	(add-to-list 'recentf-exclude no-littering-var-directory)
-	(add-to-list 'recentf-exclude no-littering-etc-directory))
+	(add-to-list 'recentf-exclude no-littering-etc-directory)
+	(add-to-list 'recentf-exclude (expand-file-name "elpa" user-emacs-directory))
+	(add-to-list 'recentf-exclude (expand-file-name "cache" user-emacs-directory)))
   (setq custom-file (no-littering-expand-etc-file-name "custom.el")))
 
 ;; theme
