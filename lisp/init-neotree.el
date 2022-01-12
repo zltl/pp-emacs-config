@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package neotree  
+(use-package neotree
   :config
   ;; f8 to view tree strucure of folder
   (defun neotree-project-dir ()
