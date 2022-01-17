@@ -30,10 +30,6 @@
         ("C-c u" . lsp-ui-imenu))
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (defun custom-setting-after-start
-	  (setq lsp-ui-imenu-auto-refresh 'after-save
-			lsp-headerline-arrow ">"))
-  (add-hook 'lsp-ui-mode-hook 'custom-setting-after-start)
   (define-key lsp-ui-mode-map [remap xref-find-definitions]
     #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references]

@@ -2,9 +2,15 @@
 ;;; Commentary:
 ;;; Code:
 
+(when (version< emacs-version "26.1")
+  (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
+
 ;; add ./lisp folder into load-path, so we can split the configure files
 ;; into this directory.
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
+;; from purcel/emacs.d/, Measure startup time
+(require 'init-benchmarking)
 
 (require 'init-cachedir)
 
@@ -19,15 +25,7 @@
 
 (require 'init-package)
 
-;; no litterint, keep .emacs.d clean
-(use-package no-littering
-  :config
-  (with-eval-after-load 'recentf
-	(add-to-list 'recentf-exclude no-littering-var-directory)
-	(add-to-list 'recentf-exclude no-littering-etc-directory)
-	(add-to-list 'recentf-exclude (expand-file-name "elpa" user-emacs-directory))
-	(add-to-list 'recentf-exclude (expand-file-name "cache" user-emacs-directory)))
-  (setq custom-file (no-littering-expand-etc-file-name "custom.el")))
+(require 'init-nolittering)
 
 ;; theme
 (use-package spacemacs-theme
