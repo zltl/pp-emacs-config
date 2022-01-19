@@ -71,8 +71,10 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
   (message "init completed in %.2fms"
            (sanityinc/time-subtract-millis after-init-time before-init-time)))
 
-(add-hook 'after-init-hook 'sanityinc/show-init-time)
-
+;;; delay 1 second to display startup time.
+(add-hook 'after-init-hook
+		  (lambda ()
+			(run-at-time "1 sec" nil #'sanityinc/show-init-time)))
 
 (provide 'init-benchmarking)
 ;;; init-benchmarking.el ends here

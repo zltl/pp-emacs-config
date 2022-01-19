@@ -6,9 +6,8 @@
 (use-package all-the-icons)
 
 (use-package doom-modeline
-  :hook
-  (after-init . doom-modeline-mode)
   :config
+  (doom-modeline-mode t)
   (setq doom-modeline-project-detection 'project))
 
 (provide 'init-modeline)
