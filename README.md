@@ -45,6 +45,8 @@ manually if you want fancy modeline. Just copy `all-the-icons/fonts/*.tty` into
 `~/.local/share/fonts/` then `fc-cache -f -v`. If you work on windows, right 
 click `*.tty` then select "Install for all users."
 
+Install [Source Code Pro](https://github.com/adobe-fonts/source-code-pro) like fonts before.
+
 ## Golang
 Go to [Golang Installation Page](https://go.dev/doc/install) to install the
 language. 
