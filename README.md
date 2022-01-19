@@ -35,9 +35,14 @@ then `fc-cache -f -v`:
 </fontconfig>
 ```
 
+Install [Source Han Sans](https://github.com/adobe-fonts/source-han-sans/tree/release) chinese fonts
+manually. Just copy the otf file into `~/.local/share/fonts/` then 
+`fc-cache -f -v`. If you work on windows, open the `otf` file then click
+`Install`.
+
 Install [all-the-icons](https://github.com/domtronn/all-the-icons.el) fonts 
-manual if you wan fancy modeline. Just copy `all-the-icons/fonts/*.tty` into 
-`~/.local/share/fonts/` then `fc-cache -f -v`. If you work on windows, Right 
+manually if you want fancy modeline. Just copy `all-the-icons/fonts/*.tty` into 
+`~/.local/share/fonts/` then `fc-cache -f -v`. If you work on windows, right 
 click `*.tty` then select "Install for all users."
 
 ## Golang
