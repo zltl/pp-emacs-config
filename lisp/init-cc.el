@@ -7,8 +7,8 @@
   (c-mode . lsp)
   (c++-mode . lsp)
   ;; TODO: open these hooks.
-  ;; Sadly I work with a dirty team, i will change the whole code base if open
-  ;; codes below.
+  ;; Sadly I work with a dirty team, i will change the whole code base if
+  ;; uncommend config below.
   ;; (before-save-hook . lsp-format-buffer)
   ;; (before-save-hook . lsp-organize-imports)
   :config

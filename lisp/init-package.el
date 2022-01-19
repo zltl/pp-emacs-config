@@ -16,9 +16,11 @@
 ;; Fast mirror for Chinese mainland
 (setq package-archives
       '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-	("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-	("org-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")))
+		("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+		("org-cn" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")))
 
+;; Run package-refresh-contents if first start.
+;; use folder "var" to check if it is the first start, see no-littering.
 (unless (file-exists-p (expand-file-name "var" user-emacs-directory))
   (package-refresh-contents))
 

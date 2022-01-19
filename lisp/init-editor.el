@@ -2,40 +2,15 @@
 ;;; Commentary:
 ;;; Code:
 
-;; default
-(set-face-attribute 'default nil :font (font-spec :family "Source Code Pro"
-						  :size 14))
-
-(when (eq system-type 'darwin)
-  (setq fonts '("SF Mono" "冬青黑体简体中文"))
-  (set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend)
-  (set-face-attribute 'default nil :font
-                      (format "%s:pixelsize=%d" (car fonts) 14)))
-
-(when (eq system-type 'windows-nt)
-  (setq fonts '("Source Code Pro" "思源黑体"))
-  (set-fontset-font t 'unicode "Segoe UI Emoji" nil 'prepend)
-  (set-face-attribute 'default nil :font
-                      (format "%s:pixelsize=%d" (car fonts) 20)))
-
-(when (eq system-type 'gnu/linux)
-  (setq fonts '("Source Code Pro" "思源黑体"))
-  (set-fontset-font t 'unicode "Noto Color Emoji" nil 'prepend)
-  (set-face-attribute 'default nil :font
-                      (format "%s:pixelsize=%d" (car fonts) 20)))
-
-(if (display-graphic-p)
-    (dolist (charset '(kana han symbol cjk-misc bopomofo))
-      (set-fontset-font (frame-parameter nil 'font) charset
-                        (font-spec :family (car (cdr fonts))))))
-
 ;; Case-insensitive pass over `auto-mode-alist' is time wasted, and
 ;; indicates misconfiguration (don't rely on case insensitivity for file names).
 (setq auto-mode-case-fold nil)
 
 ;; parens
 (use-package smartparens
-  :diminish nil)
+  :diminish nil
+  :config
+  (sp-use-smartparens-bindings))
 (use-package smartparens-config
   :diminish nil
   :ensure smartparens
@@ -46,11 +21,7 @@
   (setq show-paren-delay 0.1
         show-paren-when-point-in-periphery t))
 (use-package rainbow-delimiters
-  :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
-	 (lisp-mode . rainbow-delimiters-mode)
-	 (cc-mode . rainbow-delimiters-mode)
-	 (go-mode . rainbow-delimiters-mode)
-	 (rust-mode . rainbow-delimiters-mode)))
+  :hook ((prog-mode . rainbow-delimiters-mode)))
 
 ;; do not request confirm before visiting a new file.
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -81,6 +52,9 @@
 (push '(menu-bar-lines . 0)   default-frame-alist)
 (push '(tool-bar-lines . 0)   default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+(setq inhibit-startup-screen t) ;; stop showing startup screen
+
+(global-font-lock-mode t)   ;; turn on font-lock mode everywhere
 
 ;; oh my freaking god, just take my damn answer
 (defalias 'yes-or-no-p 'y-or-n-p)

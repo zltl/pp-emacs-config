@@ -28,5 +28,8 @@
   :after org
   :hook (org-mode . org-bullets-mode))
 
+;; no extra indentation in the source blocks
+(setq org-src-preserve-indentation t)
+
 (provide 'init-org)
 ;;; init-org.el ends here

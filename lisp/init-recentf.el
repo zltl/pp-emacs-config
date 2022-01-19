@@ -28,7 +28,12 @@
   (setq recentf-max-menu-items 5000)
   (setq recentf-auto-cleanup 'never)
   (add-hook 'focus-out-hook #'my/recentf-save-list-silence t nil)
-  (add-hook 'focus-out-hook #'my/recentf-cleanup-silence t nil))
-
+  (add-hook 'focus-out-hook #'my/recentf-cleanup-silence t nil)
+  (with-eval-after-load 'no-littering
+	(add-to-list 'recentf-exclude no-littering-etc-directory)
+	(add-to-list 'recentf-exclude no-littering-var-directory))
+  (add-to-list 'recentf-exclude (expand-file-name "elpa" user-emacs-directory))
+  (add-to-list 'recentf-exclude (expand-file-name "cache" user-emacs-directory)))
+   
 (provide 'init-recentf)
 ;;; init-recentf.el ends here

@@ -16,12 +16,14 @@
 
 (require 'init-coding)
 
-;; subr-x has a ton of useful macros and functions, and it would be nice
-;; if it were available to packages that support emacs versions down to
-;; 24.1.
-(require 'subr-x)
-;; Import some common lisp functions and macros
-(require 'cl-lib)
+(eval-when-compile
+  (progn
+	;; Import some common lisp functions and macros
+	(require 'cl-lib)
+	;; subr-x has a ton of useful macros and functions, and it would be nice
+	;; if it were available to packages that support emacs versions down to
+	;; 24.1.
+	(eval-when-compile (require 'subr-x))))
 
 (require 'init-package)
 
@@ -37,6 +39,8 @@
   :diminish which-key-mode
   :config
   (which-key-mode))
+
+(require 'init-fonts)
 
 (require 'init-editor)
 (require 'init-modeline)
@@ -71,6 +75,8 @@
 (require 'init-undo)
 
 (require 'init-neotree)
+
+(require 'init-spellcheck)
 
 (provide 'init)
 ;;; init.el ends here
