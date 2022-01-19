@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package rust-mode)
+;; (use-package rust-mode)
 
 (use-package rustic
   :hook (rustic-mode . lsp-deferred)
