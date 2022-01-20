@@ -17,13 +17,12 @@
 (require 'init-coding)
 
 (eval-when-compile
-  (progn
-	;; Import some common lisp functions and macros
-	(require 'cl-lib)
-	;; subr-x has a ton of useful macros and functions, and it would be nice
-	;; if it were available to packages that support emacs versions down to
-	;; 24.1.
-	(eval-when-compile (require 'subr-x))))
+  ;; Import some common lisp functions and macros
+  (require 'cl-lib)
+  ;; subr-x has a ton of useful macros and functions, and it would be nice
+  ;; if it were available to packages that support emacs versions down to
+  ;; 24.1.
+  (eval-when-compile (require 'subr-x)))
 
 (require 'init-package)
 

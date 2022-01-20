@@ -18,7 +18,7 @@
   (before-save . lsp-format-buffer)
   (before-save . lsp-organize-imports)
   :config
-  (eval-after-load 'go-mode (setq-default tab-width 4)))
+  (with-eval-after-load 'go-mode (setq-default tab-width 4)))
 
 (provide 'init-golang)
 ;;; init-golang.el ends here

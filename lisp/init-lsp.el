@@ -9,10 +9,9 @@
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
-  (eval-after-load 'whichkey
-    (progn
+  (with-eval-after-load 'whichkey
     (setq lsp-enable-file-watchers t)
-    (lsp-enable-which-key-integration t))))
+    (lsp-enable-which-key-integration t)))
 
 ;; Optional - provides fancier overlays.
 (use-package lsp-ui
@@ -29,7 +28,7 @@
         ;; symbol list
         ("C-c u" . lsp-ui-imenu))
   :hook (lsp-mode . lsp-ui-mode)
-  :config  
+  :config
   (define-key lsp-ui-mode-map [remap xref-find-definitions]
     #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references]

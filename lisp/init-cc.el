@@ -17,17 +17,19 @@
   (add-auto-mode 'c++-mode "\\.h\\'"))
 
 (use-package cmake-mode
-  :init
-  :mode (("CMakeLists\\.txt\\'" . cmake-mode)
-	 ("\\.cmake\\'" . cmake-mode)))
+  :mode
+  (("CMakeLists\\.txt\\'" . cmake-mode)
+   ("\\.cmake\\'" . cmake-mode)))
 
 ;; C++20 highlighting
 (use-package modern-cpp-font-lock
   :diminish nil
   :hook
   (c++-mode . modern-c++-font-lock-mode)
-  (modern-c++-font-lock-mode . (lambda () (diminish
-					   'modern-c++-font-lock-mode))))
+  (modern-c++-font-lock-mode
+   .
+   (lambda () (diminish
+			   'modern-c++-font-lock-mode))))
 
 ;; google cpplint
 (use-package flycheck-google-cpplint

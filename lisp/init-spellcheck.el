@@ -7,11 +7,7 @@
 (dolist (hook '(change-log-mode-hook log-edit-mode-hook))
   (add-hook hook (lambda () (flyspell-mode -1))))
 
-(add-hook 'prog-mode
-          (lambda ()
-            (flyspell-prog-mode)
-			;; ...
-			))
+(add-hook 'prog-mode #'flyspell-prog-mode)
 
 (use-package flyspell-correct
   :after flyspell)

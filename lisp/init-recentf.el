@@ -23,7 +23,7 @@
 (use-package recentf
   :config
   (recentf-mode 1)
-  (global-set-key (kbd "C-x C-b") 'recentf-open-files)
+  (global-set-key (kbd "C-x C-b") #'recentf-open-files)
   (setq recentf-max-saved-items 10000)
   (setq recentf-max-menu-items 5000)
   (setq recentf-auto-cleanup 'never)

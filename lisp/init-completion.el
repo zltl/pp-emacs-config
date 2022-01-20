@@ -14,8 +14,9 @@
   (prog-mode . yas-minor-mode-on)
   (text-mode . yas-minor-mode-on)
   (yas-minor-mode . (lambda () (diminish 'yas-minor-mode)))
-  :config
-  (yas-global-mode 1))
+  ;; :config
+  ;; (yas-global-mode 1)
+  )
 (use-package yasnippet-snippets)
 
 ;; Add yasnippet support for all company backends
