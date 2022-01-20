@@ -32,13 +32,13 @@
 ;; google cpplint
 (use-package flycheck-google-cpplint
   :config
-  (eval-after-load 'flycheck
-  '(progn
-     (require 'flycheck-google-cpplint)
-     ;; Add Google C++ Style checker.
-     ;; In default, syntax checked by Clang and Cppcheck.
-     (flycheck-add-next-checker 'c/c++-cppcheck
-                                '(warning . c/c++-googlelint)))))
+  (with-eval-after-load 'flycheck
+	'(progn
+	   (require 'flycheck-google-cpplint)
+	   ;; Add Google C++ Style checker.
+	   ;; In default, syntax checked by Clang and Cppcheck.
+	   (flycheck-add-next-checker 'c/c++-cppcheck
+								  '(warning . c/c++-googlelint)))))
 
 ;; google style, but with 4 space indent.
 (defun google-set-c-style-with-4-indent ()
