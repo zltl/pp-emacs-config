@@ -40,17 +40,20 @@
   (which-key-mode))
 
 (require 'init-fonts)
-
 (require 'init-editor)
 (require 'init-modeline)
 (require 'init-recentf)
 (require 'init-help)
+
+(use-package multiple-cursors)
 
 (require 'init-completion)
 (require 'init-flycheck)
 (require 'init-search)
 ;; find file, switch buffer
 (require 'init-ido)
+
+(require 'init-mmm)
 
 ;; Projectile is a really nifty package, that “teaches” Emacs the concept of
 ;; project.

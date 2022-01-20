@@ -98,8 +98,8 @@
   :config
   (setq whitespace-line-column my-column-limit
         whitespace-style '(face lines-tail)))
-(require 'column-marker)
-(add-hook 'prog-mode-hook (lambda () (interactive) (column-marker-1 80)))
+(use-package fill-column-indicator
+  :commands (fci-mode))
 
 ;; Show colume number
 (setq-default column-number-mode t)
@@ -152,6 +152,10 @@
   :bind ("C-x o" . ace-window))
 
 (diminish 'abbrev-mode)
+
+;; hightlight todo
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode))
 
 (provide 'init-editor)
 ;;; init-editor.el ends here

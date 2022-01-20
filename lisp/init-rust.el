@@ -9,5 +9,9 @@
   :config
   (setq rustic-format-on-save t))
 
+(use-package flycheck-rust
+  :hook
+  (flycheck-mode . flycheck-rust-setup))
+
 (provide 'init-rust)
 ;;; init-rust.el ends here

@@ -31,5 +31,16 @@
 ;; no extra indentation in the source blocks
 (setq org-src-preserve-indentation t)
 
+(use-package mixed-pitch
+  :hook
+  (org-mode . mixed-pitch-mode)
+  :config
+  (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-date)
+  (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-done)
+  (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-drawer)
+  (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-formula)
+  (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-tag)
+  (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-todo))
+
 (provide 'init-org)
 ;;; init-org.el ends here
