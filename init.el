@@ -72,8 +72,6 @@
 (require 'init-protobuf)
 (require 'init-yaml)
 
-(require 'init-docker)
-
 (require 'init-undo)
 
 (require 'init-neotree)
