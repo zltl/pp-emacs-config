@@ -72,6 +72,10 @@
 (require 'init-rust)
 (require 'init-protobuf)
 (require 'init-yaml)
+(require 'init-csv)
+(require 'init-html)
+(require 'init-js)
+(require 'init-json)
 
 (require 'init-undo)
 

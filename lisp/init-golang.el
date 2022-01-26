@@ -8,6 +8,7 @@
 ;;   export GOPROXY=https://goproxy.io,direct
 ;; intall tools
 ;;   go install golang.org/x/tools/gopls@latest
+;;   go get github.com/fatih/gomodifytags
 
 ;;; Code:
 
@@ -21,6 +22,11 @@
   (with-eval-after-load 'go-mode (setq-default tab-width 4)))
 
 (use-package gotest)
+
+(use-package go-tag
+  :config
+  (setq go-tag-args (list "-transform" "snakecase")))
+
 
 (provide 'init-golang)
 ;;; init-golang.el ends here
