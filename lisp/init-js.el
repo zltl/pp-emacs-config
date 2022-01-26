@@ -10,5 +10,8 @@
 (use-package skewer-mode)
 (use-package tern)
 
+(use-package typescript-mode)
+(use-package import-js)
+
 (provide 'init-js)
 ;;; init-js.el ends here
