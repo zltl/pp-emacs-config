@@ -16,6 +16,32 @@
   ;; Open a header file in C++ mode by defaults
   (add-auto-mode 'c++-mode "\\.h\\'"))
 
+(use-package company-c-headers
+  :config
+  (add-to-list 'company-backends 'company-c-headers))
+
+(use-package cpp-auto-include)
+
+;; disassemble C/C++ code under cursor
+(use-package disaster)
+
+(use-package clang-format+
+  :config
+  (add-hook 'c-mode-common-hook #'clang-format+-mode))
+
+(use-package gdb-mi
+  :config
+  (setq
+   gdb-many-windows t
+   gdb-show-main t))
+
+(use-package semantic
+  :config
+  (add-hook 'c-mode-common-hook #'semantic-mode))
+(use-package stickyfunc-enhance
+  :config
+  (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode))
+
 (use-package cmake-mode
   :mode
   (("CMakeLists\\.txt\\'" . cmake-mode)

@@ -44,6 +44,7 @@
 (require 'init-modeline)
 (require 'init-recentf)
 (require 'init-help)
+(require 'eldoc)
 
 (use-package multiple-cursors)
 
