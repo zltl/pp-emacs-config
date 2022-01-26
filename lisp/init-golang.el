@@ -20,5 +20,7 @@
   :config
   (with-eval-after-load 'go-mode (setq-default tab-width 4)))
 
+(use-package gotest)
+
 (provide 'init-golang)
 ;;; init-golang.el ends here

@@ -78,8 +78,6 @@
 
 (require 'init-neotree)
 
-(require 'init-spellcheck)
-
 (provide 'init)
 ;;; init.el ends here
 
