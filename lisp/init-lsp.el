@@ -29,6 +29,20 @@
         ("C-c u" . lsp-ui-imenu))
   :hook (lsp-mode . lsp-ui-mode)
   :config
+  (setq lsp-ui-sideline-enable t
+        lsp-ui-sideline-delay 0.2
+        lsp-ui-sideline-show-diagnostics t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-sideline-show-code-actions t
+        lsp-signature-auto-activate t
+        lsp-signature-render-documentation t
+        lsp-modeline-code-actions-enable t
+        lsp-enable-symbol-highlighting t
+        lsp-ui-sideline-update-mode t
+        lsp-ui-doc-enable t
+        lsp-eldoc-enable-hover t
+        lsp-ui-imenu-auto-refresh t
+        lsp-ui-imenu-refresh-delay 1)
   (define-key lsp-ui-mode-map [remap xref-find-definitions]
     #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references]
