@@ -13,6 +13,8 @@
     (setq lsp-enable-file-watchers t)
     (lsp-enable-which-key-integration t)))
 
+(use-package ccls)
+
 ;; Optional - provides fancier overlays.
 (use-package lsp-ui
   :ensure t
