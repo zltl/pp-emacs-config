@@ -13,5 +13,13 @@
 (use-package typescript-mode)
 (use-package import-js)
 
+(defun my-js-hook ()
+  "Js mode indent."
+  (interactive)
+  (setq	js-indent-level 2))
+
+(add-hook 'js-mode-hook
+		  #'my-js-hook)
+
 (provide 'init-js)
 ;;; init-js.el ends here
