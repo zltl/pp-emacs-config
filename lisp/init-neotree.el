@@ -20,7 +20,8 @@
   (global-set-key [f8] 'neotree-project-dir)
   ;; switch with projectile
   (use-package projectile)
-  (setq projectile-switch-project-action 'neotree-projectile-action))
+  (setq projectile-switch-project-action 'neotree-projectile-action)
+  (setq-default neo-show-hidden-files t))
 
 (provide 'init-neotree)
 ;;; init-neotree.el ends here
