@@ -16,7 +16,9 @@
 (defun my-js-hook ()
   "Js mode indent."
   (interactive)
-  (setq	js-indent-level 2))
+  (setq	js-indent-level 2
+		indent-tabs-mode t
+		tab-width 2))
 
 (add-hook 'js-mode-hook
 		  #'my-js-hook)
