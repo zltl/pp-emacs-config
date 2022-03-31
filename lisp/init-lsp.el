@@ -6,6 +6,17 @@
   :commands (lsp lsp-deferred)
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
+  ((c-mode; ccls
+	c++-mode; ccls
+	c-or-c++-mode ; ccls
+	js-jsx-mode ; ts-ls
+	typescript-mode ; ts-ls
+	js-mode ; ts-ls
+	python-mode; pyright
+	web-mode; ts-ls/HTML/CSS
+	haskell-mode; haskell-language-server
+	go-mode
+	) . lsp-deferred)
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
@@ -14,6 +25,12 @@
     (lsp-enable-which-key-integration t)))
 
 (use-package ccls)
+
+(use-package lsp-pyright
+  :hook (python-mode . (lambda () (require 'lsp-pyright)))
+  :init (when (executable-find "python3")
+          (setq lsp-pyright-python-executable-cmd "python3")))
+
 
 ;; Optional - provides fancier overlays.
 (use-package lsp-ui
@@ -31,20 +48,12 @@
         ("C-c u" . lsp-ui-imenu))
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-ui-sideline-enable t
-        lsp-ui-sideline-delay 0.2
-        lsp-ui-sideline-show-diagnostics t
-        lsp-ui-sideline-show-hover nil
-        lsp-ui-sideline-show-code-actions t
-        lsp-signature-auto-activate t
-        lsp-signature-render-documentation t
-        lsp-modeline-code-actions-enable t
-        lsp-enable-symbol-highlighting t
-        lsp-ui-sideline-update-mode t
-        lsp-ui-doc-enable t
-        lsp-eldoc-enable-hover t
-        lsp-ui-imenu-auto-refresh t
-        lsp-ui-imenu-refresh-delay 1)
+  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-header t)
+  (setq lsp-ui-doc-include-signature t)
+  (setq lsp-ui-doc-border (face-foreground 'default))
+  (setq lsp-ui-sideline-show-code-actions t)
+  (setq lsp-ui-sideline-delay 0.05)
   (define-key lsp-ui-mode-map [remap xref-find-definitions]
     #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references]

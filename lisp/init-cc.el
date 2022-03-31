@@ -3,9 +3,6 @@
 ;;; Code:
 
 (use-package cc-mode
-  :hook
-  (c-mode . lsp)
-  (c++-mode . lsp)
   ;; TODO: open these hooks.
   ;; Sadly I work with a dirty team, i will change the whole code base if
   ;; uncommend config below.
