@@ -82,6 +82,8 @@
 
 (require 'init-neotree)
 
+(use-package page-break-lines)
+
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook))
