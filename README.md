@@ -123,7 +123,7 @@ pip install pylint
 
 ## Rust
 
-[Install Rust] (https://www.rust-lang.org/tools/install) first.
+[Install Rust](https://www.rust-lang.org/tools/install) first.
 
 For Chinese mainlan user, change cargo mirror as below in file 
 `~/.cargo/config`:
