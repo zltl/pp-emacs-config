@@ -76,6 +76,7 @@
 (require 'init-html)
 (require 'init-js)
 (require 'init-json)
+(require 'init-lisp)
 (use-package lua-mode)
 
 (require 'init-undo)

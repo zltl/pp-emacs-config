@@ -12,7 +12,7 @@
 	js-jsx-mode ; ts-ls
 	typescript-mode ; ts-ls
 	js-mode ; ts-ls
-	python-mode; pyright
+	python-mode; lsp-python-ms
 	web-mode; ts-ls/HTML/CSS
 	haskell-mode; haskell-language-server
 	go-mode
@@ -26,11 +26,7 @@
 
 (use-package ccls)
 
-(use-package lsp-pyright
-  :hook (python-mode . (lambda () (require 'lsp-pyright)))
-  :init (when (executable-find "python3")
-          (setq lsp-pyright-python-executable-cmd "python3")))
-
+(use-package lsp-pyright)
 
 ;; Optional - provides fancier overlays.
 (use-package lsp-ui
