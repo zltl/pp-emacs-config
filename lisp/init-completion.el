@@ -40,8 +40,8 @@
         company-tooltip-limit 20
         company-show-quick-access t
         company-minimum-prefix-length 1)
-  ;; (setq company-backends
-  ;; 	(mapcar #'company-mode/backend-with-yas company-backends))
+  (setq company-backends
+        (mapcar #'company-mode/backend-with-yas company-backends))
   )
 
 (use-package company-box
