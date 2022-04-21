@@ -19,14 +19,14 @@
   (when (fboundp 'set-fontset-font)
 	(set-fontset-font t 'unicode "Segoe UI Emoji" nil 'prepend))
   (set-face-attribute 'default nil :font
-                      (format "%s:pixelsize=%d" (car fonts) 20)))
+                      (format "%s:pixelsize=%d" (car fonts) 18)))
 
 (when (eq system-type 'gnu/linux)
   (setq fonts '("Source Code Pro" "思源黑体"))
   (when (fboundp 'set-fontset-font)  
 	(set-fontset-font t 'unicode "Noto Color Emoji" nil 'prepend))
   (set-face-attribute 'default nil :font
-                      (format "%s:pixelsize=%d" (car fonts) 20)))
+                      (format "%s:pixelsize=%d" (car fonts) 18)))
 
 (provide 'init-fonts)
 ;;; init-fonts.el ends here

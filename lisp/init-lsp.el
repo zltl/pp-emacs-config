@@ -6,15 +6,15 @@
   :commands (lsp lsp-deferred)
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
-  ((c-mode; ccls
-	c++-mode; ccls
-	c-or-c++-mode ; ccls
-	js-jsx-mode ; ts-ls
-	typescript-mode ; ts-ls
-	js-mode ; ts-ls
-	python-mode; lsp-python-ms
-	web-mode; ts-ls/HTML/CSS
-	haskell-mode; haskell-language-server
+  ((c-mode
+	c++-mode
+	c-or-c++-mode
+	js-jsx-mode
+	typescript-mode
+	js-mode
+	python-mode
+	web-mode
+	haskell-mode
 	go-mode
 	) . lsp-deferred)
   :init
@@ -24,7 +24,7 @@
     (setq lsp-enable-file-watchers t)
     (lsp-enable-which-key-integration t)))
 
-(use-package ccls)
+;; (use-package ccls)
 
 (use-package lsp-pyright)
 
@@ -44,12 +44,6 @@
         ("C-c u" . lsp-ui-imenu))
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-doc-header t)
-  (setq lsp-ui-doc-include-signature t)
-  (setq lsp-ui-doc-border (face-foreground 'default))
-  (setq lsp-ui-sideline-show-code-actions t)
-  (setq lsp-ui-sideline-delay 0.05)
   (define-key lsp-ui-mode-map [remap xref-find-definitions]
     #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references]

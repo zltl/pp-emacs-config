@@ -24,8 +24,8 @@
   :config
   (recentf-mode 1)
   (global-set-key (kbd "C-x C-b") #'recentf-open-files)
-  (setq recentf-max-saved-items 10000)
-  (setq recentf-max-menu-items 5000)
+  (setq recentf-max-saved-items 50)
+  (setq recentf-max-menu-items 50)
   (setq recentf-auto-cleanup 'never)
   (add-hook 'focus-out-hook #'my/recentf-save-list-silence t nil)
   (add-hook 'focus-out-hook #'my/recentf-cleanup-silence t nil)
