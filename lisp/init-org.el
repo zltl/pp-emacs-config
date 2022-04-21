@@ -26,11 +26,12 @@ unwanted space when exporting org-mode to html."
 (use-package org
   :hook (org-mode . my/org-mode-setup)
   :config
-  (setq org-ellipsis " ▼")
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-log-done 'time)
-  (setq org-log-states-order-reversed t)
-  (setq org-log-into-drawer t)
+  (setq org-ellipsis " ▼"
+		org-agenda-start-with-log-mode t
+		org-log-done 'time
+		org-log-states-order-reversed t
+		org-log-into-drawer 'show2levels
+		org-startup-folded t)
   (setq org-agenda-files
         (file-expand-wildcards "~/TODO/*.org"))
   (setq org-todo-keywords

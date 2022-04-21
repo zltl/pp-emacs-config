@@ -15,7 +15,7 @@
                       (format "%s:pixelsize=%d" (car fonts) 14)))
 
 (when (eq system-type 'windows-nt)
-  (setq fonts '("Source Code Pro" "思源黑体"))
+  (setq fonts '("Source Code Pro" "微软雅黑"))
   (when (fboundp 'set-fontset-font)
 	(set-fontset-font t 'unicode "Segoe UI Emoji" nil 'prepend))
   (set-face-attribute 'default nil :font
