@@ -17,7 +17,7 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 ;; from purcel/emacs.d/, Measure startup time
-;; (require 'init-benchmarking)
+(require 'init-benchmarking)
 
 (require 'init-cachedir)
 
@@ -94,12 +94,6 @@
 (require 'init-undo)
 
 (require 'init-neotree)
-
-(use-package page-break-lines)
-
-;; (use-package dashboard
-;;   :config
-;;   (dashboard-setup-startup-hook))
 
 (provide 'init)
 ;;; init.el ends here
