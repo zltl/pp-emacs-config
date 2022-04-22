@@ -57,7 +57,8 @@ unwanted space when exporting org-mode to html."
   (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-tag)
   (add-to-list 'mixed-pitch-fixed-pitch-faces 'org-todo))
 
-(use-package org-pomodoro)
+;; I don't use it
+;; (use-package org-pomodoro)
 
 (provide 'init-org)
 ;;; init-org.el ends here

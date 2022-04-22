@@ -9,3 +9,5 @@
 ;; loaded, but after `early-init-file'. Doom handles package initialization, so
 ;; we must prevent Emacs from doing it early!
 (setq package-enable-at-startup nil)
+
+;;; early-init.el ends here

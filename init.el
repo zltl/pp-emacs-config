@@ -5,6 +5,13 @@
 (when (version< emacs-version "26.1")
   (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
 
+;; Minimize garbage collection during startup
+(setq gc-cons-threshold most-positive-fixnum)
+;; Lower threshold back to 8 MiB (default is 800kB)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (expt 2 23))))
+
 ;; add ./lisp folder into load-path, so we can split the configure files
 ;; into this directory.
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
@@ -27,6 +34,11 @@
 (require 'init-package)
 
 (require 'init-nolittering)
+
+(use-package benchmark-init
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
 ;; theme
 (use-package spacemacs-theme
@@ -85,9 +97,9 @@
 
 (use-package page-break-lines)
 
-(use-package dashboard
-  :config
-  (dashboard-setup-startup-hook))
+;; (use-package dashboard
+;;   :config
+;;   (dashboard-setup-startup-hook))
 
 (provide 'init)
 ;;; init.el ends here
