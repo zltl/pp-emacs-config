@@ -26,7 +26,7 @@ unwanted space when exporting org-mode to html."
 (use-package org
   :hook (org-mode . my/org-mode-setup)
   :config
-  (require 'org-temp)
+  (require 'org-tempo)
   (setq org-ellipsis " ▼"
 		org-agenda-start-with-log-mode t
 		org-log-done 'time
