@@ -26,6 +26,7 @@ unwanted space when exporting org-mode to html."
 (use-package org
   :hook (org-mode . my/org-mode-setup)
   :config
+  (require 'org-temp)
   (setq org-ellipsis " ▼"
 		org-agenda-start-with-log-mode t
 		org-log-done 'time
@@ -38,6 +39,8 @@ unwanted space when exporting org-mode to html."
 		'(
 		  (sequence "IDEA(i)" "TODO(t)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)")
 		  (sequence "|" "CANCELED(c)" "DELEGATED(l)" "SOMEDAY(f)"))))
+
+
 
 (use-package org-bullets
   :after org
