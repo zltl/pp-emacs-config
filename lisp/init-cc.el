@@ -9,7 +9,7 @@
   ;; (before-save-hook . lsp-format-buffer)
   ;; (before-save-hook . lsp-organize-imports)
   :config
-  (define-key c-mode-base-map (kbd "M-/") 'ff-find-related-file)
+  ;; (define-key c-mode-base-map (kbd "M-/") 'ff-find-related-file)
   ;; Open a header file in C++ mode by defaults
   (add-auto-mode 'c++-mode "\\.h\\'"))
 
@@ -58,11 +58,11 @@
 (use-package flycheck-google-cpplint
   :config
   (with-eval-after-load 'flycheck
-	(require 'flycheck-google-cpplint)
-	;; Add Google C++ Style checker.
-	;; In default, syntax checked by Clang and Cppcheck.
-	(flycheck-add-next-checker 'c/c++-cppcheck
-							   '(warning . c/c++-googlelint))))
+    (require 'flycheck-google-cpplint)
+    ;; Add Google C++ Style checker.
+    ;; In default, syntax checked by Clang and Cppcheck.
+    (flycheck-add-next-checker 'c/c++-cppcheck
+			       '(warning . c/c++-googlelint))))
 
 ;; google style, but with 4 space indent.
 (defun google-set-c-style-with-4-indent ()
@@ -71,7 +71,7 @@
   (make-local-variable 'c-tab-always-indent)
   (setq c-tab-always-indent t)
   (c-add-style "Google" google-c-style t)
-  (setq tab-width 4
+  (setq tab-width 8
         c-indent-tabs-mode t
         c-indent-level 4
         c-basic-offset 4))

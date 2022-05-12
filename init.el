@@ -89,6 +89,7 @@
 (require 'init-js)
 (require 'init-json)
 (require 'init-lisp)
+(require 'init-haskell)
 (use-package lua-mode)
 
 (require 'init-undo)

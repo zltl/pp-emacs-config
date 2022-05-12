@@ -24,7 +24,7 @@
     (setq lsp-enable-file-watchers t)
     (lsp-enable-which-key-integration t)))
 
-;; (use-package ccls)
+(use-package ccls)
 
 (use-package lsp-pyright)
 
