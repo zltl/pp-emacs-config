@@ -6,9 +6,11 @@
   :commands (lsp lsp-deferred)
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
-  ((c-mode
-	c++-mode
-	c-or-c++-mode
+  ((
+	;; not start lsp-mode automatically, may be slow
+	;; c-mode
+	;; c++-mode
+	;; c-or-c++-mode
 	js-jsx-mode
 	typescript-mode
 	js-mode
