@@ -22,7 +22,10 @@
   :config
   (with-eval-after-load 'whichkey
     (setq lsp-enable-file-watchers t)
-    (lsp-enable-which-key-integration t)))
+    (lsp-enable-which-key-integration t))
+  (setq lsp-idle-delay 0.500)
+  (setq lsp-log-io nil) ; if set to true can cause a performance hit
+  )
 
 (use-package ccls)
 

@@ -10,7 +10,10 @@
 ;; Lower threshold back to 32 MiB (default is 800kB)
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq gc-cons-threshold (expt 2 25))))
+            (setq gc-cons-threshold (expt 2 26))))
+;; emacs default is too low 4k considering that the some of the language server
+;; responses are in 800k - 3M range.
+(setq read-process-output-max (* 1024 1024 3)) ;; 1mb
 
 ;; add ./lisp folder into load-path, so we can split the configure files
 ;; into this directory.
