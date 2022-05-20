@@ -157,5 +157,33 @@
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode))
 
+(use-package zoom
+  :config
+  (custom-set-variables '(zoom-mode t)))
+
+(use-package treemacs
+  :commands (treemacs
+             treemacs-follow-mode
+             treemacs-filewatch-mode
+             treemacs-fringe-indicator-mode)
+  :bind (("<f7>" . treemacs)
+         ("<f6>" . treemacs-select-window))
+  :init
+  (when window-system
+    (setq treemacs-width 27
+          treemacs-is-never-other-window t
+          treemacs-indentation 0
+          treemacs-space-between-root-nodes nil)
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode nil)
+    (treemacs)
+    (other-window 1)))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+(use-package treemacs-magit
+  :after (treemacs magit))
+
 (provide 'init-editor)
 ;;; init-editor.el ends here
