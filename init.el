@@ -98,6 +98,7 @@
 (require 'init-undo)
 
 (require 'init-neotree)
+(require 'init-treemacs)
 
 (provide 'init)
 ;;; init.el ends here
