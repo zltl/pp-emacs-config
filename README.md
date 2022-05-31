@@ -54,7 +54,7 @@ language.
 You may set a goproxy, especially in Chinese Mainland:
 
 ``` bash
-export GOPROXY=https://goproxy.io,direct
+export GOPROXY=https://proxy.golang.com.cn,direct
 ```
 
 To drive lsp-mode, we need gopls:
