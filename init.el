@@ -97,6 +97,7 @@
 
 (require 'init-undo)
 
+;; treemacs may hung on large project, use neotree as an alternative.
 (require 'init-neotree)
 (require 'init-treemacs)
 
