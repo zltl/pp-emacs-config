@@ -18,6 +18,7 @@
                 (neotree-find file-name)))
         (message "Could not find git project root."))))
   (global-set-key [f8] 'neotree-project-dir)
+  (setq neo-window-width 40)
   ;; switch with projectile
   (use-package projectile)
   (setq projectile-switch-project-action 'neotree-projectile-action)

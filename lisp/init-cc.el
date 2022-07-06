@@ -22,9 +22,9 @@
 ;; disassemble C/C++ code under cursor
 (use-package disaster)
 
-(use-package clang-format+
-  :config
-  (add-hook 'c-mode-common-hook #'clang-format+-mode))
+;; (use-package clang-format+
+;;   :config
+;;   (add-hook 'c-mode-common-hook #'clang-format+-mode))
 
 (use-package gdb-mi
   :config
@@ -32,12 +32,13 @@
    gdb-many-windows t
    gdb-show-main t))
 
-(use-package semantic
-  :config
-  (add-hook 'c-mode-common-hook #'semantic-mode))
-(use-package stickyfunc-enhance
-  :config
-  (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode))
+;; (use-package semantic
+;;   :config
+;;   (add-hook 'c-mode-common-hook #'semantic-mode))
+
+;; (use-package stickyfunc-enhance
+;;   :config
+;;   (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode))
 
 (use-package cmake-mode
   :mode
@@ -55,14 +56,14 @@
 			   'modern-c++-font-lock-mode))))
 
 ;; google cpplint
-(use-package flycheck-google-cpplint
-  :config
-  (with-eval-after-load 'flycheck
-    (require 'flycheck-google-cpplint)
-    ;; Add Google C++ Style checker.
-    ;; In default, syntax checked by Clang and Cppcheck.
-    (flycheck-add-next-checker 'c/c++-cppcheck
-			       '(warning . c/c++-googlelint))))
+;; (use-package flycheck-google-cpplint
+;;   :config
+;;   (with-eval-after-load 'flycheck
+;;     (require 'flycheck-google-cpplint)
+;;     ;; Add Google C++ Style checker.
+;;     ;; In default, syntax checked by Clang and Cppcheck.
+;;     (flycheck-add-next-checker 'c/c++-cppcheck
+;; 			       '(warning . c/c++-googlelint))))
 
 ;; google style, but with 4 space indent.
 (defun google-set-c-style-with-4-indent ()
