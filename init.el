@@ -2,104 +2,434 @@
 ;;; Commentary:
 ;;; Code:
 
+(defconst emacs-start-time (current-time))
+
 (when (version< emacs-version "26.1")
   (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
 
-;; Minimize garbage collection during startup
-(setq gc-cons-threshold most-positive-fixnum)
-;; Lower threshold back to 32 MiB (default is 800kB)
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (expt 2 26))))
-;; emacs default is too low 4k considering that the some of the language server
-;; responses are in 800k - 3M range.
-(setq read-process-output-max (* 1024 1024 3)) ;; 1mb
-
 ;; add ./lisp folder into load-path, so we can split the configure files
 ;; into this directory.
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-
-;; from purcel/emacs.d/, Measure startup time
-(require 'init-benchmarking)
-
-(require 'init-cachedir)
-
-(require 'init-coding)
+;; (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 (eval-when-compile
-  ;; Import some common lisp functions and macros
   (require 'cl-lib)
-  ;; subr-x has a ton of useful macros and functions, and it would be nice
-  ;; if it were available to packages that support emacs versions down to
-  ;; 24.1.
-  (eval-when-compile (require 'subr-x)))
-
-(require 'init-package)
-
-(require 'init-nolittering)
-
-(use-package benchmark-init
-  :config
-  ;; To disable collection of benchmark data after init is done.
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
-
-;; theme
-(use-package spacemacs-theme
-  :defer t
-  :init (load-theme 'spacemacs-dark t))
-
-;; feel free to forget shortkeys
-(use-package which-key
-  :diminish which-key-mode
-  :config
-  (which-key-mode))
-
-(require 'init-fonts)
-(require 'init-editor)
-(require 'init-modeline)
-(require 'init-recentf)
-(require 'init-help)
+  (require 'subr-x))
 (require 'eldoc)
 
-(use-package multiple-cursors)
+(prefer-coding-system 'utf-8)
 
-(require 'init-completion)
-(require 'init-flycheck)
-(require 'init-search)
-;; find file, switch buffer
-(require 'init-ido)
+
+;; install straight.el
+(let* ((reposupd (expand-file-name "straight/repos" user-emacs-directory))
+       (ob (get-buffer "*Messages*"))
+       (repodir (expand-file-name "straight.el" reposupd))
+       (bootstrap-file (expand-file-name "bootstrap.el" repodir))
+       (clone-cmd (format "git clone git@github.com:radian-software/straight.el.git %s" repodir)))
+  (unless (file-exists-p reposupd)
+    (make-directory reposupd t))
+  (unless (file-exists-p bootstrap-file)
+    (message "executing %s ..." clone-cmd)
+    (shell-command clone-cmd ob ob))
+  (load bootstrap-file))
 
-(require 'init-mmm)
+
+;; C-q C-l to insert line
+(straight-use-package
+ '(page-break-lines :type git :host github :repo "purcell/page-break-lines"))
+(global-page-break-lines-mode)
 
-;; Projectile is a really nifty package, that “teaches” Emacs the concept of
-;; project.
-(require 'init-projectile)
+
+;; Help keeping ~/.emacs.d clean
+(straight-use-package 'no-littering)
+(require 'no-littering)
+;; no littering suggested settings
+(require 'recentf)
+(add-to-list 'recentf-exclude no-littering-var-directory)
+(add-to-list 'recentf-exclude no-littering-etc-directory)
+;; auto-save setting
+(setq auto-save-file-name-transforms
+      `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+;; customizations
+(setq custom-file (no-littering-expand-etc-file-name "custom.el"))
 
+
+;; theme
+(straight-use-package '(spacemacs-theme :repo "nashamri/spacemacs-theme"))
+(load-theme 'spacemacs-dark t)
+
+;; modeline
+(straight-use-package 'doom-modeline)
+(doom-modeline-mode t)
+(setq doom-modeline-project-detection 'project)
+
+
+;; displays available keybindings in popup
+(straight-use-package '(which-key :repo "justbur/emacs-which-key"))
+(require 'which-key)
+(which-key-mode)
+
+
+;; parens
+
+(straight-use-package '(smartparens :repo "Fuco1/smartparens"))
+(require 'smartparens-config)
+(sp-use-smartparens-bindings)
+(show-smartparens-global-mode t)
+(add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
+
+(straight-use-package 'paren)
+(require 'paren)
+(setq show-paren-delay 0.1
+      show-paren-when-point-in-periphery t)
+
+(straight-use-package 'rainbow-delimiters)
+(require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+
+;; do not request confirm before visiting a new file.
+(setq confirm-nonexistent-file-or-buffer nil)
+
+(setq uniquify-buffer-name-style 'forward)
+
+;; no beeping or blinking
+(setq ring-bell-function #'ignore
+      visible-bell nil)
+
+;; disable menu bar, tool-bar
+(push '(menu-bar-lines . 0)   default-frame-alist)
+(push '(tool-bar-lines . 0)   default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+(setq inhibit-startup-screen t) ;; stop showing startup screen
+
+;; oh my freaking god, just take my damn answer
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
+;; as a buffer is unsaved, backups create copies once, when the file is first
+;; written, and never again until it is killed and reopened. This is better
+;; suited to version control, and I don't want world-readable copies of
+;; potentially sensitive material floating around our filesystem.
+(setq create-lockfiles nil
+      make-backup-files nil
+      ;; But in case the user does enable it, some sensible defaults:
+      version-control t     ; number each backup file
+      backup-by-copying t   ; instead of renaming current file (clobbers links)
+      delete-old-versions t ; clean up after itself
+      kept-old-versions 5
+      kept-new-versions 5)
+;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
+;; Use `recover-file' or `recover-session' to recover them.
+(setq auto-save-default t
+      ;; Don't auto-disable auto-save after deleting big chunks. This defeats
+      ;; the purpose of a failsafe. This adds the risk of losing the data we
+      ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
+      auto-save-include-big-deletions t
+	  auto-save-file-name-transforms
+      (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+                  ;; Prefix tramp autosaves to prevent conflicts with local ones
+                  (concat auto-save-list-file-prefix "tramp-\\2") t)
+            (list ".*" auto-save-list-file-prefix t)))
+
+;; Show colume number
+(setq-default column-number-mode t)
+(setq-default word-wrap t)
+;; ...but don't do any wrapping by default. It's expensive. Enable
+;; `visual-line-mode' if you want soft line-wrapping. `auto-fill-mode' for hard
+;; line-wrapping.
+(setq-default truncate-lines t)
+
+(visual-line-mode)
+
+;; The POSIX standard defines a line is "a sequence of zero or more non-newline
+;; characters followed by a terminating newline", so files should end in a
+;; newline. Windows doesn't respect this (because it's Windows), but we should,
+;; since programmers' tools tend to be POSIX compliant (and no big deal if not).
+(setq require-final-newline t)
+
+;; Cull duplicates in the kill ring to reduce bloat and make the kill ring
+;; easier to peruse (with `counsel-yank-pop' or `helm-show-kill-ring'.
+(setq kill-do-not-save-duplicates t)
+
+;; Keeping buffers automatically up-to-date.
+(require 'autorevert)
+(global-auto-revert-mode 1)
+(setq auto-revert-verbose t
+      auto-revert-use-notify nil
+      auto-revert-stop-on-user-input nil)
+
+
+;; switch window fast
+(straight-use-package 'ace-window)
+(global-set-key (kbd "C-x o") #'ace-window)
+
+
+;; hightlight todo
+(straight-use-package 'hl-todo)
+(add-hook 'prog-mode-hook #'hl-todo-mode)
+
+
+;; projectile
+
+(straight-use-package 'projectile)
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+
+
+;; recentf
+(require 'recentf)
+(defun my/recentf-save-list-silence ()
+  "Save recentf."
+  (interactive)
+  (let ((mesage-log-max nil))
+    (if (fboundp 'shut-up)
+        (shut-up (recentf-save-list))
+      (recentf-save-list)))
+  (message ""))
+
+(defun my/recentf-cleanup-silence()
+  "Clean recentf."
+  (interactive)
+  (let ((message-log-max nil))
+    (if (fboundp 'shut-up)
+        (shut-up (recentf-cleanup))
+      (recentf-cleanup)))
+  (message ""))
+
+(recentf-mode 1)
+(global-set-key (kbd "C-x C-b") #'recentf-open-files)
+(setq recentf-max-saved-items 100)
+(setq recentf-max-menu-items 100)
+(setq recentf-auto-cleanup 'never)
+(add-hook 'focus-out-hook #'my/recentf-save-list-silence t nil)
+(add-hook 'focus-out-hook #'my/recentf-cleanup-silence t nil)
+(with-eval-after-load 'no-littering
+  (add-to-list 'recentf-exclude no-littering-etc-directory)
+  (add-to-list 'recentf-exclude no-littering-var-directory))
+(add-to-list 'recentf-exclude (expand-file-name "elpa" user-emacs-directory))
+(add-to-list 'recentf-exclude (expand-file-name "cache" user-emacs-directory))
+
+
+;; more contextual information of help
+(straight-use-package 'helpful)
+(global-set-key (kbd "C-h f") #'helpful-callable)
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
+(global-set-key (kbd "C-c C-d") #'helpful-at-point)
+(global-set-key (kbd "C-h F") #'helpful-function)
+(global-set-key (kbd "C-h C") #'helpful-command)
+
+
+;; completion/search
+
+;; ivy
+(straight-use-package 'counsel)
+(straight-use-package 'ivy :repo "abo-abo/swiper")
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "(%d/%d) ")
+
+(global-set-key (kbd "C-s") 'swiper-isearch)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "M-y") 'counsel-yank-pop)
+
+;; ag
+(straight-use-package 'ag)
+
+;; yas
+(straight-use-package 'yasnippet)
+(require 'yasnippet)
+(yas-global-mode 1)
+
+;; company
+(straight-use-package 'company)
+(global-company-mode t)
+(setq company-idle-delay 0.2
+      company-tooltip-align-annotations t
+      company-tooltip-limit 20
+      company-show-quick-access t
+      company-minimum-prefix-length 1)
+
+
+;; flycheck
+
+(straight-use-package 'flycheck)
+(global-flycheck-mode)
+
+
 ;; git
-(use-package magit)
+(straight-use-package 'magit)
+
+;; org
+(require 'org)
 
-(require 'init-org)
+(defun chinese/post-init-org ()
+  "Remove space between chinese workds when exporting."
+  (defadvice org-html-paragraph (before org-html-paragraph-advice
+                                        (paragraph contents info) activate)
+    "Join consecutive Chinese lines into a single long line without
+unwanted space when exporting org-mode to html."
+    (let* ((origin-contents (ad-get-arg 1))
+           (fix-regexp "[[:multibyte:]]")
+           (fixed-contents
+            (replace-regexp-in-string
+             (concat
+              "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
+      (ad-set-arg 1 fixed-contents))))
 
-(require 'init-lsp)
-(require 'init-golang)
-(require 'init-cc)
-(require 'init-python)
-(require 'init-rust)
-(require 'init-protobuf)
-(require 'init-yaml)
-(require 'init-csv)
-(require 'init-html)
-(require 'init-js)
-(require 'init-json)
-(require 'init-lisp)
-(require 'init-haskell)
-(use-package lua-mode)
+(defun my/org-mode-setup ()
+    "Setup orgmode."
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (auto-fill-mode 0)
+    (visual-line-mode 1)
+    (chinese/post-init-org))
+(require 'org-tempo)
+  (setq org-ellipsis " ▼"
+        org-agenda-start-with-log-mode t
+        org-log-done 'time
+        org-log-states-order-reversed t
+        org-log-into-drawer 'show2levels
+        org-startup-folded t)
+  (setq org-agenda-files
+        (file-expand-wildcards "~/TODO/*.org"))
 
-(require 'init-undo)
+(straight-use-package 'org-bullets)
+(add-hook 'org-mode-hook #'org-bullets-mode)
 
-;; treemacs may hung on large project, use neotree as an alternative.
-(require 'init-neotree)
-(require 'init-treemacs)
+
+;; lsp
+(straight-use-package 'lsp-mode)
+(require 'lsp-mode)
+(setq lsp-keymap-prefix "C-c l")
+(add-hook 'lsp-mode #'lsp-enable-which-key-integration)
+
+(straight-use-package 'lsp-ui)
+(straight-use-package 'lsp-ivy)
+(straight-use-package 'lsp-treemacs)
+
+
+;; golang
+
+(straight-use-package 'go-mode)
+(autoload 'go-mode "go-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+
+(defun lsp-go-install-save-hooks ()
+  "Auto format after save."
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+
+;; c/c++
+
+(require 'cc-mode)
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+;; Auto-completion for C/C++ headers using Company
+(straight-use-package 'company-c-headers)
+(add-to-list 'company-backends 'company-c-headers)
+
+(straight-use-package 'cpp-auto-include)
+
+(straight-use-package 'disaster)
+
+(straight-use-package 'gdb-mi)
+(setq gdb-many-windows t
+      gdb-show-main t)
+
+;; cmake
+(straight-use-package 'cmake-mode)
+(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
+(add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
+
+;; c++20
+(straight-use-package 'modern-cpp-font-lock)
+(add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
+
+;; google style, but with 4 space indent.
+(straight-use-package 'google-c-style)
+(require 'google-c-style)
+(defun google-set-c-style-with-4-indent ()
+  "Set current buffer to google style, but with 4 space indent."
+  (interactive)
+  (setq c-tab-always-indent t)
+  ;; linux source code use linux style
+  (if (string-match "\\(linux|Linux\\)" (file-name-directory buffer-file-name))
+      ;; if case
+      (setq c-default-style "linux")
+
+    ;; else case
+    (progn
+      (google-set-c-style)
+      (setq tab-width 8
+            c-indent-tabs-mode t
+            c-indent-level 4
+            c-basic-offset 4))))
+(add-hook 'c-mode-common-hook 'google-set-c-style-with-4-indent)
+
+
+;; python
+(straight-use-package 'elpy)
+(add-hook 'python-mode #'elpy-enable)
+(setq python-indent-offset 4)
+(add-hook 'python-mode-hook (lambda () (setq python-indent 4)))
+
+
+;; rust
+(straight-use-package 'rustic)
+(add-hook 'rustic-mode #'lsp-deferred)
+
+
+;; protobuf
+(straight-use-package 'protobuf-mode)
+(require 'protobuf-mode)
+
+
+
+;; yaml csv json
+
+(straight-use-package 'yaml-mode)
+(require 'yaml-mode)
+(straight-use-package 'csv-mode)
+(require 'csv-mode)
+(straight-use-package 'json-mode)
+(straight-use-package 'json-navigator)
+(straight-use-package 'json-reformat)
+(straight-use-package 'json-snatcher)
+(require 'json-mode)
+
+;; web
+
+(straight-use-package 'prettier-js)
+(straight-use-package 'web-beautify)
+(straight-use-package 'company-web)
+(straight-use-package 'web-mode)
+(require 'web-mode)
+(straight-use-package 'js2-mode)
+
+
+;; lua
+(straight-use-package 'lua-mode)
+(require 'lua-mode)
+
+
+;; undotree
+(straight-use-package 'undo-tree)
+(require 'undo-tree-autoloads)
+(global-undo-tree-mode)
+(setq undo-tree-auto-save-history t)
+
+
+;; treemacs
+(straight-use-package 'neotree)
+(require 'neotree-autoloads)
+(straight-use-package 'treemacs)
+(require 'treemacs-autoloads)
 
 (provide 'init)
 ;;; init.el ends here
