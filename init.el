@@ -33,6 +33,12 @@
   (load bootstrap-file))
 
 
+;; switch window fast
+(straight-use-package 'ace-window)
+(require 'ace-window)
+(global-set-key (kbd "C-x o") #'ace-window)
+
+
 ;; C-q C-l to insert line
 (straight-use-package
  '(page-break-lines :type git :host github :repo "purcell/page-break-lines"))
@@ -159,9 +165,19 @@
       auto-revert-stop-on-user-input nil)
 
 
-;; switch window fast
-(straight-use-package 'ace-window)
-(global-set-key (kbd "C-x o") #'ace-window)
+;; treemacs
+(straight-use-package 'neotree)
+(require 'neotree-autoloads)
+(straight-use-package 'treemacs)
+(treemacs-git-commit-diff-mode nil)
+(treemacs-git-mode 'deferred)
+(require 'treemacs-autoloads)
+(global-set-key (kbd "C-c t") #'treemacs-select-window)
+
+;; ace-window ignore treemacs default, use 'C-x o' move windows including treemacs.
+(add-hook 'treemacs-mode-hook
+	  (lambda()
+	    (setq aw-ignored-buffers (delete 'treemacs-mode aw-ignored-buffers))))
 
 
 ;; hightlight todo
@@ -298,17 +314,33 @@ unwanted space when exporting org-mode to html."
 
 (straight-use-package 'org-bullets)
 (add-hook 'org-mode-hook #'org-bullets-mode)
+(add-hook 'org-mode-hook #'my/org-mode-setup)
 
 
 ;; lsp
 (straight-use-package 'lsp-mode)
+(setq-default lsp-keymap-prefix "C-c C-l")
 (require 'lsp-mode)
-(setq lsp-keymap-prefix "C-c l")
-(add-hook 'lsp-mode #'lsp-enable-which-key-integration)
-
 (straight-use-package 'lsp-ui)
 (straight-use-package 'lsp-ivy)
 (straight-use-package 'lsp-treemacs)
+
+
+
+;; use dump jump on shell script mode
+(straight-use-package 'dumb-jump)
+
+(add-hook 'shell-script-mode #'dump-jump-mode)
+
+(cl-defun lsp-find-definition-or-dumb-jump ()
+  "Fallback dump jump when using lsp."
+  (interactive)
+  (let ((loc (lsp-request "textDocument/definition"
+                          (lsp--text-document-position-params))))
+    (if (seq-empty-p loc)
+        (dumb-jump-go) ;; todo: this is technically deprecated
+      (lsp-show-xrefs (lsp--locations-to-xref-items loc) nil nil))))
+
 
 
 ;; golang
@@ -317,12 +349,14 @@ unwanted space when exporting org-mode to html."
 (autoload 'go-mode "go-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
+(add-hook 'go-mode-hook #'lsp-deferred)
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
-  "Auto format after save."
+  "Fomat and import when save."
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-(add-hook 'go-mode-hook #'lsp-deferred)
 
 
 ;; c/c++
@@ -372,6 +406,7 @@ unwanted space when exporting org-mode to html."
             c-basic-offset 4))))
 (add-hook 'c-mode-common-hook 'google-set-c-style-with-4-indent)
 
+
 
 ;; python
 (straight-use-package 'elpy)
@@ -390,7 +425,6 @@ unwanted space when exporting org-mode to html."
 (require 'protobuf-mode)
 
 
-
 ;; yaml csv json
 
 (straight-use-package 'yaml-mode)
@@ -425,12 +459,6 @@ unwanted space when exporting org-mode to html."
 (setq undo-tree-auto-save-history t)
 
 
-;; treemacs
-(straight-use-package 'neotree)
-(require 'neotree-autoloads)
-(straight-use-package 'treemacs)
-(require 'treemacs-autoloads)
-
 (provide 'init)
 ;;; init.el ends here
 
