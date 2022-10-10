@@ -97,7 +97,7 @@
 (require 'smartparens-config)
 (sp-use-smartparens-bindings)
 (show-smartparens-global-mode t)
-;; (add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
+(add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
 
 (straight-use-package 'paren)
 (require 'paren)
@@ -196,6 +196,9 @@
 	  (lambda()
 	    (setq aw-ignored-buffers (delete 'treemacs-mode aw-ignored-buffers))))
 
+(straight-use-package 'lsp-treemacs)
+(lsp-treemacs-sync-mode 1)
+
 
 ;; hightlight todo
 (straight-use-package 'hl-todo)
@@ -267,6 +270,8 @@
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
+
+(define-key prog-mode-map (kbd "M-,") 'pop-global-mark)
 
 ;; ag
 (straight-use-package 'ag)
