@@ -16,6 +16,8 @@
   (require 'subr-x))
 (require 'eldoc)
 
+
+;; encoding
 (prefer-coding-system 'utf-8)
 
 
@@ -67,6 +69,20 @@
 (straight-use-package 'doom-modeline)
 (doom-modeline-mode t)
 (setq doom-modeline-project-detection 'project)
+;;   truncate-upto-project => ~/P/F/emacs/lisp/comint.el
+;;   truncate-from-project => ~/Projects/FOSS/emacs/l/comint.el
+;;   truncate-with-project => emacs/l/comint.el
+;;   truncate-except-project => ~/P/F/emacs/l/comint.el
+;;   truncate-upto-root => ~/P/F/e/lisp/comint.el
+;;   truncate-all => ~/P/F/e/l/comint.el
+;;   relative-from-project => emacs/lisp/comint.el
+;;   relative-to-project => lisp/comint.el
+;;   file-name => comint.el"
+;;
+;; If you are expereicing the laggy issue, especially while editing remote files
+;; with tramp, please try `file-name' style.
+;; Please refer to https://github.com/bbatsov/projectile/issues/657.
+(setq doom-modeline-buffer-file-name-style 'relative-from-project)
 
 
 ;; displays available keybindings in popup
@@ -81,7 +97,7 @@
 (require 'smartparens-config)
 (sp-use-smartparens-bindings)
 (show-smartparens-global-mode t)
-(add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
+;; (add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
 
 (straight-use-package 'paren)
 (require 'paren)
@@ -119,23 +135,26 @@
 (setq create-lockfiles nil
       make-backup-files nil
       ;; But in case the user does enable it, some sensible defaults:
-      version-control t     ; number each backup file
-      backup-by-copying t   ; instead of renaming current file (clobbers links)
-      delete-old-versions t ; clean up after itself
-      kept-old-versions 5
-      kept-new-versions 5)
+      ;; version-control t     ; number each backup file
+      ;; backup-by-copying t   ; instead of renaming current file (clobbers links)
+      ;; delete-old-versions t ; clean up after itself
+      ;; kept-old-versions 5
+      ;; kept-new-versions 5
+      )
+
+;; (setq auto-save-default t)
 ;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
 ;; Use `recover-file' or `recover-session' to recover them.
-(setq auto-save-default t
-      ;; Don't auto-disable auto-save after deleting big chunks. This defeats
-      ;; the purpose of a failsafe. This adds the risk of losing the data we
-      ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
-      auto-save-include-big-deletions t
-	  auto-save-file-name-transforms
-      (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-                  ;; Prefix tramp autosaves to prevent conflicts with local ones
-                  (concat auto-save-list-file-prefix "tramp-\\2") t)
-            (list ".*" auto-save-list-file-prefix t)))
+;; (setq auto-save-default t
+;;       ;; Don't auto-disable auto-save after deleting big chunks. This defeats
+;;       ;; the purpose of a failsafe. This adds the risk of losing the data we
+;;       ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
+;;       auto-save-include-big-deletions t
+;; 	  auto-save-file-name-transforms
+;;       (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+;;                   ;; Prefix tramp autosaves to prevent conflicts with local ones
+;;                   (concat auto-save-list-file-prefix "tramp-\\2") t)
+;;             (list ".*" auto-save-list-file-prefix t)))
 
 ;; Show colume number
 (setq-default column-number-mode t)
@@ -169,8 +188,6 @@
 (straight-use-package 'neotree)
 (require 'neotree-autoloads)
 (straight-use-package 'treemacs)
-(treemacs-git-commit-diff-mode nil)
-(treemacs-git-mode 'deferred)
 (require 'treemacs-autoloads)
 (global-set-key (kbd "C-c t") #'treemacs-select-window)
 
@@ -323,8 +340,6 @@ unwanted space when exporting org-mode to html."
 (require 'lsp-mode)
 (straight-use-package 'lsp-ui)
 (straight-use-package 'lsp-ivy)
-(straight-use-package 'lsp-treemacs)
-
 
 
 ;; use dump jump on shell script mode
@@ -445,6 +460,8 @@ unwanted space when exporting org-mode to html."
 (straight-use-package 'web-mode)
 (require 'web-mode)
 (straight-use-package 'js2-mode)
+(setq js2-basic-offset 2)
+(setq js-indent-level 2)
 
 
 ;; lua
