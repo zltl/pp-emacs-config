@@ -196,8 +196,8 @@
 	  (lambda()
 	    (setq aw-ignored-buffers (delete 'treemacs-mode aw-ignored-buffers))))
 
-(straight-use-package 'lsp-treemacs)
-(lsp-treemacs-sync-mode 1)
+;; (straight-use-package 'lsp-treemacs)
+;; (lsp-treemacs-sync-mode 1)
 
 
 ;; hightlight todo
@@ -261,7 +261,7 @@
 
 ;; ivy
 (straight-use-package 'counsel)
-(straight-use-package 'ivy :repo "abo-abo/swiper")
+(straight-use-package '(ivy :repo "abo-abo/swiper"))
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-count-format "(%d/%d) ")
@@ -378,6 +378,11 @@ unwanted space when exporting org-mode to html."
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
+(straight-use-package
+ '(go-tag :type git :host github :repo "brantou/emacs-go-tag"))
+(require 'go-tag)
+(setq go-tag-args (list "-transform" "snakecase"))
+
 
 ;; c/c++
 
@@ -477,8 +482,20 @@ unwanted space when exporting org-mode to html."
 ;; undotree
 (straight-use-package 'undo-tree)
 (require 'undo-tree-autoloads)
+;; comment these when calling straight-pull-all
 (global-undo-tree-mode)
 (setq undo-tree-auto-save-history t)
+
+
+(straight-use-package '(slime :repo "slime/slime"))
+(require 'slime)
+
+;; TODO: in sbcl (ql:quickload "quicklisp-slime-helper")
+
+(let ((slime-file "~/.quicklisp/slime-helper.el"))
+  (when (file-exists-p slime-file)
+    (load (expand-file-name slime-file))))
+(setq inferior-lisp-program "sbcl")
 
 
 (provide 'init)
