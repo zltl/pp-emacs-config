@@ -487,15 +487,26 @@ unwanted space when exporting org-mode to html."
 (setq undo-tree-auto-save-history t)
 
 
-(straight-use-package '(slime :repo "slime/slime"))
-(require 'slime)
+;; (straight-use-package '(slime :repo "slime/slime"))
+;; (require 'slime)
 
 ;; TODO: in sbcl (ql:quickload "quicklisp-slime-helper")
 
-(let ((slime-file "~/.quicklisp/slime-helper.el"))
-  (when (file-exists-p slime-file)
-    (load (expand-file-name slime-file))))
-(setq inferior-lisp-program "sbcl")
+;; (let ((slime-file "~/.quicklisp/slime-helper.el"))
+;;   (when (file-exists-p slime-file)
+;;     (load (expand-file-name slime-file))))
+;; (setq inferior-lisp-program "sbcl")
+
+;; use sly instead
+(straight-use-package '(sly :repo "joaotavora/sly"))
+(require 'sly-autoloads)
+
+(straight-use-package '(sly-macrostep :repo "joaotavora/sly-macrostep"))
+(require 'sly-macrostep-autoloads)
+
+
+(straight-use-package '(lispy :repo "abo-abo/lispy"))
+(add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
 
 
 (provide 'init)
