@@ -318,12 +318,14 @@ unwanted space when exporting org-mode to html."
       (ad-set-arg 1 fixed-contents))))
 
 (defun my/org-mode-setup ()
-    "Setup orgmode."
-    (org-indent-mode)
-    (variable-pitch-mode 1)
-    (auto-fill-mode 0)
-    (visual-line-mode 1)
-    (chinese/post-init-org))
+  "Setup orgmode."
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setf org-src-preserve-indentation nil)
+  (setf org-edit-src-content-indentation 0)
+  (chinese/post-init-org))
 (require 'org-tempo)
   (setq org-ellipsis " ▼"
         org-agenda-start-with-log-mode t
@@ -507,6 +509,14 @@ unwanted space when exporting org-mode to html."
 
 (straight-use-package '(lispy :repo "abo-abo/lispy"))
 (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
+
+
+;; (straight-use-package '(company-tabnine :repo "TommyX12/company-tabnine"))
+;; (require 'company-tabnine)
+;; (add-to-list 'company-backends #'company-tabnine)
+;; TODO install binary
+;; M-x company-tabnine-install-binary
+;; (setq company-show-numbers t)
 
 
 (provide 'init)
