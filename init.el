@@ -350,19 +350,19 @@ unwanted space when exporting org-mode to html."
 
 
 ;; use dump jump on shell script mode
-(straight-use-package 'dumb-jump)
-
-(add-hook 'shell-script-mode #'dump-jump-mode)
-
-(cl-defun lsp-find-definition-or-dumb-jump ()
-  "Fallback dump jump when using lsp."
-  (interactive)
-  (let ((loc (lsp-request "textDocument/definition"
-                          (lsp--text-document-position-params))))
-    (if (seq-empty-p loc)
-        (dumb-jump-go) ;; todo: this is technically deprecated
-      (lsp-show-xrefs (lsp--locations-to-xref-items loc) nil nil))))
-
+; (straight-use-package 'dumb-jump)
+; 
+; (add-hook 'shell-script-mode #'dump-jump-mode)
+; 
+; (cl-defun lsp-find-definition-or-dumb-jump ()
+;   "Fallback dump jump when using lsp."
+;   (interactive)
+;   (let ((loc (lsp-request "textDocument/definition"
+;                           (lsp--text-document-position-params))))
+;     (if (seq-empty-p loc)
+;         (dumb-jump-go) ;; todo: this is technically deprecated
+;       (lsp-show-xrefs (lsp--locations-to-xref-items loc) nil nil))))
+; 
 
 
 ;; golang
@@ -486,7 +486,7 @@ unwanted space when exporting org-mode to html."
 (require 'undo-tree-autoloads)
 ;; comment these when calling straight-pull-all
 (global-undo-tree-mode)
-(setq undo-tree-auto-save-history t)
+;; (setq undo-tree-auto-save-history t)
 
 
 ;; (straight-use-package '(slime :repo "slime/slime"))
