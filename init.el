@@ -9,6 +9,9 @@
 
 ;; simple face
 (menu-bar-mode -1)
+;; not backup
+(virual-line-mode 1)
+
 
 
 ;; straignt.el
@@ -46,19 +49,26 @@
 (straight-use-package 'org-bullets)
 (straight-use-package 'markdown-mode)
 (straight-use-package 'json-mode)
+(straight-use-package 'sly)
+(straight-use-package 'smartparens)
 
 
 (require 'org)
 (add-hook 'org-mode-hook
 	  (lambda ()
 	    (org-indent-mode)
-	    (virual-line-mode 1)
 	    (org-bullets-mode 1)
 	    (setq org-agenda-files
 		  (file-expand-wildcards "~/TODO/*.org"))))
 
 
 (load-theme 'spacemacs-dark t)
+
+(require 'smartparens-config)
+(add-hook 'prog-mode-hook
+	  (lambda ()
+	    (smartparens-mode)))
+
 
 (helm-mode)
 (require 'helm-xref)
