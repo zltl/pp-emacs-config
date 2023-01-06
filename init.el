@@ -10,7 +10,7 @@
 ;; simple face
 (menu-bar-mode -1)
 ;; not backup
-(virual-line-mode 1)
+(setq make-backup-files nil)
 
 
 
