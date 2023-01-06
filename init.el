@@ -42,7 +42,21 @@
 (straight-use-package 'ag)
 (straight-use-package 'spacemacs-theme)
 (straight-use-package 'treemacs)
+(straight-use-package 'magit)
+(straight-use-package 'org-bullets)
 
+
+
+(require 'org)
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (org-indent-mode)
+	    (virual-line-mode 1)
+	    (org-bullets-mode 1)
+	    (setq org-agenda-files
+		  (file-expand-wildcards "~/TODO/*.org"))))
+
+
 (load-theme 'spacemacs-dark t)
 
 (helm-mode)
@@ -70,6 +84,7 @@
 
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+
 
 
 
