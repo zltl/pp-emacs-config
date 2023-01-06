@@ -45,6 +45,7 @@
 (straight-use-package 'magit)
 (straight-use-package 'org-bullets)
 (straight-use-package 'markdown-mode)
+(straight-use-package 'json-mode)
 
 
 (require 'org)
@@ -84,8 +85,6 @@
 
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
-
-
 
 
 
