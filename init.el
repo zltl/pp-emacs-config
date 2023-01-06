@@ -44,7 +44,7 @@
 (straight-use-package 'treemacs)
 (straight-use-package 'magit)
 (straight-use-package 'org-bullets)
-
+(straight-use-package 'markdown-mode)
 
 
 (require 'org)
