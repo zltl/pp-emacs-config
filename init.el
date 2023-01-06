@@ -29,28 +29,32 @@
   (load bootstrap-file nil 'nomessage))
 
 
-(straight-use-package 'lsp-mode)
-(straight-use-package 'lsp-treemacs)
-(straight-use-package 'helm-lsp)
-(straight-use-package 'projectile)
-(straight-use-package 'hydra)
-(straight-use-package 'flycheck)
-(straight-use-package 'company)
-(straight-use-package 'avy)
-(straight-use-package 'which-key)
-(straight-use-package 'helm-xref)
-(straight-use-package 'dap-mode)
-(straight-use-package 'yasnippet)
-(straight-use-package 'go-mode)
-(straight-use-package 'ag)
-(straight-use-package 'spacemacs-theme)
-(straight-use-package 'treemacs)
-(straight-use-package 'magit)
-(straight-use-package 'org-bullets)
-(straight-use-package 'markdown-mode)
-(straight-use-package 'json-mode)
-(straight-use-package 'sly)
-(straight-use-package 'smartparens)
+(defvar *use-package-list*
+  (list 'lsp-mode
+	'lsp-treemacs
+	'helm-lsp
+	'projectile
+	'hydra
+	'flycheck
+	'company
+	'avy
+	'which-key
+	'helm-xref
+	'dap-mode
+	'yasnippet	
+	'go-mode
+	'ag
+	'spacemacs-theme
+	'treemacs
+	'magit
+	'org-bullets
+	'markdown-mode
+	'json-mode
+	'sly
+	'smartparens))
+
+(dolist (e *use-package-list*)
+  (straight-use-package e))
 
 
 (require 'org)
