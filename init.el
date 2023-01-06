@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-
 ;; encoding
 (prefer-coding-system 'utf-8)
 
@@ -51,7 +50,9 @@
 	'markdown-mode
 	'json-mode
 	'sly
-	'smartparens))
+	'smartparens
+	'swiper
+	))
 
 (dolist (e *use-package-list*)
   (straight-use-package e))
