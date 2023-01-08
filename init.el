@@ -89,6 +89,7 @@
 (add-hook 'go-mode-hook #'lsp)
 
 (add-hook 'emacs-lisp-mode-hook #'page-break-lines-mode)
+(add-hook 'lisp-mode-hook #'page-break-lines-mode)
 
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
