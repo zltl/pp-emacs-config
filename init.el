@@ -52,6 +52,7 @@
 	'sly
 	'smartparens
 	'swiper
+	'page-break-lines
 	))
 
 (dolist (e *use-package-list*)
@@ -83,9 +84,12 @@
 (which-key-mode)
 (yas-global-mode)
 
-(add-hook 'c-mode-hook 'lsp)
-(add-hook 'c++-mode-hook 'lsp)
-(add-hook 'go-mode-hook 'lsp)
+(add-hook 'c-mode-hook #'lsp)
+(add-hook 'c++-mode-hook #'lsp)
+(add-hook 'go-mode-hook #'lsp)
+
+(add-hook 'emacs-lisp-mode-hook #'page-break-lines-mode)
+
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
 (with-eval-after-load 'c++-mode
