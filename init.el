@@ -40,7 +40,7 @@
 	'which-key
 	'helm-xref
 	'dap-mode
-	'yasnippet	
+	'yasnippet
 	'go-mode
 	'ag
 	'spacemacs-theme
@@ -53,11 +53,11 @@
 	'smartparens
 	'swiper
 	'page-break-lines
+	'smarttabs
 	))
 
 (dolist (e *use-package-list*)
   (straight-use-package e))
-
 
 
 (require 'org)
@@ -102,8 +102,11 @@
 (add-hook 'c++-mode-hook #'lsp)
 (add-hook 'go-mode-hook #'lsp)
 
-(add-hook 'emacs-lisp-mode-hook #'page-break-lines-mode)
-(add-hook 'lisp-mode-hook #'page-break-lines-mode)
+(defun my-lisp-hook ()
+  "common hook of elisp and common lisp."
+  (page-break-lines-mode))
+(add-hook 'emacs-lisp-mode-hook #'my-lisp-hook)
+(add-hook 'lisp-mode-hook #'my-lisp-hook)
 
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
