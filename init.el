@@ -53,7 +53,7 @@
 	'smartparens
 	'swiper
 	'page-break-lines
-	'smarttabs
+	'undo-tree
 	))
 
 (dolist (e *use-package-list*)
@@ -80,6 +80,8 @@
 (setq whitespace-display-mappings
   '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
 (global-whitespace-mode) ; Enable whitespace mode everywhere
+
+(global-undo-tree-mode)
 
 (require 'smartparens-config)
 (add-hook 'prog-mode-hook
@@ -122,6 +124,13 @@
 
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+
+
+(defun m/tab-width (w)
+  "Set tab width."
+  (interactive "nNew Tab Width: ")
+  (setf tab-width w))
+
 
 
 
