@@ -58,6 +58,7 @@
 (dolist (e *use-package-list*)
   (straight-use-package e))
 
+
 
 (require 'org)
 (add-hook 'org-mode-hook
@@ -83,6 +84,8 @@
 (define-key global-map [remap switch-to-buffer] #'helm-mini)
 (which-key-mode)
 (yas-global-mode)
+;; replace C-s
+(global-set-key "\C-s" 'swiper)
 
 (add-hook 'c-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'lsp)
