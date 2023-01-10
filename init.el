@@ -76,6 +76,7 @@
 	  (lambda ()
 	    (smartparens-mode)))
 
+(setq backward-delete-char-untabify-method 'hungry)
 
 (helm-mode)
 (require 'helm-xref)
