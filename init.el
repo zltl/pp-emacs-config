@@ -30,6 +30,7 @@
 
 (defvar *use-package-list*
   (list 'lsp-mode
+	'lsp-ui
 	'lsp-treemacs
 	'helm-lsp
 	'projectile
@@ -54,6 +55,7 @@
 	'swiper
 	'page-break-lines
 	'undo-tree
+	'helpful
 	))
 
 (dolist (e *use-package-list*)
@@ -82,6 +84,11 @@
 (global-whitespace-mode) ; Enable whitespace mode everywhere
 
 (global-undo-tree-mode)
+
+;; helpful
+(global-set-key (kbd "C-h f") #'helpful-callable)
+(global-set-key (kbd "C-h v") #'helpful-variable)
+(global-set-key (kbd "C-h k") #'helpful-key)
 
 (require 'smartparens-config)
 (add-hook 'prog-mode-hook
