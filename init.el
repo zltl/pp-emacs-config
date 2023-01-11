@@ -10,7 +10,8 @@
 (menu-bar-mode -1)
 ;; not backup
 (setq make-backup-files nil)
-
+(setf line-number-mode t
+      column-number-mode t)
 
 
 ;; straignt.el
@@ -55,8 +56,7 @@
 	'swiper
 	'page-break-lines
 	'undo-tree
-	'helpful
-	))
+	'helpful))
 
 (dolist (e *use-package-list*)
   (straight-use-package e))
