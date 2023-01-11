@@ -53,6 +53,7 @@
 	'json-mode
 	'sly
 	'smartparens
+	'rainbow-delimiters
 	'swiper
 	'page-break-lines
 	'undo-tree
@@ -82,6 +83,7 @@
 (setq whitespace-display-mappings
   '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
 (global-whitespace-mode) ; Enable whitespace mode everywhere
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (global-undo-tree-mode)
 
