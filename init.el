@@ -64,6 +64,7 @@
 
 
 (require 'org)
+(setf org-startup-folded 'show2levels)
 (add-hook 'org-mode-hook
 	  (lambda ()
 	    (org-indent-mode)
