@@ -31,35 +31,35 @@
 
 (defvar *use-package-list*
   (list 'lsp-mode
-	'lsp-ui
-	'lsp-treemacs
-	'helm-lsp
-	'projectile
-	'hydra
-	'flycheck
-	'company
-	'avy
-	'which-key
-	'helm-xref
-	'dap-mode
-	'yasnippet
-	'go-mode
-	'ag
-	'spacemacs-theme
-	'treemacs
-	'magit
-	'org-bullets
-	'markdown-mode
-	'json-mode
-	'sly
-	'smartparens
-	'rainbow-delimiters
-	'swiper
-	'page-break-lines
-	'undo-tree
-	'modern-cpp-font-lock
+        'lsp-ui
+        'lsp-treemacs
+        'helm-lsp
+        'projectile
+        'hydra
+        'flycheck
+        'company
+        'avy
+        'which-key
+        'helm-xref
+        'dap-mode
+        'yasnippet
+        'go-mode
+        'ag
+        'spacemacs-theme
+        'treemacs
+        'magit
+        'org-bullets
+        'markdown-mode
+        'json-mode
+        'sly
+        'smartparens
+        'rainbow-delimiters
+        'swiper
+        'page-break-lines
+        'undo-tree
+        'modern-cpp-font-lock
         'ace-window
-	'helpful))
+        'helpful))
 
 (dolist (e *use-package-list*)
   (straight-use-package e))
@@ -68,11 +68,11 @@
 (require 'org)
 (setf org-startup-folded 'show2levels)
 (add-hook 'org-mode-hook
-	  (lambda ()
-	    (org-indent-mode)
-	    (org-bullets-mode 1)
-	    (setq org-agenda-files
-		  (file-expand-wildcards "~/TODO/*.org"))))
+          (lambda ()
+            (org-indent-mode)
+            (org-bullets-mode 1)
+            (setq org-agenda-files
+                  (file-expand-wildcards "~/TODO/*.org"))))
 
 
 (load-theme 'spacemacs-dark t)
@@ -114,8 +114,8 @@
 
 (require 'smartparens-config)
 (add-hook 'prog-mode-hook
-	  (lambda ()
-	    (smartparens-mode)))
+          (lambda ()
+            (smartparens-mode)))
 
 (setq backward-delete-char-untabify-method 'hungry)
 
