@@ -82,10 +82,26 @@
 ;; This will also show trailing characters as they are useful to spot.
 (setq whitespace-style '(face tabs tab-mark trailing))
 (custom-set-faces
+ ;; rainbow
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#e91e63"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#2196F3"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#EF6C00"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#B388FF"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#76ff03"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#26A69A"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#FFCDD2"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#795548"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "#DCE775"))))
+ '(rainbow-delimiters-unmatched-face ((t (:foreground "#FFFFFF" :background "#EF6C00"))))
+
  '(whitespace-tab ((t (:foreground "#636363")))))
 (setq whitespace-display-mappings
   '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
 (global-whitespace-mode) ; Enable whitespace mode everywhere
+
+
+
+
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (global-undo-tree-mode)
@@ -160,3 +176,9 @@
 (provide 'init)
 ;;; init.el ends here
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
