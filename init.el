@@ -93,7 +93,7 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "#795548"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "#DCE775"))))
  '(rainbow-delimiters-unmatched-face ((t (:foreground "#FFFFFF" :background "#EF6C00"))))
-
+ ;; whitespace
  '(whitespace-tab ((t (:foreground "#636363")))))
 (setq whitespace-display-mappings
   '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
@@ -170,15 +170,7 @@
   (interactive "nNew Tab Width: ")
   (setf tab-width w))
 
-
 
 
 (provide 'init)
 ;;; init.el ends here
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
