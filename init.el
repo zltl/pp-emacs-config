@@ -10,6 +10,7 @@
 (menu-bar-mode -1)
 ;; not backup
 (setq make-backup-files nil)
+;; show line and column on mode-line
 (setf line-number-mode t
       column-number-mode t)
 
@@ -29,6 +30,7 @@
   (load bootstrap-file nil 'nomessage))
 
 
+;; install all package we need here
 (defvar *use-package-list*
   (list 'lsp-mode
         'lsp-ui
@@ -60,26 +62,33 @@
         'modern-cpp-font-lock
         'ace-window
         'helpful))
-
 (dolist (e *use-package-list*)
   (straight-use-package e))
 
 
+;; orgmode config
 (require 'org)
+;; fold content when open
 (setf org-startup-folded 'show2levels)
 (add-hook 'org-mode-hook
           (lambda ()
+            ;; indent by levels
             (org-indent-mode)
+            ;; make title look better
             (org-bullets-mode 1)
+            ;; add all todo org file to agenda, for me, all todo files are
+            ;; list in ~/TODO/ folder, and sync by a net drive service.
             (setq org-agenda-files
                   (file-expand-wildcards "~/TODO/*.org"))))
 
 
+
+;; looks good enough
 (load-theme 'spacemacs-dark t)
 
-;; WARNING: This will change your life
-;; (OPTIONAL) Visualize tabs as a pipe character - "|"
+;; Visualize tabs as a pipe character - "|"
 ;; This will also show trailing characters as they are useful to spot.
+;; Use brighter color for parens.
 (setq whitespace-style '(face tabs tab-mark trailing))
 (custom-set-faces
  ;; rainbow
@@ -93,82 +102,115 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "#795548"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "#DCE775"))))
  '(rainbow-delimiters-unmatched-face ((t (:foreground "#FFFFFF" :background "#EF6C00"))))
- ;; whitespace
+ ;; whitespace color
  '(whitespace-tab ((t (:foreground "#636363")))))
 (setq whitespace-display-mappings
   '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
 (global-whitespace-mode) ; Enable whitespace mode everywhere
 
-
-
-
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
+
+;; undotree C-x u
 (global-undo-tree-mode)
 (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
 
-;; helpful
+;; hungry delete
+(setq backward-delete-char-untabify-method 'hungry)
+
+;; better help pages.
 (global-set-key (kbd "C-h f") #'helpful-callable)
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 
+
+;; I prefer smartparens-strict-mode, but always forget what sp-xxx
+;; command should I use, so be humble.
 (require 'smartparens-config)
 (add-hook 'prog-mode-hook
           (lambda ()
             (smartparens-mode)))
-
-(setq backward-delete-char-untabify-method 'hungry)
-
+
+;; prefer helm
 (helm-mode)
 (require 'helm-xref)
 (define-key global-map [remap find-file] #'helm-find-files)
 (define-key global-map [remap execute-extended-command] #'helm-M-x)
 (define-key global-map [remap switch-to-buffer] #'helm-mini)
+;; completion for shortcut
 (which-key-mode)
+;; yasnippets, just for lsp completion.
+;; looks wired if not enable it when lsp complete your code.
 (yas-global-mode)
-;; replace C-s
+
+;; A good search, replace C-s
 (global-set-key "\C-s" #'swiper)
 
-;; ace, treemacs
+
+;; M-o (Am Oh) to switch to other window.
+;; M-0 (Am Zero) to open, or switch to treemacs window.
 (global-set-key (kbd "M-o") #'ace-window)
 (global-set-key (kbd "M-0") #'treemacs-select-window)
 
+
+;; enable lsp for C/C++
 (add-hook 'c-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 (add-hook 'go-mode-hook #'lsp)
-
-(defun turn-off-indent-tabs-mode ()
-  (setq indent-tabs-mode nil))
-(add-hook 'sh-mode-hook #'turn-off-indent-tabs-mode)
-
-(defun my-lisp-hook ()
-  "common hook of elisp and common lisp."
-  (page-break-lines-mode))
-(add-hook 'emacs-lisp-mode-hook #'my-lisp-hook)
-(add-hook 'lisp-mode-hook #'my-lisp-hook)
-(add-hook 'emacs-lisp-mode-hook #'turn-off-indent-tabs-mode)
 
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
 (with-eval-after-load 'c++-mode
   (lambda () (require 'dap-cpptools)))
 
+;; not gc too much.
+;; And other value for lsp.
 (setq gc-cons-threshold (* 100 1024 1024)
       read-process-output-max (* 1024 1024)
-      treemacs-space-between-root-nodes nil
       company-idle-delay 0.0
       company-minimum-prefix-length 1
       lsp-idle-delay 0.1)  ;; clangd is fast
 
+;; enable which-key
 (with-eval-after-load 'lsp-mode
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+  (add-hook 'lsp-mode-hook (lambda ()
+                             (let ((lsp-keymap-prefix "C-c l"))
+                               (lsp-enable-which-key-integration)))))
 
 
+;; lisp mode config
+
+;; use space instead of tabs in lisp-mode
+(defun turn-off-indent-tabs-mode ()
+  (setq indent-tabs-mode nil))
+;; And sh mode
+(add-hook 'sh-mode-hook #'turn-off-indent-tabs-mode)
+(defun my-lisp-hook ()
+  "common hook of elisp and common lisp."
+  ;; Make ^L (C-q-l) looks as horizontal line on lisp
+  (page-break-lines-mode)
+  (turn-off-indent-tabs-mode))
+(add-hook 'emacs-lisp-mode-hook #'my-lisp-hook)
+(add-hook 'lisp-mode-hook #'my-lisp-hook)
+
+
+;; For convenient to set tab-width.
+;; I works on multile project that follow different code style.
+;; Sad for that.
 (defun m/tab-width (w)
   "Set tab width."
   (interactive "nNew Tab Width: ")
   (setf tab-width w))
+(defun m/indent-space ()
+  "Use tab indent."
+  (interactive)
+  (setf indent-tabs-mode nil
+        tab-always-indent t))
+(defun m/indent-tab ()
+  "Use tab indent."
+  (interactive)
+  (setq indent-tabs-mode t))
 
 
 
