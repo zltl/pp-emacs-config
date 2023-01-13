@@ -58,6 +58,7 @@
 	'page-break-lines
 	'undo-tree
 	'modern-cpp-font-lock
+        'ace-window
 	'helpful))
 
 (dolist (e *use-package-list*)
@@ -110,7 +111,11 @@
 (which-key-mode)
 (yas-global-mode)
 ;; replace C-s
-(global-set-key "\C-s" 'swiper)
+(global-set-key "\C-s" #'swiper)
+
+;; ace, treemacs
+(global-set-key (kbd "M-o") #'ace-window)
+(global-set-key (kbd "M-0") #'treemacs-select-window)
 
 (add-hook 'c-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'lsp)
@@ -126,6 +131,7 @@
   (page-break-lines-mode))
 (add-hook 'emacs-lisp-mode-hook #'my-lisp-hook)
 (add-hook 'lisp-mode-hook #'my-lisp-hook)
+(add-hook 'emacs-lisp-mode-hook #'turn-off-indent-tabs-mode)
 
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
