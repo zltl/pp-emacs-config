@@ -57,6 +57,7 @@
 	'swiper
 	'page-break-lines
 	'undo-tree
+	'modern-cpp-font-lock
 	'helpful))
 
 (dolist (e *use-package-list*)
@@ -87,6 +88,7 @@
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (global-undo-tree-mode)
+(setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
 
 ;; helpful
 (global-set-key (kbd "C-h f") #'helpful-callable)
@@ -112,7 +114,12 @@
 
 (add-hook 'c-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'lsp)
+(add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 (add-hook 'go-mode-hook #'lsp)
+
+(defun turn-off-indent-tabs-mode ()
+  (setq indent-tabs-mode nil))
+(add-hook 'sh-mode-hook #'turn-off-indent-tabs-mode)
 
 (defun my-lisp-hook ()
   "common hook of elisp and common lisp."
