@@ -13,6 +13,8 @@
 ;; show line and column on mode-line
 (setf line-number-mode t
       column-number-mode t)
+;; load file when other program modify files that opening.
+(global-auto-revert-mode)
 
 
 ;; straignt.el
