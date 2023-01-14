@@ -63,6 +63,7 @@
         'undo-tree
         'modern-cpp-font-lock
         'ace-window
+        'clang-format
         'helpful))
 (dolist (e *use-package-list*)
   (straight-use-package e))
