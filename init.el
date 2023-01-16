@@ -64,6 +64,7 @@
         'modern-cpp-font-lock
         'ace-window
         'clang-format
+        'rust-mode
         'helpful))
 (dolist (e *use-package-list*)
   (straight-use-package e))
@@ -156,11 +157,18 @@
 (global-set-key (kbd "M-0") #'treemacs-select-window)
 
 
-;; enable lsp for C/C++
+;; enable lsp for C/C++/go/rust
 (add-hook 'c-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 (add-hook 'go-mode-hook #'lsp)
+(add-hook 'rust-mode-hook #'lsp)
+
+;; The Rust style guide recommends spaces rather than tabs for indentation
+(defun turn-off-indent-tabs-mode ()
+  (setq indent-tabs-mode nil))
+(add-hook 'rust-mode-hook #'turn-off-indent-tabs-mode)
+
 
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
@@ -184,9 +192,6 @@
 
 ;; lisp mode config
 
-;; use space instead of tabs in lisp-mode
-(defun turn-off-indent-tabs-mode ()
-  (setq indent-tabs-mode nil))
 ;; And sh mode
 (add-hook 'sh-mode-hook #'turn-off-indent-tabs-mode)
 (defun my-lisp-hook ()
