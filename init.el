@@ -38,6 +38,7 @@
         'lsp-ui
         'lsp-treemacs
         'helm-lsp
+        'go-add-tags
         'projectile
         'hydra
         'flycheck
@@ -168,7 +169,9 @@
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'before-save-hook #'lsp-organize-imports t t)
+  (custom-set-variables
+   '(go-add-tags-style 'lower-camel-case)))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;; The Rust style guide recommends spaces rather than tabs for indentation
