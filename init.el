@@ -179,6 +179,8 @@
   (setq indent-tabs-mode nil))
 (add-hook 'rust-mode-hook #'turn-off-indent-tabs-mode)
 
+(setf lsp-ui-doc-enable t
+      lsp-ui-doc-show-with-cursor t)
 
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
