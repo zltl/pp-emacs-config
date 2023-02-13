@@ -35,7 +35,7 @@
 ;; install all package we need here
 (defvar *use-package-list*
   (list 'lsp-mode
-        'lsp-ui
+        '(lsp-ui :repo "emacs-lsp/lsp-ui" :host github)
         'lsp-treemacs
         'helm-lsp
         'go-add-tags
@@ -178,9 +178,6 @@
 (defun turn-off-indent-tabs-mode ()
   (setq indent-tabs-mode nil))
 (add-hook 'rust-mode-hook #'turn-off-indent-tabs-mode)
-
-(setf lsp-ui-doc-enable t
-      lsp-ui-doc-show-with-cursor t)
 
 (with-eval-after-load 'c-mode
   (lambda () (require 'dap-cpptools)))
