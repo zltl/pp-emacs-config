@@ -8,6 +8,10 @@
 
 ;; simple face
 (menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+;; font size
+(set-face-attribute 'default nil :height 150)
 ;; not backup
 (setq make-backup-files nil)
 ;; show line and column on mode-line
@@ -79,6 +83,8 @@
           (lambda ()
             ;; indent by levels
             (org-indent-mode)
+            (setf org-src-preserve-indentation nil
+                  org-edit-src-content-indentation 0)
             ;; make title look better
             (org-bullets-mode 1)
             ;; add all todo org file to agenda, for me, all todo files are
