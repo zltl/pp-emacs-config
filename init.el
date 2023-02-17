@@ -11,7 +11,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 ;; font size
-(set-face-attribute 'default nil :height 150)
+(set-face-attribute 'default nil :height 140)
 ;; not backup
 (setq make-backup-files nil)
 ;; show line and column on mode-line
@@ -189,6 +189,9 @@
   (lambda () (require 'dap-cpptools)))
 (with-eval-after-load 'c++-mode
   (lambda () (require 'dap-cpptools)))
+
+;; use c++ in .h default.
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
 ;; not gc too much.
 ;; And other value for lsp.
