@@ -85,12 +85,16 @@
             (org-indent-mode)
             (setf org-src-preserve-indentation nil
                   org-edit-src-content-indentation 0)
+
             ;; make title look better
             (org-bullets-mode 1)
             ;; add all todo org file to agenda, for me, all todo files are
             ;; list in ~/TODO/ folder, and sync by a net drive service.
             (setq org-agenda-files
                   (file-expand-wildcards "~/TODO/*.org"))))
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
 
 
 
