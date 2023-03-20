@@ -220,10 +220,9 @@
   (delq 'company-preview-if-just-one-frontend company-frontends))
 
 (add-hook 'copilot-mode-hook
-	  (lambda ()
-	    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-	    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)))
-
+          (lambda ()
+            (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+            (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)))
 
 
 ;; lisp mode config
