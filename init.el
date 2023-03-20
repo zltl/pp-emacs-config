@@ -41,6 +41,7 @@
   (list 'lsp-mode
         '(lsp-ui :repo "emacs-lsp/lsp-ui" :host github)
         'lsp-treemacs
+        '(copilot :host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
         'helm-lsp
         'go-add-tags
         'projectile
@@ -210,6 +211,16 @@
   (add-hook 'lsp-mode-hook (lambda ()
                              (let ((lsp-keymap-prefix "C-c l"))
                                (lsp-enable-which-key-integration)))))
+
+
+;; copilot
+(add-hook 'prog-mode-hook 'copilot-mode)
+(with-eval-after-load 'company
+  ;; disable inline previews
+  (delq 'company-preview-if-just-one-frontend company-frontends))
+
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
 
 ;; lisp mode config
