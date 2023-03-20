@@ -47,6 +47,10 @@ click `*.tty` then select "Install for all users."
 
 Install [Source Code Pro](https://github.com/adobe-fonts/source-code-pro) like fonts before.
 
+## Copilot
+If want to use copilot, run `M-x copilot-login`. Then follow the instructions to
+login to github.
+
 ## Golang
 Go to [Golang Installation Page](https://go.dev/doc/install) to install the
 language. 
