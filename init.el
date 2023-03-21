@@ -98,6 +98,8 @@
       '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
 
 
+;; just take my answer!
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; looks good enough
 (load-theme 'spacemacs-dark t)
