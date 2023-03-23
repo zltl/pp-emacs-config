@@ -211,6 +211,7 @@
 ;; enable which-key
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook (lambda ()
+                             (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
                              (let ((lsp-keymap-prefix "C-c l"))
                                (lsp-enable-which-key-integration)))))
 
