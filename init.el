@@ -8,8 +8,12 @@
 
 ;; simple face
 (menu-bar-mode -1)
-;; (tool-bar-mode -1)
-;; (scroll-bar-mode -1)
+
+(if window-system
+    (progn
+      (scroll-bar-mode -1)
+      (tool-bar-mode -1)))
+
 ;; font size
 (set-face-attribute 'default nil :height 140)
 ;; not backup
