@@ -264,7 +264,7 @@
 
 
 ;; latex
-(setq-default TeX-engine 'xetex)
+(setq-default TeX-engine 'xelatex)
 (setq-default Tex-PDF-mode t)
 
 
