@@ -263,6 +263,11 @@
   (setq indent-tabs-mode t))
 
 
+;; latex
+(setq-default TeX-engine 'xetex)
+(setq-default Tex-PDF-mode t)
+
+
 
 (provide 'init)
 ;;; init.el ends here
