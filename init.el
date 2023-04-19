@@ -75,6 +75,7 @@
         'ace-window
         'clang-format
         'rust-mode
+        'nyan-mode
         'helpful))
 (dolist (e *use-package-list*)
   (straight-use-package e))
@@ -107,6 +108,9 @@
 
 ;; looks good enough
 (load-theme 'spacemacs-dark t)
+(setq mode-line-format
+      (list
+       '(:eval (list (nyan-create)))))
 
 ;; Visualize tabs as a pipe character - "|"
 ;; This will also show trailing characters as they are useful to spot.
