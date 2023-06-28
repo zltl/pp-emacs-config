@@ -5,8 +5,7 @@
 ;; encoding
 (prefer-coding-system 'utf-8)
 
-
-
+
 ;; simple face
 (menu-bar-mode -1)
 
@@ -25,8 +24,7 @@
 ;; load file when other program modify files that opening.
 (global-auto-revert-mode)
 
-
-
+
 ;; straignt.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -41,8 +39,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-
-
+
 ;; install all package we need here
 (defvar *use-package-list*
   (list 'lsp-mode
@@ -87,8 +84,7 @@
 (dolist (e *use-package-list*)
   (straight-use-package e))
 
-
-
+
 ;; orgmode config
 (require 'org)
 ;; fold content when open
@@ -110,8 +106,7 @@
 (setq org-todo-keywords
       '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
 
-
-
+
 ;; just take my answer!
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -145,31 +140,30 @@
 
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
-
-
+
 ;; undotree C-x u
 (global-undo-tree-mode)
 (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
 
 ;; hungry delete
 (setq backward-delete-char-untabify-method 'hungry)
-
-
+
 ;; better help pages.
 (global-set-key (kbd "C-h f") #'helpful-callable)
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
 
+;; enable mouse
+(xterm-mouse-mode)
 
-
+
 ;; I prefer smartparens-strict-mode, but always forget what sp-xxx
 ;; command should I use, so be humble.
 (require 'smartparens-config)
 (add-hook 'prog-mode-hook
           (lambda ()
             (smartparens-mode)))
-
-
+
 ;; prefer helm
 (helm-mode)
 (require 'helm-xref)
@@ -185,14 +179,12 @@
 ;; A good search, replace C-s
 (global-set-key "\C-s" #'swiper)
 
-
-
+
 ;; M-o (Am Oh) to switch to other window.
 ;; M-0 (Am Zero) to open, or switch to treemacs window.
 (global-set-key (kbd "M-o") #'ace-window)
 (global-set-key (kbd "M-0") #'treemacs-select-window)
-
-
+
 ;; web
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . tsx-mode))
@@ -200,10 +192,10 @@
                              (tide-setup)
                              (tide-hl-idenifier-mode)
                              (tide-format-before-save)
+                             (turn-off-indent-tabs-mode)
                              (lsp)))
 
-
-
+
 ;; enable lsp for C/C++/go/rust
 (add-hook 'c-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'lsp)
@@ -248,8 +240,7 @@
                              (let ((lsp-keymap-prefix "C-c l"))
                                (lsp-enable-which-key-integration)))))
 
-
-
+
 ;; copilot
 (add-hook 'prog-mode-hook 'copilot-mode)
 (with-eval-after-load 'company
@@ -261,8 +252,7 @@
             (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
             (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)))
 
-
-
+
 ;; lisp mode config
 
 ;; And sh mode
@@ -275,8 +265,7 @@
 (add-hook 'emacs-lisp-mode-hook #'my-lisp-hook)
 (add-hook 'lisp-mode-hook #'my-lisp-hook)
 
-
-
+
 ;; For convenient to set tab-width.
 ;; I works on multile project that follow different code style.
 ;; Sad for that.
@@ -294,14 +283,12 @@
   (interactive)
   (setq indent-tabs-mode t))
 
-
-
+
 ;; latex
 (setq-default TeX-engine 'xelatex)
 (setq-default Tex-PDF-mode t)
 
-
-
+
 
 (provide 'init)
 ;;; init.el ends here
