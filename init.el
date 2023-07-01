@@ -47,7 +47,7 @@
         'lsp-treemacs
         '(copilot :host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
         '(tsi :type git :host github :repo "orzechowskid/tsi.el")
-        '(tsx-mode :type git :host github :repo "orzechowskid/tsx-mode.el" :branch "emacs28")
+        'web-mode
         'helm-lsp
         'go-add-tags
         'projectile
@@ -186,14 +186,54 @@
 (global-set-key (kbd "M-0") #'treemacs-select-window)
 
 ;; web
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . tsx-mode))
-(add-hook 'tsx-mode-hook #'(lambda ()
-                             (tide-setup)
-                             (tide-hl-idenifier-mode)
-                             (tide-format-before-save)
-                             (turn-off-indent-tabs-mode)
-                             (lsp)))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+(defun web-mode-config ()
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-block-padding 2
+        web-mode-comment-style 2
+        web-mode-enable-css-colorization t
+        web-mode-enable-auto-pairing t
+        web-mode-enable-comment-keywords t
+        typescript-indent-level 2
+        web-mode-enable-current-element-highlight t)
+  (setf (alist-get 'web-mode lsp--formatting-indent-alist)
+        'web-mode-code-indent-offset)
+  (m/indent-space))
+(add-hook 'web-mode-hook #'web-mode-config)
+
+(setq-default typescript-indent-level 2)
+(setq-default js-indent-level 2)
+(setq-default js2-basic-offset 2)
+(setq-default js3-indent-level 2)
+(setq-default typescript-ts-mode-indent-offset 2)
+(defun lsp-ts-install-save-hooks ()
+  (add-hook 'before-save-hook #'tide-format-before-save)
+  (tide-hl-identifier-mode)
+  (tide-setup)
+  (tide-mode)
+  (tide-hl-identifier-mode)
+  (web-mode-config)
+  (setq typescript-indent-level 2)
+  (m/indent-space)
+  (subword-mode))
+(add-hook 'typescript-mode-hook #'lsp-ts-install-save-hooks)
 
 
 ;; enable lsp for C/C++/go/rust
@@ -202,6 +242,7 @@
 (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 (add-hook 'go-mode-hook #'lsp)
 (add-hook 'rust-mode-hook #'lsp)
+(add-hook 'web-mode-hook #'lsp)
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
