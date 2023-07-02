@@ -48,7 +48,7 @@
         '(copilot :host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
         '(tsi :type git :host github :repo "orzechowskid/tsi.el")
         'web-mode
-        'helm-lsp
+        ;; 'helm-lsp
         'go-add-tags
         'projectile
         'hydra
