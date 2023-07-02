@@ -48,7 +48,14 @@
         '(copilot :host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
         '(tsi :type git :host github :repo "orzechowskid/tsi.el")
         'web-mode
-        ;; 'helm-lsp
+        'helm-lsp
+        ;; - ido
+        'ido
+        'ido-completing-read+
+        'ido-yes-or-no
+        'crm-custom
+        'icomplete
+        ;; - ido
         'go-add-tags
         'projectile
         'hydra
@@ -63,6 +70,7 @@
         'ag
         'spacemacs-theme
         'treemacs
+        'lsp-treemacs
         'magit
         'org-bullets
         'markdown-mode
@@ -79,10 +87,22 @@
         'rust-mode
         'typescript-mode
         'tide
+	'iedit
         'nyan-mode
         'helpful))
 (dolist (e *use-package-list*)
   (straight-use-package e))
+
+
+(ido-mode 1)
+(require 'ido-completing-read+)
+(ido-ubiquitous-mode 1)
+(require 'ido-yes-or-no)
+(ido-yes-or-no-mode 1)
+(require 'crm-custom)
+(crm-custom-mode 1)
+(require 'icomplete)
+(icomplete-mode 1)
 
 
 ;; orgmode config
@@ -189,6 +209,7 @@
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
 
 (defun setup-tide-mode ()
   (interactive)
@@ -272,19 +293,29 @@
       read-process-output-max (* 1024 1024)
       company-idle-delay 0.0
       company-minimum-prefix-length 1
-      lsp-idle-delay 0.1)  ;; clangd is fast
+      lsp-idle-delay 0.5)  ;; clangd is fast
 
 ;; enable which-key
 (with-eval-after-load 'lsp-mode
-  (add-hook 'lsp-mode-hook (lambda ()
-                             (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
-                             (let ((lsp-keymap-prefix "C-c l"))
-                               (lsp-enable-which-key-integration)))))
+  (add-hook 'lsp-mode-hook
+            (lambda ()
+              (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+              (let ((lsp-keymap-prefix "C-c l"))
+                (lsp-enable-which-key-integration)))))
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\target\\'")
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\vendor\\'")
+  (add-to-list 'lsp-file-watch-ignored-files "[/\\\\]\\deps\\'")
+  (setq lsp-log-io nil)
+  )
+
 
 
 ;; copilot
 (add-hook 'prog-mode-hook 'copilot-mode)
 (with-eval-after-load 'company
+  (setq company-minimum-prefix-length 1
+        company-idle-delay 0.0) ;; default is 0.2
   ;; disable inline previews
   (delq 'company-preview-if-just-one-frontend company-frontends))
 
