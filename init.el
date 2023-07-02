@@ -48,14 +48,9 @@
         '(copilot :host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
         '(tsi :type git :host github :repo "orzechowskid/tsi.el")
         'web-mode
+        'highlight-thing
         'helm-lsp
-        ;; - ido
-        'ido
-        'ido-completing-read+
-        'ido-yes-or-no
-        'crm-custom
-        'icomplete
-        ;; - ido
+        'dashboard
         'go-add-tags
         'projectile
         'hydra
@@ -68,16 +63,19 @@
         'yasnippet
         'go-mode
         'ag
+        'helm-ag
         'spacemacs-theme
         'treemacs
         'lsp-treemacs
         'magit
         'org-bullets
         'markdown-mode
+        'markdown-mode+
         'json-mode
         'sly
         'smartparens
         'rainbow-delimiters
+        'goto-line-preview
         'swiper
         'page-break-lines
         'undo-tree
@@ -87,22 +85,50 @@
         'rust-mode
         'typescript-mode
         'tide
-	'iedit
+        'iedit
+        'ace-popup-menu
+        'selectrum
+        'selectrum-prescient
+        'orderless
         'nyan-mode
+        'hungry-delete
+        'spaceline
         'helpful))
 (dolist (e *use-package-list*)
   (straight-use-package e))
 
 
-(ido-mode 1)
-(require 'ido-completing-read+)
-(ido-ubiquitous-mode 1)
-(require 'ido-yes-or-no)
-(ido-yes-or-no-mode 1)
-(require 'crm-custom)
-(crm-custom-mode 1)
-(require 'icomplete)
-(icomplete-mode 1)
+(selectrum-mode +1)
+;; to make sorting and filtering more intelligent
+(selectrum-prescient-mode +1)
+;; to save your command history on disk, so the sorting gets more
+;; intelligent over time
+(prescient-persist-mode +1)
+
+(setq completion-styles '(orderless basic)
+      completion-category-overrides '((file (styles basic partial-completion))))
+
+
+(dashboard-setup-startup-hook)
+(setq dashboard-items '((recents  . 10)
+                        (bookmarks . 5)
+                        (projects . 5)
+                        (agenda . 5)
+                        (registers . 5)))
+(setq dashboard-set-navigator t)
+(setq dashboard-set-init-info t)
+(setq dashboard-set-footer nil)
+(setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+(add-to-list 'dashboard-items '(agenda) t)
+(setq dashboard-week-agenda t)
+(setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
+(ace-popup-menu-mode 1)
+
+(require 'spaceline-config)
+(spaceline-spacemacs-theme)
+(nyan-mode)
+(add-hook 'prog-mode-hook 'highlight-thing-mode)
+(hungry-delete-mode)
 
 
 ;; orgmode config
@@ -141,7 +167,10 @@
 ;; Use brighter color for parens.
 (setq whitespace-style '(face tabs tab-mark trailing))
 (custom-set-faces
- ;; rainbow
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#e91e63"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "#2196F3"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "#EF6C00"))))
@@ -152,7 +181,6 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "#795548"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "#DCE775"))))
  '(rainbow-delimiters-unmatched-face ((t (:foreground "#FFFFFF" :background "#EF6C00"))))
- ;; whitespace color
  '(whitespace-tab ((t (:foreground "#636363")))))
 (setq whitespace-display-mappings
   '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
@@ -172,6 +200,11 @@
 (global-set-key (kbd "C-h f") #'helpful-callable)
 (global-set-key (kbd "C-h v") #'helpful-variable)
 (global-set-key (kbd "C-h k") #'helpful-key)
+
+;; recentf
+(global-set-key (kbd "C-x b") #'recentf-open-files)
+
+(global-set-key (kbd "C-c g") #'avy-goto-char-2)
 
 ;; enable mouse
 (xterm-mouse-mode)
@@ -198,6 +231,8 @@
 
 ;; A good search, replace C-s
 (global-set-key "\C-s" #'swiper)
+
+(global-set-key [remap goto-line] 'goto-line-preview)
 
 
 ;; M-o (Am Oh) to switch to other window.
@@ -363,4 +398,3 @@
 
 
 (provide 'init)
-;;; init.el ends here
