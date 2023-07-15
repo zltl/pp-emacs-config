@@ -47,6 +47,7 @@
         'lsp-treemacs
         '(copilot :host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
         '(tsi :type git :host github :repo "orzechowskid/tsi.el")
+        '(lsp-tailwindcss :type git :host github :repo "merrickluo/lsp-tailwindcss")
         'web-mode
         'highlight-thing
         'helm-lsp
