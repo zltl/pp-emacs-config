@@ -176,7 +176,7 @@
   (:prefix-map ltl/goto
                :prefix "C-c j")
   :config
-  (defun rab/unbind-all (fn)
+  (defun ltl/unbind-all (fn)
     "Unbinds a function everywhere."
     (dolist (key (where-is-internal fn nil))
       (unbind-key key))))
@@ -452,7 +452,7 @@ with EXPORT_FILE_NAME."
   :after org
   :bind
   (:map org-mode-map
-   :prefix-map rab/org-mode-map
+   :prefix-map ltl/org-mode-map
    :prefix "C-c m"
    ("w" . org-slack-export-to-clipboard-as-slack)))
 
@@ -797,7 +797,7 @@ clone to the default prompted directory, and not some random
 existing directory under `magit-clone-default-directory'."
     (let ((vertico-preselect 'prompt))
       (apply orig-fun args)))
-  (advice-add 'magit-clone-read-args :around #'rab/magit-clone-read-args-a))
+  (advice-add 'magit-clone-read-args :around #'ltl/magit-clone-read-args-a))
 
 ;; Git-Link
 ;; git-link grabs links to lines, regions, commits, or home pages.
@@ -1133,7 +1133,7 @@ This uses `split-window-right' but follows with the cursor."
 ;; C-h C-h shadows which-key with something less useful.
 (use-package help
   :config
-  (rab/unbind-all 'help-for-help))
+  (ltl/unbind-all 'help-for-help))
 
 ;; Junk drawer
 ;;
