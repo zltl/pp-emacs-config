@@ -732,6 +732,12 @@ with EXPORT_FILE_NAME."
   :init
   (setq lsp-tailwindcss-add-on-mode t))
 
+(use-package python-mode
+  :ensure t)
+(use-package anaconda-mode
+  :ensure t
+  :hook (python-mode . anaconda-mode))
+
 ;; lsp
 (use-package lsp-mode
   :ensure t
