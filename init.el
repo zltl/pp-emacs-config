@@ -98,6 +98,66 @@
 (add-to-list 'recentf-exclude
              (recentf-expand-file-name no-littering-etc-directory))
 
+;; Frames
+;; I like tiled windows more than I need Emacs to maintain a static
+;; number of columns and rows.
+(setopt frame-inhibit-implied-resize t)
+
+;; Cursor
+;; I like a non-blinking bar cursor.
+
+(setopt cursor-type 'bar)
+(use-package frame
+  :config
+  (blink-cursor-mode -1))
+
+;; Mode line
+;; Column number
+(use-package simple
+  :hook
+  (on-first-buffer . column-number-mode))
+
+;; Scroll bars #
+;; The mode line tells us where we’re at, and we mostly eschew the mouse.
+(use-package scroll-bar
+  :config
+  (scroll-bar-mode -1))
+
+;; Tool bars
+;; The much despised tool bar is not a terrible default for the Emacs
+;; neophyte, but I’m old and grizzled.
+(use-package tool-bar
+  :config
+  (tool-bar-mode -1))
+
+;; menu bar
+;; remove menu bar
+(menu-bar-mode -1)
+
+;; Set the font. Note: height = px * 100
+(set-face-attribute 'default nil :font "Consolas" :height 120)
+
+;; Add unique buffer names in the minibuffer where there are many
+;; identical files. This is super useful if you rely on folders for
+;; organization and have lots of files with the same name,
+;; e.g. foo/index.ts and bar/index.ts.
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward
+      window-resize-pixelwise t
+      frame-resize-pixelwise t
+      load-prefer-newer t
+      backup-by-copying t
+      ;; Backups are placed into your Emacs directory, e.g. xxxx/backups
+      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+      ;; I'll add an extra note here since user customizations are important.
+      ;; Emacs actually offers a UI-based customization menu, "M-x customize".
+      ;; You can use this menu to change variable values across Emacs. By default,
+      ;; changing a variable will write to your init.el automatically, mixing
+      ;; your hand-written Emacs Lisp with automatically-generated Lisp from the
+      ;; customize menu. The following setting instead writes customizations to a
+      ;; separate file, custom.el, to keep your init.el clean.
+      custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 ;;; use-package keywords
 
 ;; bind-key
@@ -108,13 +168,13 @@
   :demand t
   :bind
   (:prefix-map ltl/files-map
-   :prefix "C-c f")
+               :prefix "C-c f")
   :bind
   (:prefix-map ltl/toggles-map
-   :prefix "C-c t")
+               :prefix "C-c t")
   :bind
   (:prefix-map ltl/goto
-   :prefix "C-c j")
+               :prefix "C-c j")
   :config
   (defun rab/unbind-all (fn)
     "Unbinds a function everywhere."
@@ -804,71 +864,6 @@ existing directory under `magit-clone-default-directory'."
   :defer
   :custom
   (dired-auto-revert-buffer t))
-
-;; Frames
-;; I like tiled windows more than I need Emacs to maintain a static
-;; number of columns and rows.
-(setopt frame-inhibit-implied-resize t)
-
-;; Cursor
-;; I like a non-blinking bar cursor.
-
-(setopt cursor-type 'bar)
-(use-package frame
-  :config
-  (blink-cursor-mode -1))
-
-;; Mode line
-;; Column number
-(use-package simple
-  :hook
-  (on-first-buffer . column-number-mode))
-
-;; Scroll bars #
-;; The mode line tells us where we’re at, and we mostly eschew the mouse.
-(use-package scroll-bar
-  :config
-  (scroll-bar-mode -1))
-
-;; Tool bars
-;; The much despised tool bar is not a terrible default for the Emacs
-;; neophyte, but I’m old and grizzled.
-(use-package tool-bar
-  :config
-  (tool-bar-mode -1))
-
-;; menu bar
-;; remove menu bar
-(menu-bar-mode -1)
-
-
-;; ;; I’d usually rather exit Slack, to be quite honest.
-;; (setopt confirm-kill-emacs 'yes-or-no-p)
-
-;; ;; Set the font. Note: height = px * 100
-;; (set-face-attribute 'default nil :font "Consolas" :height 120)
-
-;; Add unique buffer names in the minibuffer where there are many
-;; identical files. This is super useful if you rely on folders for
-;; organization and have lots of files with the same name,
-;; e.g. foo/index.ts and bar/index.ts.
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward
-      window-resize-pixelwise t
-      frame-resize-pixelwise t
-      load-prefer-newer t
-      backup-by-copying t
-      ;; Backups are placed into your Emacs directory, e.g. xxxx/backups
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      ;; I'll add an extra note here since user customizations are important.
-      ;; Emacs actually offers a UI-based customization menu, "M-x customize".
-      ;; You can use this menu to change variable values across Emacs. By default,
-      ;; changing a variable will write to your init.el automatically, mixing
-      ;; your hand-written Emacs Lisp with automatically-generated Lisp from the
-      ;; customize menu. The following setting instead writes customizations to a
-      ;; separate file, custom.el, to keep your init.el clean.
-      custom-file (expand-file-name "custom.el" user-emacs-directory))
-
 
 ;; Minimization: let’s not {#minimization-let’s-not} #
 ;; I don’t much care for minimizing windows in the first place, and
