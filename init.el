@@ -1153,3 +1153,5 @@ This uses `split-window-right' but follows with the cursor."
          ("C-c C-d" . #'helpful-at-point)
          ("C-h F" . #'helpful-function)
          ("C-h C" . #'helpful-command)))
+
+;;; init.el ends here
