@@ -41,8 +41,14 @@
 
 ;;;;; {
 
-;; put packages init here
-
+;; I'll add an extra note here since user customizations are important.
+;; Emacs actually offers a UI-based customization menu, "M-x customize".
+;; You can use this menu to change variable values across Emacs. By default,
+;; changing a variable will write to your init.el automatically, mixing
+;; your hand-written Emacs Lisp with automatically-generated Lisp from the
+;; customize menu. The following setting instead writes customizations to a
+;; separate file, custom.el, to keep your init.el clean.
+(setf  custom-file (expand-file-name "custom.el" user-emacs-directory))
 ;; Unless we've already fetched (and cached) the package archives,
 ;; refresh them.
 (unless package-archive-contents
@@ -134,6 +140,9 @@
 ;; remove menu bar
 (menu-bar-mode -1)
 
+;; change all prompts to y or n
+(fset 'yes-or-no-p 'y-or-n-p)
+
 ;; Set the font. Note: height = px * 100
 (set-face-attribute 'default nil :font "Consolas" :height 120)
 
@@ -148,15 +157,7 @@
       load-prefer-newer t
       backup-by-copying t
       ;; Backups are placed into your Emacs directory, e.g. xxxx/backups
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      ;; I'll add an extra note here since user customizations are important.
-      ;; Emacs actually offers a UI-based customization menu, "M-x customize".
-      ;; You can use this menu to change variable values across Emacs. By default,
-      ;; changing a variable will write to your init.el automatically, mixing
-      ;; your hand-written Emacs Lisp with automatically-generated Lisp from the
-      ;; customize menu. The following setting instead writes customizations to a
-      ;; separate file, custom.el, to keep your init.el clean.
-      custom-file (expand-file-name "custom.el" user-emacs-directory))
+      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
 
 ;;; use-package keywords
 
@@ -1152,15 +1153,3 @@ This uses `split-window-right' but follows with the cursor."
          ("C-c C-d" . #'helpful-at-point)
          ("C-h F" . #'helpful-function)
          ("C-h C" . #'helpful-command)))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-vc-selected-packages
-   '((copilot :vc-backend Git :url
-              "https://github.com/zerolfx/copilot.el")
-     (on :vc-backend Git :url "https://github.com/ajgrf/on.el")
-     (gcmh :vc-backend Git :url "https://github.com/emacsmirror/gcmh")
-     (vc-use-package :vc-backend Git :url
-                     "https://github.com/slotThe/vc-use-package"))))
