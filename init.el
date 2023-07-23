@@ -296,7 +296,6 @@
    ("M-p" . #'copilot-previous-completion)
    ("M-n" . #'copilot-next-completion)
    ("TAB" . #'copilot-accept-completion)
-   ("yy" . #'copilot-accept-completion)
    ("M-f" . #'copilot-accept-completion-by-word)
    ("M-<return>" . #'copilot-accept-completion-by-line)))
 
