@@ -331,6 +331,7 @@
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I’m trying not to call until I die.
 (use-package persist-state
+  :diminish
   :ensure t
   :hook
   (on-first-input . persist-state-mode))
@@ -408,6 +409,7 @@
 ;; Jinx is a just-in-time spell checker.
 (use-package jinx
   :ensure t
+  :diminish
   :hook (on-first-buffer . global-jinx-mode)
   :bind
   ([remap ispell-word] . jinx-correct)
@@ -521,6 +523,7 @@ with EXPORT_FILE_NAME."
 ;;
 ;; Where possible, I add an .envrc file to load the environment from the flake.
 (use-package envrc
+  :diminish
   :ensure t
   :hook (on-first-file . envrc-global-mode))
 
@@ -547,19 +550,24 @@ with EXPORT_FILE_NAME."
 ;; Code completion at point
 (use-package company
   :ensure t
+  :diminish
   :hook (after-init . global-company-mode)
   :custom
   (company-idle-delay 0))
 
 (use-package yasnippet
   :ensure t
+  :diminish
   :config
   (yas-global-mode 1))
 
 ;; flycheck
 (use-package flycheck
   :ensure t
+  :diminish
   :init (global-flycheck-mode))
+
+;;;
 
 
 ;;; Languages
@@ -588,6 +596,7 @@ with EXPORT_FILE_NAME."
 ;; I use ^L to break sections on lisp
 (use-package page-break-lines
   :ensure t
+  :diminish
   :hook  ((lisp-mode . page-break-lines-mode)
           (emacs-lisp-mode . page-break-lines-mode)))
 
@@ -882,18 +891,19 @@ existing directory under `magit-clone-default-directory'."
 
 ;; Themes
 ;; Great looking theme
-;; (use-package spacemacs-theme
-;;   :ensure t
-;;   :config (load-theme spacemacs-dark t))
-
-(use-package modus-themes
+(use-package spacemacs-theme
   :ensure t
-  :config
-  (load-theme 'modus-vivendi t))
+  :config (load-theme 'spacemacs-dark t))
+
+;; (use-package modus-themes
+;;   :ensure t
+;;   :config
+;;   (load-theme 'modus-vivendi t))
 
 ;; undo-tree
 (use-package undo-tree
   :ensure t
+  :diminish
   :config (global-undo-tree-mode))
 
 ;; Breadcrumb adds, well, breadcrumbs to the top of your open buffers
@@ -907,9 +917,6 @@ existing directory under `magit-clone-default-directory'."
 
 ;; A fancy and fast mode-line inspired by minimalism design.
 ;; doom-line not works will in terminal, use spaceline instead
-;;(use-package doom-modeline
-;;  :ensure t
-;;  :init (doom-modeline-mode 1))
 (use-package spaceline
   :ensure t
   :config
