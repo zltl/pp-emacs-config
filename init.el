@@ -3,6 +3,8 @@
 
 ;; A reasonable eamcs config.
 
+;; for bugs on emacs: invalid image type svg when open treemacs
+(setq image-types (cons 'svg image-types))
 
 ;;; Code:
 
