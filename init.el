@@ -144,7 +144,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Set the font. Note: height = px * 100
-(set-face-attribute 'default nil :font "Consolas" :height 120)
+;; (set-face-attribute 'default nil :font "Consolas" :height 120)
 
 ;; Add unique buffer names in the minibuffer where there are many
 ;; identical files. This is super useful if you rely on folders for
@@ -420,7 +420,12 @@
 ;; Org Mode’s timestamps are sadly not aware of time zones, but we can
 ;; crudely approximate support by setting org-time-stamp-formats.
 (use-package org
+  :hook (org-mode . org-indent-mode)
   :config
+  (setf org-src-preserve-indentation nil
+        org-edit-src-content-indentation 0)
+  ;; make title look better
+  (org-bullets-mode 1)
   (setq org-time-stamp-formats '("<%Y-%m-%d %a>" . "<%Y-%m-%d %a %H:%M %Z>"))
   (setf org-startup-folded 'show2levels))
 (use-package org-bullets
@@ -637,27 +642,15 @@ with EXPORT_FILE_NAME."
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 
+
+;; Visualize tabs as a pipe character - "|"
+;; This will also show trailing characters as they are useful to spot.
+;; Use brighter color for parens.
+
 ;; color parens
 (use-package rainbow-delimiters
   :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode)
-  :config
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(rainbow-delimiters-depth-1-face ((t (:foreground "#e91e63"))))
-   '(rainbow-delimiters-depth-2-face ((t (:foreground "#2196F3"))))
-   '(rainbow-delimiters-depth-3-face ((t (:foreground "#EF6C00"))))
-   '(rainbow-delimiters-depth-4-face ((t (:foreground "#B388FF"))))
-   '(rainbow-delimiters-depth-5-face ((t (:foreground "#76ff03"))))
-   '(rainbow-delimiters-depth-6-face ((t (:foreground "#26A69A"))))
-   '(rainbow-delimiters-depth-7-face ((t (:foreground "#FFCDD2"))))
-   '(rainbow-delimiters-depth-8-face ((t (:foreground "#795548"))))
-   '(rainbow-delimiters-depth-9-face ((t (:foreground "#DCE775"))))
-   '(rainbow-delimiters-unmatched-face ((t (:foreground "#FFFFFF" :background "#EF6C00"))))
-   '(whitespace-tab ((t (:foreground "#636363"))))))
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package highlight-thing
   :ensure t
@@ -670,13 +663,6 @@ with EXPORT_FILE_NAME."
   :ensure t
   :bind (:map go-mode-map
 	      ("C-c C-f" . 'gofmt)))
-;; Optional: install eglot-format-buffer as a save hook.
-;; The depth of -10 places this before eglot's willSave notification,
-;; so that that notification reports the actual contents that will be saved.
-(defun eglot-format-buffer-on-save ()
-  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
-(add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
-
 
 (use-package julia-mode
   :ensure t)
@@ -749,6 +735,7 @@ with EXPORT_FILE_NAME."
          (c-mode . lsp)
          (c++-mode . lsp)
          (web-mode . lsp)
+         (rust-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
@@ -895,10 +882,14 @@ existing directory under `magit-clone-default-directory'."
 
 ;; Themes
 ;; Great looking theme
+;; (use-package spacemacs-theme
+;;   :ensure t
+;;   :config (load-theme spacemacs-dark t))
+
 (use-package modus-themes
   :ensure t
   :config
-  (load-theme 'modus-vivendi :no-confirm))
+  (load-theme 'modus-vivendi t))
 
 ;; undo-tree
 (use-package undo-tree
