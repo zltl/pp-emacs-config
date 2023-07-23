@@ -410,7 +410,8 @@
 (use-package jinx
   :ensure t
   :diminish
-  :hook (on-first-buffer . global-jinx-mode)
+  ;; I don't want it anywhere except I really want.
+  ;; :hook (on-first-buffer . global-jinx-mode)
   :bind
   ([remap ispell-word] . jinx-correct)
   :bind
