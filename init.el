@@ -184,6 +184,16 @@
     (dolist (key (where-is-internal fn nil))
       (unbind-key key))))
 
+;; use evil
+(use-package evil
+  :ensure t
+  :bind
+  (:map ltl/toggles-map
+        ("e" . evil-mode))
+  :config
+  (evil-mode 1))
+
+
 ;; avy is a GNU Emacs package for jumping to visible text using a
 ;; char-based decision tree
 (use-package avy
