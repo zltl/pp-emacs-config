@@ -189,9 +189,7 @@
   :ensure t
   :bind
   (:map ltl/toggles-map
-        ("e" . evil-mode))
-  :config
-  (evil-mode 1))
+        ("e" . evil-mode)))
 
 
 ;; avy is a GNU Emacs package for jumping to visible text using a
@@ -534,10 +532,10 @@ with EXPORT_FILE_NAME."
 ;; teammates.
 ;;
 ;; Where possible, I add an .envrc file to load the environment from the flake.
-(use-package envrc
-  :diminish
-  :ensure t
-  :hook (on-first-file . envrc-global-mode))
+;; (use-package envrc
+;;   :diminish
+;;   :ensure t
+;;   :hook (on-first-file . envrc-global-mode))
 
 
 ;;;
@@ -746,6 +744,11 @@ with EXPORT_FILE_NAME."
   :ensure t
   :hook (python-mode . anaconda-mode))
 
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode))
+
 ;; lsp
 (use-package lsp-mode
   :ensure t
@@ -770,6 +773,7 @@ with EXPORT_FILE_NAME."
 (use-package lsp-treemacs
   :ensure t
   :commands lsp-treemacs-errors-list)
+
 ;; optionally if you want to use debugger
 (use-package dap-mode
   :ensure t)
@@ -916,7 +920,9 @@ existing directory under `magit-clone-default-directory'."
 (use-package undo-tree
   :ensure t
   :diminish
-  :config (global-undo-tree-mode))
+  :config
+  (global-undo-tree-mode)
+  (setq undo-tree-history-directory-alist '(("." . "~/.cache/emacs/undo/"))))
 
 ;; Breadcrumb adds, well, breadcrumbs to the top of your open buffers
 ;; and works great with project.el, the Emacs project manager.
