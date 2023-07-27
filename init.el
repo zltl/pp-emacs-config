@@ -724,13 +724,14 @@ with EXPORT_FILE_NAME."
          ("\\.tsx\\'" . web-mode)
          ("\\.jsx\\'" . web-mode))
   :custom
-  (web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
   (web-mode-code-indent-offset 2)
   (web-mode-css-indent-offset 2)
-  (web-mode-markup-indent-offset 2)
-  (web-mode-enable-auto-quoting nil))
+  (web-mode-markup-indent-offset 2))
 
 (use-package clang-format
+  :ensure t)
+
+(use-package bazel
   :ensure t)
 
 (use-package lsp-tailwindcss
@@ -931,6 +932,7 @@ existing directory under `magit-clone-default-directory'."
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
   :vc (:fetcher github :repo joaotavora/breadcrumb)
+  :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
   :init (breadcrumb-mode))
 
 ;; A fancy and fast mode-line inspired by minimalism design.
