@@ -184,6 +184,9 @@
     (dolist (key (where-is-internal fn nil))
       (unbind-key key))))
 
+;; for C-SPC not work
+(global-set-key (kbd "C-x 2")  #'set-mark-command)
+
 ;; use evil
 (use-package evil
   :ensure t
