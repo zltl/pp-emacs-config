@@ -721,11 +721,11 @@ with EXPORT_FILE_NAME."
 ;; TypeScript, JS, and JSX/TSX support.
 (use-package web-mode
   :ensure t
-  :mode (("\\.ts\\'" . web-mode)
-         ("\\.js\\'" . web-mode)
-         ("\\.mjs\\'" . web-mode)
-         ("\\.tsx\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
+  :mode ("\\.ts\\'"
+         "\\.js\\'"
+         "\\.mjs\\'"
+         "\\.tsx\\'"
+         "\\.jsx\\'")
   :custom
   (web-mode-code-indent-offset 2)
   (web-mode-css-indent-offset 2)
