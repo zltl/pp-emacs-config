@@ -185,7 +185,7 @@
       (unbind-key key))))
 
 ;; for C-SPC not work
-(global-set-key (kbd "C-x 2")  #'set-mark-command)
+(global-set-key (kbd "C-c 2")  #'set-mark-command)
 
 ;; use evil
 (use-package evil
@@ -683,8 +683,11 @@ with EXPORT_FILE_NAME."
 
 (use-package go-mode
   :ensure t
-  :bind (:map go-mode-map
-	      ("C-c C-f" . 'gofmt)))
+  :config
+
+  )
+
+
 
 (use-package julia-mode
   :ensure t)
@@ -756,20 +759,14 @@ with EXPORT_FILE_NAME."
 ;; lsp
 (use-package lsp-mode
   :ensure t
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
+  :init (setq lsp-keymap-prefix "C-c l")
   :hook ((go-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
          (web-mode . lsp)
-         (rust-mode . lsp)
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp
+         (rust-mode . lsp))
   :config
-  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\target\\'")
-  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\vendor\\'")
-  (add-to-list 'lsp-file-watch-ignored-files "[/\\\\]\\deps\\'"))
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map))
 ;; optionally
 (use-package lsp-ui
   :ensure t
