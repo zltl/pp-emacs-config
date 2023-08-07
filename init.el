@@ -682,12 +682,7 @@ with EXPORT_FILE_NAME."
   :ensure t)
 
 (use-package go-mode
-  :ensure t
-  :config
-
-  )
-
-
+  :ensure t)
 
 (use-package julia-mode
   :ensure t)
@@ -766,7 +761,11 @@ with EXPORT_FILE_NAME."
          (web-mode . lsp)
          (rust-mode . lsp))
   :config
-  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map))
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+  (defun lsp-go-install-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks))
 ;; optionally
 (use-package lsp-ui
   :ensure t
