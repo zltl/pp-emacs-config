@@ -69,7 +69,7 @@
 ;; init. After startup, we revert on the Garbage Collector Magic Hack.
 (use-package gcmh
   :ensure t
-  :vc (:fetcher github :repo emacsmirror/gcmh)
+  :vc (:url  "git@github.com:emacsmirror/gcmh.git")
   :diminish
   :init (setq gc-cons-threshold (* 80 1024 1024))
   :hook (emacs-startup . gcmh-mode))
@@ -80,7 +80,7 @@
 ;; We’re also going to use on.el to provide some of the same hooks
 ;; Doom uses.
 (use-package on
-  :vc (:fetcher github :repo ajgrf/on.el)
+  :vc (:url "git@github.com:ajgrf/on.el.git")
   :ensure t)
 
 ;;; Security
@@ -291,7 +291,7 @@
 
 ;; TODO: use M-x copilot-login
 (use-package copilot
-  :vc (:fetcher github :repo zerolfx/copilot.el)
+  :vc (:url "git@github.com:zerolfx/copilot.el.git")
   :ensure t
   :custom
   (copilot-disable-predicates '(always))
@@ -931,9 +931,9 @@ existing directory under `magit-clone-default-directory'."
 ;; Read more about projects here:
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
-  :vc (:fetcher github :repo joaotavora/breadcrumb)
+  :vc (:url "git@github.com:joaotavora/breadcrumb.git")
   :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
-  :init (breadcrumb-mode))
+  :config (breadcrumb-mode))
 
 ;; A fancy and fast mode-line inspired by minimalism design.
 ;; doom-line not works will in terminal, use spaceline instead
