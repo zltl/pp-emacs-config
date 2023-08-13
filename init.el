@@ -4,7 +4,7 @@
 ;; A reasonable eamcs config.
 
 ;; for bugs on emacs: invalid image type svg when open treemacs
-(setq image-types (cons 'svg image-types))
+;; (setq image-types (cons 'svg image-types))
 
 ;;; Code:
 
@@ -58,9 +58,10 @@
 
 ;; Primitive package-vc integration for use-package
 ;; you may need a proxy on Chinese mainland for this
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
+;; Note that, as of 2023-05-16, vc-use-package has been merged into Emacs master!
+;;(unless (package-installed-p 'vc-use-package)
+;;  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+;;(require 'vc-use-package)
 ;;;;; }
 
 ;;; Garbage collection
