@@ -1,6 +1,8 @@
 A clean and fast emacs config
 ---
 
+NOTE: emacs 30 are need.
+
 This is my emacs configuration tree. It may be a good starting point for other
 emacs users, especially Golang/C/C++/Rust programers.
 
