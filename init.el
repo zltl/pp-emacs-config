@@ -682,6 +682,25 @@ with EXPORT_FILE_NAME."
 (use-package go-mode
   :ensure t)
 
+(use-package scala-mode
+  :ensure t
+  :interpreter
+    ("scala" . scala-mode))
+;; Enable sbt mode for executing sbt commands
+(use-package sbt-mode
+  :ensure t
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+   (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+
 (use-package julia-mode
   :ensure t)
 
@@ -758,7 +777,8 @@ with EXPORT_FILE_NAME."
          (c-mode . lsp)
          (c++-mode . lsp)
          (web-mode . lsp)
-         (rust-mode . lsp))
+         (rust-mode . lsp)
+         (scala-mode . lsp))
   :config
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   (defun lsp-go-install-save-hooks ()
