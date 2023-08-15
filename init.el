@@ -3,9 +3,6 @@
 
 ;; A reasonable eamcs config.
 
-;; for bugs on emacs: invalid image type svg when open treemacs
-(setq image-types (cons 'svg image-types))
-
 ;;; Code:
 
 ;;; Early Tasks
@@ -723,11 +720,12 @@ with EXPORT_FILE_NAME."
          "\\.js\\'"
          "\\.mjs\\'"
          "\\.tsx\\'"
-         "\\.jsx\\'")
+         "\\.jsx\\'"
+         )
   :custom
-  (web-mode-code-indent-offset 2)
-  (web-mode-css-indent-offset 2)
-  (web-mode-markup-indent-offset 2))
+   (web-mode-markup-indent-offset 2)
+   (web-mode-css-indent-offset 2)
+   (web-mode-code-indent-offset 2))
 
 (use-package clang-format
   :ensure t)
