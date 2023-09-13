@@ -742,6 +742,10 @@ with EXPORT_FILE_NAME."
 (use-package php-mode
   :ensure t)
 
+;; powershell mode
+(use-package powershell
+  :ensure t)
+
 (use-package rust-mode
   :ensure t
   :bind (:map rust-mode-map
@@ -764,6 +768,11 @@ with EXPORT_FILE_NAME."
    (web-mode-markup-indent-offset 2)
    (web-mode-css-indent-offset 2)
    (web-mode-code-indent-offset 2))
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
+(add-hook 'web-mode-hook  'my-web-mode-hook)
 
 (use-package clang-format
   :ensure t)
