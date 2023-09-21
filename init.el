@@ -736,6 +736,9 @@ with EXPORT_FILE_NAME."
   :init
   (setq markdown-command "multimarkdown"))
 
+(use-package dockerfile-mode
+  :ensure t)
+
 ;; Note that `php-mode' assumes php code is separate from HTML.
 ;; If you prefer working with PHP and HTML in a single file you
 ;; may prefer `web-mode'.
