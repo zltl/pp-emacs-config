@@ -1057,6 +1057,9 @@ existing directory under `magit-clone-default-directory'."
   (xref-show-xrefs-function 'consult-xref)
   (xref-show-definitions-function 'consult-xref))
 
+(use-package ag
+  :ensure t)
+
 (use-package ace-window
   :ensure t
   :bind ("M-o" . ace-window)
