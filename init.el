@@ -679,6 +679,9 @@ with EXPORT_FILE_NAME."
 (use-package elixir-mode
   :ensure t)
 
+(use-package cmake-mode
+  :ensure t)
+
 (use-package go-mode
   :ensure t)
 
