@@ -175,12 +175,12 @@
                :prefix "C-c t")
   :bind
   (:prefix-map ltl/goto
-               :prefix "C-c j")
-  :config
-  (defun ltl/unbind-all (fn)
-    "Unbinds a function everywhere."
-    (dolist (key (where-is-internal fn nil))
-      (unbind-key key))))
+               :prefix "C-c j"))
+
+(defun ltl/unbind-all (fn)
+  "Unbinds a function everywhere."
+  (dolist (key (where-is-internal fn nil))
+    (unbind-key key)))
 
 ;; for C-SPC not work
 (global-set-key (kbd "C-c 2")  #'set-mark-command)
