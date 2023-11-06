@@ -319,7 +319,20 @@
   (corfu-auto-delay 0)
   (corfu-auto-prefix 0)
   (completion-styles '(basic)))
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
 
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
 
 ;; Exiting
 ;; I’d usually rather exit Slack, to be quite honest.
@@ -806,6 +819,7 @@ with EXPORT_FILE_NAME."
 (use-package lsp-mode
   :ensure t
   :init (setq lsp-keymap-prefix "C-c l")
+  :config (setq lsp-enable-imenu nil)
   :hook ((go-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
@@ -962,6 +976,12 @@ existing directory under `magit-clone-default-directory'."
 (use-package spacemacs-theme
   :ensure t
   :config (load-theme 'spacemacs-dark t))
+
+;; font
+(set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal)
+(set-fontset-font t 'han (font-spec :family "PingFang SC" :weight 'normal))
+;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
+(set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))
 
 ;; (use-package modus-themes
 ;;   :ensure t
