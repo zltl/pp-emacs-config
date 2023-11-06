@@ -37,6 +37,15 @@ then `fc-cache -f -v`:
 </fontconfig>
 ```
 
+Install [Droid Sans Fallback](http://fonts3.com/fonts/d/Droid-Sans-Fallback.html) :
+```bash
+# for gentoo
+sudo emerge --ask media-fonts/droid
+
+# for ubuntu
+sudo apt install fonts-droid-fallback
+```
+
 Install [Source Han Sans](https://github.com/adobe-fonts/source-han-sans/tree/release) chinese fonts
 manually. Just copy the otf file into `~/.local/share/fonts/` then 
 `fc-cache -f -v`. If you work on windows, open the `otf` file then click
@@ -51,7 +60,7 @@ Install [Source Code Pro](https://github.com/adobe-fonts/source-code-pro) like f
 
 ## Copilot
 If want to use copilot, run `M-x copilot-login`. Then follow the instructions to
-login to github.
+login to Github.
 
 ## Golang
 Go to [Golang Installation Page](https://go.dev/doc/install) to install the
@@ -76,6 +85,10 @@ In order to generate `compile_commands.json` for Emacs itself I have found that
 
 
 ```bash
+# for gentoo
+sudo emerge --ask dev-util/bear
+
+# for ubuntu
 apt-get install bear
 ```
 
@@ -99,6 +112,9 @@ implementation point. It's not always work, in that case, open `.c/.cc/.cpp`
 files that related to current work first.
 
 ```bash
+# for gentoo
+sudo emerge --ask clang
+
 # use =apt search clangd= to search the latest version
 apt install clangd-12 && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-12 100
 # or

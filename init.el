@@ -71,7 +71,7 @@
   :init (setq gc-cons-threshold (* 80 1024 1024))
   :hook (emacs-startup . gcmh-mode))
 
-(setq read-process-output-max (* 1024 1024))
+(setq read-process-output-max (* 1024 1024 100))
 
 ;;; Doom-like hooks
 ;; We’re also going to use on.el to provide some of the same hooks
