@@ -979,7 +979,7 @@ existing directory under `magit-clone-default-directory'."
 
 ;; font
 (set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal)
-(set-fontset-font t 'han (font-spec :family "PingFang SC" :weight 'normal))
+(set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal))
 ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
 (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))
 
