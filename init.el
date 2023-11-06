@@ -192,7 +192,6 @@
   (:map ltl/toggles-map
         ("e" . evil-mode)))
 
-
 ;; avy is a GNU Emacs package for jumping to visible text using a
 ;; char-based decision tree
 (use-package avy
@@ -308,17 +307,8 @@
    ("M-f" . #'copilot-accept-completion-by-word)
    ("M-<return>" . #'copilot-accept-completion-by-line)))
 
-;; Corfu complete ui
-(use-package corfu
-  :ensure t
-  :init
-  (global-corfu-mode)
-  :custom
-  (corfu-auto t)
-  ;; You may want to play with delay/prefix/styles to suit your preferences.
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 0)
-  (completion-styles '(basic)))
+
+
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -337,7 +327,6 @@
 ;; Exiting
 ;; I’d usually rather exit Slack, to be quite honest.
 (setopt confirm-kill-emacs 'yes-or-no-p)
-
 
 ;; Highlight the current line
 (use-package hl-line
@@ -572,12 +561,36 @@ with EXPORT_FILE_NAME."
 (global-auto-revert-mode t)
 
 ;; Code completion at point
-(use-package company
+;; (use-package company
+;;   :ensure t
+;;   :diminish
+;;   :hook (after-init . global-company-mode)
+;;   :custom
+;;   (company-idle-delay 0))
+;; corfu cannot used in terminal
+(use-package corfu
   :ensure t
-  :diminish
-  :hook (after-init . global-company-mode)
+  :init
+  (when (display-graphic-p)
+    (global-corfu-mode))
   :custom
-  (company-idle-delay 0))
+  (corfu-auto t)
+  ;; You may want to play with delay/prefix/styles to suit your preferences.
+  (corfu-auto-delay 0)
+  (corfu-auto-prefix 0)
+  (completion-styles '(basic)))
+(use-package cape
+  :ensure t)
+
+(use-package popon
+  :ensure t
+  :vc (:url "https://codeberg.org/akib/emacs-popon.git"))
+(use-package corfu-terminal
+  :ensure t
+  :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :config
+  (unless (display-graphic-p)
+    (corfu-terminal-mode +1)))
 
 (use-package yasnippet
   :ensure t
@@ -818,20 +831,35 @@ with EXPORT_FILE_NAME."
 ;; lsp
 (use-package lsp-mode
   :ensure t
-  :init (setq lsp-keymap-prefix "C-c l")
+  :custom
+  (lsp-completion-provider :none) ;; we use Corfu!
+
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  (defun my/orderless-dispatch-flex-first (_pattern index _total)
+    (and (eq index 0) 'orderless-flex))
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+  ;; Optionally configure the first word as flex filtered.
+  (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
+  ;; Optionally configure the cape-capf-buster.
+  (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point)))
   :config (setq lsp-enable-imenu nil)
   :hook ((go-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
          (web-mode . lsp)
          (rust-mode . lsp)
-         (scala-mode . lsp))
+         (scala-mode . lsp)
+         (lsp-completion-mode . my/lsp-mode-setup-completion))
   :config
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
   (defun lsp-go-install-save-hooks ()
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
     (add-hook 'before-save-hook #'lsp-organize-imports t t))
   (add-hook 'go-mode-hook #'lsp-go-install-save-hooks))
+
 ;; optionally
 (use-package lsp-ui
   :ensure t
@@ -945,10 +973,18 @@ existing directory under `magit-clone-default-directory'."
 
 ;; Dired
 ;; Dired should refresh the listing on each revisit.
+;; C-\ to goggle input method
 (use-package dired
   :defer
   :custom
   (dired-auto-revert-buffer t))
+
+;; rime
+;; install librime/librime-dev
+(use-package rime
+  :ensure t
+  :custom
+  (default-input-method "rime"))
 
 ;; Minimization: let’s not {#minimization-let’s-not} #
 ;; I don’t much care for minimizing windows in the first place, and
@@ -1034,7 +1070,7 @@ existing directory under `magit-clone-default-directory'."
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless basic))
+  (completion-styles '(orderless partial-completion basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
 ;; Consult
