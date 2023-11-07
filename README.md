@@ -187,6 +187,17 @@ It’s recommended to install the following command-line tools:
 apt-get install silversearcher-ag
 apt install fd-find
 ```
+# Input Method
+Use [emacs-rime](https://github.com/DogLooksGood/emacs-rime) input method.
+```bash
+# for gentoo
+sudo emerge --ask app-i18n/librime
+# for ubuntu
+sudo apt install librime-dev
+```
+
+- `C-\` to toggle input methods.
+- `M-x rime-select-schema` to switch input schema.
 
 # Installation
 
