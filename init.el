@@ -567,12 +567,14 @@ with EXPORT_FILE_NAME."
 ;;   :hook (after-init . global-company-mode)
 ;;   :custom
 ;;   (company-idle-delay 0))
+
 ;; corfu cannot used in terminal
+;; try corfu-terminal
 (use-package corfu
   :ensure t
+  :vc (:url "git@github.com:minad/corfu.git")
   :init
-  (when (display-graphic-p)
-    (global-corfu-mode))
+  (global-corfu-mode)
   :custom
   (corfu-auto t)
   ;; You may want to play with delay/prefix/styles to suit your preferences.
@@ -581,7 +583,6 @@ with EXPORT_FILE_NAME."
   (completion-styles '(basic)))
 (use-package cape
   :ensure t)
-
 (use-package popon
   :ensure t
   :vc (:url "https://codeberg.org/akib/emacs-popon.git"))
