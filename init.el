@@ -853,6 +853,7 @@ with EXPORT_FILE_NAME."
          (web-mode . lsp)
          (rust-mode . lsp)
          (scala-mode . lsp)
+         (python-mode . lsp)
          (lsp-completion-mode . my/lsp-mode-setup-completion))
   :config
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
