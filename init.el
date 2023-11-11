@@ -258,7 +258,6 @@
   (global-pangu-spacing-mode 1))
 (add-hook 'org-mode-hook
           '(lambda ()
-
              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
 (add-hook 'markdown-mode-hook
           '(lambda ()
@@ -1030,10 +1029,12 @@ existing directory under `magit-clone-default-directory'."
   :config (load-theme 'spacemacs-dark t))
 
 ;; font
-(set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal)
-(set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal))
-;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
-(set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))
+(when (display-graphic-p)
+  (progn
+    (set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal)
+    (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal))
+    ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
+    (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))))
 
 ;; (use-package modus-themes
 ;;   :ensure t
