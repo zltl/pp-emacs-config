@@ -251,6 +251,20 @@
   :config
   (setq-default indent-tabs-mode nil))
 
+;; space between chinese and english
+(use-package pangu-spacing
+  :ensure t
+  :config
+  (global-pangu-spacing-mode 1))
+(add-hook 'org-mode-hook
+          '(lambda ()
+
+             (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
+(add-hook 'markdown-mode-hook
+          '(lambda ()
+             (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
+
+
 ;; Killing
 ;; Put the clipboard on the kill ring before killing something
 ;; else. Emacs isn’t as violent as it sometimes sounds, I swear.
