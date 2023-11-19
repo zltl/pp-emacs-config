@@ -179,6 +179,7 @@
   (:prefix-map ltl/goto
                :prefix "C-c j"))
 
+
 (defun ltl/unbind-all (fn)
   "Unbinds a function everywhere."
   (dolist (key (where-is-internal fn nil))
@@ -200,7 +201,9 @@
   :ensure t
   :bind
   (:map ltl/goto
-        ("c" . #'avy-goto-char)))
+        ("c" . #'avy-goto-char)
+        ("j" . #'avy-goto-word-0)
+        ("l" . #'avy-goto-line)))
 
 ;; Diminish
 ;; We also want to “diminish” most minor-mode indicators on the mode
@@ -453,11 +456,39 @@
   :hook (org-mode . org-indent-mode)
   :config
   (setf org-src-preserve-indentation nil
-        org-edit-src-content-indentation 0)
-  ;; make title look better
+        org-edit-src-content-indentation 0
+        org-ellipsis " ▾"
+        org-hide-emphasis-markers t
+        org-src-fontify-natively t
+        org-fontify-quote-and-verse-blocks t
+        org-src-tab-acts-natively t
+        org-edit-src-content-indentation 2
+        org-hide-block-startup nil
+        org-src-preserve-indentation nil
+        org-startup-folded 'content
+        org-cycle-separator-lines 2)
+        ;; make title look better
   (org-bullets-mode 1)
   (setq org-time-stamp-formats '("<%Y-%m-%d %a>" . "<%Y-%m-%d %a %H:%M %Z>"))
-  (setf org-startup-folded 'show2levels))
+  (setf org-startup-folded 'show2levels)
+  (setq org-modules
+    '(org-crypt
+        org-habit
+        org-bookmark
+        org-eshell
+        org-irc))
+
+  ;; This is needed as of Org 9.2
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+  (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("go" . "src go"))
+  (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
+  (add-to-list 'org-structure-template-alist '("json" . "src json")))
+
 (use-package org-bullets
   :ensure t
   :hook (org-mode . (lambda ()  org-bullets-mode 1)))
@@ -661,6 +692,7 @@ with EXPORT_FILE_NAME."
   :hook  ((lisp-mode . page-break-lines-mode)
           (emacs-lisp-mode . page-break-lines-mode)))
 
+
 (use-package sly
   :ensure t)
 
@@ -852,6 +884,16 @@ with EXPORT_FILE_NAME."
   :config
   (projectile-mode))
 
+;; workspaces
+(use-package perspective
+  :ensure t
+  :bind
+  ;; ("C-x C-b" . perp-list-buffers)
+  :custom
+  (persp-mode-prefix-key  (kbd "C-c M-p"))
+  :init
+  (persp-mode))
+
 ;; lsp
 (use-package lsp-mode
   :ensure t
@@ -930,6 +972,12 @@ existing directory under `magit-clone-default-directory'."
     (let ((vertico-preselect 'prompt))
       (apply orig-fun args)))
   (advice-add 'magit-clone-read-args :around #'ltl/magit-clone-read-args-a))
+
+;; show todos
+(use-package magit-todos
+  :ensure t
+  :after magit
+  :config (magit-todos-mode 1))
 
 ;; Git-Link
 ;; git-link grabs links to lines, regions, commits, or home pages.
@@ -1046,6 +1094,12 @@ existing directory under `magit-clone-default-directory'."
     ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
     (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))))
 
+;; frame scaling/zooming
+(use-package default-text-scale
+  :ensure t
+  :config
+  (default-text-scale-mode))
+
 ;; (use-package modus-themes
 ;;   :ensure t
 ;;   :config
@@ -1146,6 +1200,7 @@ existing directory under `magit-clone-default-directory'."
 (use-package ag
   :ensure t)
 
+;; window selection with ace-window
 (use-package ace-window
   :ensure t
   :bind ("M-o" . ace-window)
