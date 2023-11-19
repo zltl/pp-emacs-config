@@ -635,6 +635,17 @@ with EXPORT_FILE_NAME."
   (corfu-auto-delay 0)
   (corfu-auto-prefix 0)
   (completion-styles '(basic)))
+(use-package prescient
+  :ensure t)
+(use-package corfu-prescient
+  :ensure t
+  :hook (corfu-mode . corfu-prescient-mode))
+(use-package ivy-prescient
+  :ensure t
+  :hook (ivy-mode . ivy-prescient-mode))
+(use-package vertico-prescient
+  :ensure t
+  :hook (vertico-mode . vertico-prescient-mode))
 (use-package cape
   :ensure t)
 (use-package popon
