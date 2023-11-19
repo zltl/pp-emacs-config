@@ -40,6 +40,8 @@
 
 ;;;;; {
 
+(require 'subr-x)
+
 ;; I'll add an extra note here since user customizations are important.
 ;; Emacs actually offers a UI-based customization menu, "M-x customize".
 ;; You can use this menu to change variable values across Emacs. By default,
@@ -530,6 +532,14 @@ with EXPORT_FILE_NAME."
 ;; This mode saves our place for when we revisit a file.
 (use-package saveplace
   :hook (on-first-buffer . save-place-mode))
+
+;; auto-saving changed files
+(use-package super-save
+  :defer 1
+  :diminish super-save-mode
+  :config
+  (super-save-mode +1)
+  (setq super-save-auto-save-when-idle t))
 
 
 ;;;
