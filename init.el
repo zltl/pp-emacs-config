@@ -259,13 +259,14 @@
 ;; space between chinese and english
 (use-package pangu-spacing
   :ensure t
+  :diminish
   :config
   (global-pangu-spacing-mode 1))
 (add-hook 'org-mode-hook
-          '(lambda ()
+          #'(lambda ()
              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
 (add-hook 'markdown-mode-hook
-          '(lambda ()
+          #'(lambda ()
              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
 
 
@@ -569,6 +570,7 @@ with EXPORT_FILE_NAME."
 (use-package super-save
   :defer 1
   :diminish super-save-mode
+  :diminish auto-save-mode
   :config
   (super-save-mode +1)
   (setq super-save-auto-save-when-idle t))
@@ -740,6 +742,7 @@ with EXPORT_FILE_NAME."
 ;; https://stackoverflow.com/a/5243421/3606440
 (use-package paredit
   :ensure t
+  :diminish
   :hook ((emacs-lisp-mode . enable-paredit-mode)
          (lisp-mode . enable-paredit-mode)
          (ielm-mode . enable-paredit-mode)
@@ -764,9 +767,11 @@ with EXPORT_FILE_NAME."
 ;; color parens
 (use-package rainbow-delimiters
   :ensure t
+  :diminish t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package highlight-thing
+  :diminish t
   :ensure t
   :hook (prog-mode . highlight-thing-mode))
 
@@ -892,6 +897,7 @@ with EXPORT_FILE_NAME."
   :hook (python-mode . anaconda-mode))
 
 (use-package projectile
+  :diminish
   :ensure t
   :config
   (projectile-mode))
@@ -1118,6 +1124,9 @@ existing directory under `magit-clone-default-directory'."
     (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal))
     ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
     (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))))
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
 
 ;; frame scaling/zooming
 (use-package default-text-scale

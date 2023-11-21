@@ -24,19 +24,6 @@ To make the most of the programming language-specific support in this config,
 further programs will likely be required.
 
 ## Fonts
-Recomment [source-code-pr](https://github.com/adobe-fonts/source-code-pro).
-
-If your are using WSL, create `/etc/fonts/local.conf` and set contents below,
-then `fc-cache -f -v`:
-
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-    <dir>/mnt/c/Windows/Fonts</dir>
-</fontconfig>
-```
-
 Install [Droid Sans Fallback](http://fonts3.com/fonts/d/Droid-Sans-Fallback.html) :
 ```bash
 # for gentoo
@@ -195,7 +182,7 @@ sudo emerge --ask app-i18n/librime
 # for ubuntu
 sudo apt install librime-dev
 ```
-
+ 
 - `C-\` to toggle input methods.
 - `M-x rime-select-schema` to switch input schema.
 
