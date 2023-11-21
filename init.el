@@ -307,6 +307,7 @@
 (use-package copilot
   :vc (:url "git@github.com:zerolfx/copilot.el.git")
   :ensure t
+  :diminish
   :custom
   (copilot-disable-predicates '(always))
   :hook
@@ -905,6 +906,18 @@ with EXPORT_FILE_NAME."
   :init
   (persp-mode))
 
+;; Automatically install and use tree-sitter major modes in Emacs
+;; 29+. If the tree-sitter version can’t be used, fall back to the
+;; original major mode.
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+
 ;; lsp
 (use-package lsp-mode
   :ensure t
@@ -924,6 +937,7 @@ with EXPORT_FILE_NAME."
   (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point)))
   :config (setq lsp-enable-imenu nil)
   :hook ((go-mode . lsp)
+         (go-ts-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
          (web-mode . lsp)
@@ -1132,7 +1146,7 @@ existing directory under `magit-clone-default-directory'."
 (use-package breadcrumb
   :vc (:url "git@github.com:joaotavora/breadcrumb.git")
   :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
-  :config (breadcrumb-mode))
+  :config (breadcrumb-imenu-crumbs))
 
 ;; A fancy and fast mode-line inspired by minimalism design.
 ;; doom-line not works will in terminal, use spaceline instead
