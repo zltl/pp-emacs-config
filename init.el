@@ -956,7 +956,8 @@ with EXPORT_FILE_NAME."
   (defun lsp-go-install-save-hooks ()
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
     (add-hook 'before-save-hook #'lsp-organize-imports t t))
-  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+  (add-hook 'go-ts-mode-hook #'lsp-go-install-save-hooks))
 
 ;; optionally
 (use-package lsp-ui
