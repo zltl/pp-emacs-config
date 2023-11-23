@@ -42,6 +42,33 @@
 
 (require 'subr-x)
 
+(cl-defun git-clone-command (PATH &key repo)
+  "Clone REPO to -> PATH."
+  (shell-command-on-region
+   ;; begin and end of buffer
+   (point-min)
+   (point-max)
+   (concat "git clone " repo " " PATH)
+   "*git-clone"
+   ;; replace?
+   nil
+   ;; name of the error buffer
+   "*git-clone*"
+   ;; show error buffer?
+   t))
+
+(require 'f)
+(cl-defun git-clone (NAME &key repo)
+  "Clone REPO to -> .emacs.d/elpa/NAME when folder not exists."
+  (let ((path (expand-file-name (f-join "elpa" NAME) user-emacs-directory)))
+    (progn
+      (add-to-list 'load-path path)
+      (message "Clone %s to %s" repo path)
+      (if (file-directory-p path)
+          (message "Repo exists, skip")
+        (progn (git-clone-command path :repo repo)
+               (message "Finished"))))))
+
 ;; I'll add an extra note here since user customizations are important.
 ;; Emacs actually offers a UI-based customization menu, "M-x customize".
 ;; You can use this menu to change variable values across Emacs. By default,
@@ -73,13 +100,6 @@
   :hook (emacs-startup . gcmh-mode))
 
 (setq read-process-output-max (* 1024 1024 100))
-
-;;; Doom-like hooks
-;; We’re also going to use on.el to provide some of the same hooks
-;; Doom uses.
-(use-package on
-  :vc (:url "git@github.com:ajgrf/on.el.git")
-  :ensure t)
 
 ;;; Security
 ;; For the love of all that is holy, do not continue with untrusted
@@ -304,10 +324,10 @@
 ;; close to M-TAB and bound to a menubar command I don’t ever use.
 
 ;; TODO: use M-x copilot-login
+(git-clone "copilot" :repo "git@github.com:zerolfx/copilot.el.git")
 (use-package copilot
-  :vc (:url "git@github.com:zerolfx/copilot.el.git")
-  :ensure t
   :diminish
+  :load-path "elpa/copilot"
   :custom
   (copilot-disable-predicates '(always))
   :hook
@@ -628,7 +648,6 @@ with EXPORT_FILE_NAME."
 ;; try corfu-terminal
 (use-package corfu
   :ensure t
-  :vc (:url "git@github.com:minad/corfu.git")
   :init
   (global-corfu-mode)
   :custom
@@ -650,15 +669,18 @@ with EXPORT_FILE_NAME."
   :hook (vertico-mode . vertico-prescient-mode))
 (use-package cape
   :ensure t)
+(git-clone "popon" :repo "https://codeberg.org/akib/emacs-popon.git")
 (use-package popon
-  :ensure t
-  :vc (:url "https://codeberg.org/akib/emacs-popon.git"))
+  :load-path "elpa/popon")
+(git-clone "corfu-terminal" :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+(require 'corfu-terminal)
 (use-package corfu-terminal
-  :ensure t
-  :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :load-path "elpa/corfu-terminal"
   :config
   (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
+    (progn
+      (require 'corfu-terminal)
+      (corfu-terminal-mode +1))))
 
 (use-package yasnippet
   :ensure t
@@ -673,7 +695,6 @@ with EXPORT_FILE_NAME."
   :init (global-flycheck-mode))
 
 ;;;
-
 
 ;;; Languages
 
@@ -1153,8 +1174,9 @@ existing directory under `magit-clone-default-directory'."
 ;;
 ;; Read more about projects here:
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
+(git-clone "breadcrumb" :repo "git@github.com:joaotavora/breadcrumb.git")
 (use-package breadcrumb
-  :vc (:url "git@github.com:joaotavora/breadcrumb.git")
+  :load-path "elpa/breadcrumb"
   :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
   :config (breadcrumb-imenu-crumbs))
 
