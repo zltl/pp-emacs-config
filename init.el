@@ -275,6 +275,12 @@
   :config
   (setq-default indent-tabs-mode nil))
 
+;; editorconfig
+(git-clone "editorconfig" :repo "git@github.com:editorconfig/editorconfig-emacs.git")
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1))
+
 ;; space between chinese and english
 (use-package pangu-spacing
   :ensure t
@@ -625,6 +631,7 @@ with EXPORT_FILE_NAME."
 (electric-pair-mode t)
 ;; Visualize matching parens
 (show-paren-mode 1)
+(electric-pair-mode t)
 ;; Prefer spaces to tabs
 (setq-default indent-tabs-mode nil)
 ;; Automatically save your place in files
