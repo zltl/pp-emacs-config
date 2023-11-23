@@ -68,7 +68,6 @@
 ;; init. After startup, we revert on the Garbage Collector Magic Hack.
 (use-package gcmh
   :ensure t
-  :vc (:url  "git@github.com:emacsmirror/gcmh.git")
   :diminish
   :init (setq gc-cons-threshold (* 80 1024 1024))
   :hook (emacs-startup . gcmh-mode))
