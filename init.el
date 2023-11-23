@@ -944,6 +944,7 @@ with EXPORT_FILE_NAME."
   :config (setq lsp-enable-imenu nil)
   :hook ((go-mode . lsp)
          (go-ts-mode . lsp)
+         (tsx-ts-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
          (web-mode . lsp)
