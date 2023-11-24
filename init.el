@@ -12,6 +12,15 @@
                          ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 
+;; I'll add an extra note here since user customizations are important.
+;; Emacs actually offers a UI-based customization menu, "M-x customize".
+;; You can use this menu to change variable values across Emacs. By default,
+;; changing a variable will write to your init.el automatically, mixing
+;; your hand-written Emacs Lisp with automatically-generated Lisp from the
+;; customize menu. The following setting instead writes customizations to a
+;; separate file, custom.el, to keep your init.el clean.
+(setf  custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 ;; A quick primer on the `use-package' function (refer to
 ;; "C-h f use-package" for the full details).
 ;;
@@ -39,9 +48,22 @@
   (benchmark-init/activate))
 
 ;;;;; {
+;; use quelpa as package manager
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://github.com/quelpa/quelpa-use-package.git"))
+(require 'quelpa-use-package)
+(setq use-package-ensure-function 'quelpa)
+(setq use-package-always-ensure t)
 
+;;;; {
 (require 'subr-x)
-
 (cl-defun git-clone-command (PATH &key repo)
   "Clone REPO to -> PATH."
   (shell-command-on-region
@@ -57,7 +79,11 @@
    ;; show error buffer?
    t))
 
-(require 'f)
+;;(defalias 'f-join #'file-name-concat)
+
+(use-package f
+  :quelpa (f :url "rejeep/f.el" :fetcher github))
+
 (cl-defun git-clone (NAME &key repo)
   "Clone REPO to -> .emacs.d/elpa/NAME when folder not exists."
   (let ((path (expand-file-name (f-join "elpa" NAME) user-emacs-directory)))
@@ -70,40 +96,27 @@
                (message "Finished"))))))
 
 ;; utility hooks and functions from Doom Emacs
-(git-clone "on" :repo "git@github.com:ajgrf/on.el.git")
 (use-package on
-  :load-path "elpa/on")
+  :quelpa (on :repo "ajgrf/on.el" :fetcher github))
 
-;; I'll add an extra note here since user customizations are important.
-;; Emacs actually offers a UI-based customization menu, "M-x customize".
-;; You can use this menu to change variable values across Emacs. By default,
-;; changing a variable will write to your init.el automatically, mixing
-;; your hand-written Emacs Lisp with automatically-generated Lisp from the
-;; customize menu. The following setting instead writes customizations to a
-;; separate file, custom.el, to keep your init.el clean.
-(setf  custom-file (expand-file-name "custom.el" user-emacs-directory))
 ;; Unless we've already fetched (and cached) the package archives,
 ;; refresh them.
 (unless package-archive-contents
   (package-refresh-contents))
 
-;; Primitive package-vc integration for use-package
-;; you may need a proxy on Chinese mainland for this
-;; Note that, as of 2023-05-16, vc-use-package has been merged into Emacs master!
-;;(unless (package-installed-p 'vc-use-package)
-;;  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-;;(require 'vc-use-package)
-;;;;; }
+
+;; Diminish
+;; We also want to “diminish” most minor-mode indicators on the mode
+;; line. They’re only interesting if they’re in an unexpected state.
+(use-package diminish)
 
 ;;; Garbage collection
 ;; Increasing the garbage collector threshold is reputed to help at
 ;; init. After startup, we revert on the Garbage Collector Magic Hack.
 (use-package gcmh
-  :ensure t
   :diminish
   :init (setq gc-cons-threshold (* 80 1024 1024))
   :hook (emacs-startup . gcmh-mode))
-
 (setq read-process-output-max (* 1024 1024 100))
 
 ;;; Security
@@ -112,7 +125,7 @@
 (use-package gnutls
   :defer t
   :custom
-  (gnutls-verify-error t))
+  (gnutls-verify-error nil))
 
 ;;; No littering
 ;; Many packages leave crumbs in user-emacs-directory or even
@@ -120,11 +133,10 @@
 ;; rely on the community configuration of no-littering. Run this
 ;; early, because many of the crumb droppers are configured below!
 (use-package no-littering
-  :ensure t
   :init
   (setq no-littering-etc-directory "~/.cache/emacs/etc/"
         no-littering-var-directory "~/.cache/emacs/var/"))
-(require 'recentf)
+(use-package recentf)
 (add-to-list 'recentf-exclude
              (recentf-expand-file-name no-littering-var-directory))
 (add-to-list 'recentf-exclude
@@ -137,7 +149,6 @@
 
 ;; Cursor
 ;; I like a non-blinking bar cursor.
-
 (setopt cursor-type 'bar)
 (use-package frame
   :config
@@ -169,9 +180,6 @@
 ;; change all prompts to y or n
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Set the font. Note: height = px * 100
-;; (set-face-attribute 'default nil :font "Consolas" :height 120)
-
 ;; Add unique buffer names in the minibuffer where there are many
 ;; identical files. This is super useful if you rely on folders for
 ;; organization and have lots of files with the same name,
@@ -184,8 +192,6 @@
       backup-by-copying t
       ;; Backups are placed into your Emacs directory, e.g. xxxx/backups
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
-
-;;; use-package keywords
 
 ;; bind-key
 ;; use-package is built-in as of Emacs 29, but since we use :bind, we
@@ -214,7 +220,6 @@
 
 ;; use evil
 (use-package evil
-  :ensure t
   :bind
   (:map ltl/toggles-map
         ("e" . evil-mode)))
@@ -222,24 +227,17 @@
 ;; avy is a GNU Emacs package for jumping to visible text using a
 ;; char-based decision tree
 (use-package avy
-  :ensure t
   :bind
   (:map ltl/goto
         ("c" . #'avy-goto-char)
         ("j" . #'avy-goto-word-0)
         ("l" . #'avy-goto-line)))
 
-;; Diminish
-;; We also want to “diminish” most minor-mode indicators on the mode
-;; line. They’re only interesting if they’re in an unexpected state.
-(use-package diminish :ensure t)
-
 ;;; Path setup
 ;; Launching Emacs from the MacOS dock does not source my shell
 ;; config, which leads to my Nix profile not being on the $PATH, which
 ;; leads to errors, or worse, trying to install the execrable Xcode.
 (use-package exec-path-from-shell
-  :ensure t
   :demand t
   :if (memq window-system '(mac ns x))
   :config
@@ -277,11 +275,19 @@
 ;; Indent
 ;; Tabs are the devil’s whitespace.
 (use-package simple
+  :custom
+  ;; Killing
+  ;; Put the clipboard on the kill ring before killing something
+  ;; else. Emacs isn’t as violent as it sometimes sounds, I swear.
+  ;;
+  ;; We also don’t want to clutter the ring with consecutively duplicate
+  ;; values.  
+  (save-interprogram-paste-before-kill t)
+  (kill-do-not-save-duplicates t)  
   :config
   (setq-default indent-tabs-mode nil))
 
-;; editorconfig
-(git-clone "editorconfig" :repo "git@github.com:editorconfig/editorconfig-emacs.git")
+;; editorconfig for emacs
 (use-package editorconfig
   :diminish
   :config
@@ -300,18 +306,6 @@
           #'(lambda ()
              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
 
-
-;; Killing
-;; Put the clipboard on the kill ring before killing something
-;; else. Emacs isn’t as violent as it sometimes sounds, I swear.
-;;
-;; We also don’t want to clutter the ring with consecutively duplicate
-;; values.
-(use-package simple
-  :custom
-  (save-interprogram-paste-before-kill t)
-  (kill-do-not-save-duplicates t))
-
 ;;; Matching
 
 ;; Bookmark
@@ -319,6 +313,7 @@
 (use-package bookmark
   :custom
   (bookmark-save-flag 1))
+
 
 
 ;;;
@@ -336,29 +331,26 @@
 ;; close to M-TAB and bound to a menubar command I don’t ever use.
 
 ;; TODO: use M-x copilot-login
-(git-clone "copilot" :repo "git@github.com:zerolfx/copilot.el.git")
-(use-package copilot
-  :diminish
-  :load-path "elpa/copilot"
-  :custom
-  (copilot-disable-predicates '(always))
-  :hook
-  (prog-mode . copilot-mode)
-  :bind
-  ("M-`" . copilot-complete)
-  :bind
-  (:map ltl/toggles-map
-   ("`" . copilot-mode))
-  :bind
-  (:map copilot-completion-map
-   ("C-g" .  #'copilot-clear-overlay)
-   ("M-p" . #'copilot-previous-completion)
-   ("M-n" . #'copilot-next-completion)
-   ("TAB" . #'copilot-accept-completion)
-   ("M-f" . #'copilot-accept-completion-by-word)
-   ("M-<return>" . #'copilot-accept-completion-by-line)))
-
-
+;; (use-package copilot
+;;   :quelpa (copilot :repo "zerolfx/copilot.el" :fetcher github)
+;;   :diminish
+;;   :custom
+;;   (copilot-disable-predicates '(always))
+;;   :hook
+;;   (prog-mode . copilot-mode)
+;;   :bind
+;;   ("M-`" . copilot-complete)
+;;   :bind
+;;   (:map ltl/toggles-map
+;;    ("`" . copilot-mode))
+;;   :bind
+;;   (:map copilot-completion-map
+;;    ("C-g" .  #'copilot-clear-overlay)
+;;    ("M-p" . #'copilot-previous-completion)
+;;    ("M-n" . #'copilot-next-completion)
+;;    ("TAB" . #'copilot-accept-completion)
+;;    ("M-f" . #'copilot-accept-completion-by-word)
+;;    ("M-<return>" . #'copilot-accept-completion-by-line)))
 
 ;; A few more useful configurations...
 (use-package emacs
@@ -375,7 +367,7 @@
   ;; `completion-at-point' is often bound to M-TAB.
   (setq tab-always-indent 'complete))
 
-;; Exiting
+;;; Exiting
 ;; I’d usually rather exit Slack, to be quite honest.
 (setopt confirm-kill-emacs 'yes-or-no-p)
 
@@ -387,21 +379,21 @@
 ;; ffap, short for “find file at point,” guesses a default file from
 ;; the point. ffap-bindings rebinds several commands with ffap
 ;; equivalents.
-(use-package ffap
-  :hook (on-first-input . ffap-bindings))
+;; (use-package ffap
+;;   :hook (on-first-input . ffap-bindings))
 
 ;; Persist state
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I’m trying not to call until I die.
 (use-package persist-state
+  :quelpa (persist-state :url "https://codeberg.org/bram85/emacs-persist-state.git"
+                         :fetcher git)
   :diminish
-  :ensure t
   :hook
   (on-first-input . persist-state-mode))
 
 ;; Whitespace butler
 (use-package ws-butler
-  :ensure t
   :hook (on-first-buffer . ws-butler-global-mode)
   :diminish)
 
@@ -433,6 +425,7 @@
   (:map ltl/files-map
    ("r" . recentf-open)))
 
+;; project/projectile
 (use-package project
   :ensure t
   :config
@@ -444,7 +437,10 @@
     (cdr project))
   :config
   (add-hook 'project-find-functions #'project-find-go-module))
-
+(use-package projectile
+  :diminish
+  :config
+  (projectile-mode))
 
 
 ;;;
@@ -523,7 +519,6 @@
   (add-to-list 'org-structure-template-alist '("json" . "src json")))
 
 (use-package org-bullets
-  :ensure t
   :hook (org-mode . (lambda ()  org-bullets-mode 1)))
 
 ;; ox-hugo
@@ -532,7 +527,6 @@
 ;; ltl/ox-hugo-update-lastmod can be used to update the timestamp of
 ;; the exported tree at the current point.
 (use-package ox-hugo
-  :ensure t
   :after org
   :config
   (defun ltl/ox-hugo-update-lastmod ()
@@ -548,7 +542,6 @@ with EXPORT_FILE_NAME."
 ;; ox-slack
 ;; Mostly useful for org-slack-export-to-clipboard-as-slack.
 (use-package ox-slack
-  :ensure t
   :after org
   :bind
   (:map org-mode-map
@@ -563,7 +556,6 @@ with EXPORT_FILE_NAME."
 ;; used it before. The Denote manual is also excellent:
 ;; https://protesilaos.com/emacs/denote
 (use-package denote
-  :ensure t
   :custom
   (denote-known-keywords '("emacs" "journal"))
   ;; This is the directory where your notes live.
@@ -572,7 +564,6 @@ with EXPORT_FILE_NAME."
   (("C-c n n" . denote)
    ("C-c n f" . denote-open-or-create)
    ("C-c n i" . denote-link)))
-
 
 ;; Subword mode
 ;; Subword mode helps us move around camel-case languages, and is
@@ -586,6 +577,7 @@ with EXPORT_FILE_NAME."
 ;; The default binding of M-= is count-words-region. The newer
 ;; count-words counts the buffer when there’s no active region.
 (bind-key [remap count-words-region] 'count-words)
+
 
 
 ;;;
@@ -613,7 +605,6 @@ with EXPORT_FILE_NAME."
 
 ;; RFC mode
 (use-package rfc-mode
-  :ensure t
   :defer t)
 
 ;; Envrc
@@ -649,18 +640,11 @@ with EXPORT_FILE_NAME."
 ;; Keep files up-to-date when they change outside Emacs
 (global-auto-revert-mode t)
 
-;; Code completion at point
-;; (use-package company
-;;   :ensure t
-;;   :diminish
-;;   :hook (after-init . global-company-mode)
-;;   :custom
-;;   (company-idle-delay 0))
-
+;;; complete
 ;; corfu cannot used in terminal
 ;; try corfu-terminal
 (use-package corfu
-  :ensure t
+  :quelpa (corfu :fetcher github :repo "minad/corfu")
   :init
   (global-corfu-mode)
   :custom
@@ -669,43 +653,34 @@ with EXPORT_FILE_NAME."
   (corfu-auto-delay 0)
   (corfu-auto-prefix 0)
   (completion-styles '(basic)))
-(use-package prescient
-  :ensure t)
+(use-package prescient)
 (use-package corfu-prescient
-  :ensure t
   :hook (corfu-mode . corfu-prescient-mode))
 (use-package ivy-prescient
-  :ensure t
   :hook (ivy-mode . ivy-prescient-mode))
 (use-package vertico-prescient
-  :ensure t
   :hook (vertico-mode . vertico-prescient-mode))
-(use-package cape
-  :ensure t)
-(git-clone "popon" :repo "https://codeberg.org/akib/emacs-popon.git")
+(use-package cape)
 (use-package popon
-  :load-path "elpa/popon")
-(git-clone "corfu-terminal" :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
-(require 'corfu-terminal)
+  :quelpa (popon :fetcher git
+                 :url "https://codeberg.org/akib/emacs-popon.git"))
 (use-package corfu-terminal
-  :load-path "elpa/corfu-terminal"
+  :quelpa (corfu-terminal
+           :fetcher git
+           :url "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :config
   (unless (display-graphic-p)
-    (progn
-      (require 'corfu-terminal)
-      (corfu-terminal-mode +1))))
-
+    (corfu-terminal-mode +1)))
 (use-package yasnippet
-  :ensure t
   :diminish
   :config
   (yas-global-mode 1))
 
 ;; flycheck
 (use-package flycheck
-  :ensure t
   :diminish
-  :init (global-flycheck-mode))
+  :init
+  (global-flycheck-mode))
 
 ;;;
 
@@ -718,8 +693,7 @@ with EXPORT_FILE_NAME."
   :hook (csharp-ts-mode . subword-mode))
 
 ;; Markdown
-(use-package markdown-mode
-  :ensure t)
+(use-package markdown-mode)
 
 ;; compilation
 ;; I get a bunch of asynchronous warnings from native compilation in a
@@ -734,30 +708,24 @@ with EXPORT_FILE_NAME."
 ;;
 ;; I use ^L to break sections on lisp
 (use-package page-break-lines
-  :ensure t
   :diminish
   :hook  ((lisp-mode . page-break-lines-mode)
           (emacs-lisp-mode . page-break-lines-mode)))
 
-
-(use-package sly
-  :ensure t)
+(use-package sly)
 
 ;; Nix
 (use-package nix-mode
-  :ensure t
   :defer t)
 
 ;; XML
 ;; esxml essentially turns Lisp into an XML (or XHTML) templating
 ;; engine.
 (use-package esxml
-  :ensure t
   :defer t)
 
 ;; YAML
 (use-package yaml-mode
-  :ensure t
   :defer t)
 
 ;; As you've probably noticed, Lisp has a lot of parentheses.
@@ -774,7 +742,6 @@ with EXPORT_FILE_NAME."
 ;; http://danmidwood.com/content/2014/11/21/animated-paredit.html
 ;; https://stackoverflow.com/a/5243421/3606440
 (use-package paredit
-  :ensure t
   :diminish
   :hook ((emacs-lisp-mode . enable-paredit-mode)
          (lisp-mode . enable-paredit-mode)
@@ -784,14 +751,11 @@ with EXPORT_FILE_NAME."
 
 ;; multi cursor
 (use-package multiple-cursors
-  :ensure t
   :config
   (global-set-key (kbd "C-c C-c") 'mc/edit-lines)
-
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
-
 
 ;; Visualize tabs as a pipe character - "|"
 ;; This will also show trailing characters as they are useful to spot.
@@ -799,172 +763,17 @@ with EXPORT_FILE_NAME."
 
 ;; color parens
 (use-package rainbow-delimiters
-  :ensure t
   :diminish
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package highlight-thing
   :diminish
-  :ensure t
   :hook (prog-mode . highlight-thing-mode))
-
-(use-package elixir-mode
-  :ensure t)
-
-(use-package cmake-mode
-  :ensure t)
-
-(use-package go-mode
-  :ensure t)
-
-(use-package scala-mode
-  :ensure t
-  :interpreter
-    ("scala" . scala-mode))
-;; Enable sbt mode for executing sbt commands
-(use-package sbt-mode
-  :ensure t
-  :commands sbt-start sbt-command
-  :config
-  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-  ;; allows using SPACE when in the minibuffer
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map)
-   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
-   (setq sbt:program-options '("-Dsbt.supershell=false")))
-(use-package lsp-metals
-  :ensure t
-  :custom
-  ;; You might set metals server options via -J arguments. This might not always work, for instance when
-  ;; metals is installed using nix. In this case you can use JAVA_TOOL_OPTIONS environment variable.
-  (lsp-metals-server-args '(;; Metals claims to support range formatting by default but it supports range
-                            ;; formatting of multiline strings only. You might want to disable it so that
-                            ;; emacs can use indentation provided by scala-mode.
-                            "-J-Dmetals.allow-multiline-string-formatting=off"
-                            ;; Enable unicode icons. But be warned that emacs might not render unicode
-                            ;; correctly in all cases.
-                            "-J-Dmetals.icons=unicode"))
-  ;; In case you want semantic highlighting. This also has to be enabled in lsp-mode using
-  ;; `lsp-semantic-tokens-enable' variable. Also you might want to disable highlighting of modifiers
-  ;; setting `lsp-semantic-tokens-apply-modifiers' to `nil' because metals sends `abstract' modifier
-  ;; which is mapped to `keyword' face.
-  (lsp-metals-enable-semantic-highlighting t)
-  :hook (scala-mode . lsp))
-
-
-(use-package julia-mode
-  :ensure t)
-
-(use-package lua-mode
-  :ensure t)
-
-(use-package markdown-mode
-  :ensure t
-  ;; These extra modes help clean up the Markdown editing experience.
-  ;; `visual-line-mode' turns on word wrap and helps editing commands
-  ;; work with paragraphs of text. `flyspell-mode' turns on an
-  ;; automatic spell checker.
-  :hook ((markdown-mode . visual-line-mode)
-         (markdown-mode . flyspell-mode))
-  :init
-  (setq markdown-command "multimarkdown"))
-
-(use-package dockerfile-mode
-  :ensure t)
-
-;; Note that `php-mode' assumes php code is separate from HTML.
-;; If you prefer working with PHP and HTML in a single file you
-;; may prefer `web-mode'.
-(use-package php-mode
-  :ensure t)
-
-;; powershell mode
-(use-package powershell
-  :ensure t)
-
-(use-package rust-mode
-  :ensure t
-  :bind (:map rust-mode-map
-	      ("C-c C-r" . 'rust-run)
-	      ("C-c C-c" . 'rust-compile)
-	      ("C-c C-f" . 'rust-format-buffer)
-	      ("C-c C-t" . 'rust-test))
-  :hook (rust-mode . prettify-symbols-mode))
-
-;; TypeScript, JS, and JSX/TSX support.
-(use-package web-mode
-  :ensure t
-  :mode ("\\.ts\\'"
-         "\\.js\\'"
-         "\\.mjs\\'"
-         "\\.tsx\\'"
-         "\\.jsx\\'"
-         )
-  :custom
-   (web-mode-markup-indent-offset 2)
-   (web-mode-css-indent-offset 2)
-   (web-mode-code-indent-offset 2))
-(defun my-web-mode-hook ()
-  "Hooks for Web mode."
-  (setq web-mode-markup-indent-offset 2)
-  (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
-(add-hook 'web-mode-hook  'my-web-mode-hook)
-
-(use-package clang-format
-  :ensure t)
-
-(use-package bazel
-  :ensure t)
-
-(use-package lsp-tailwindcss
-  :ensure t
-  :init
-  (setq lsp-tailwindcss-add-on-mode t))
-
-(use-package python-mode
-  :ensure t)
-(use-package anaconda-mode
-  :ensure t
-  :hook (python-mode . anaconda-mode))
-
-(use-package projectile
-  :diminish
-  :ensure t
-  :config
-  (projectile-mode))
-
-;; workspaces
-(use-package perspective
-  :ensure t
-  :bind
-  ;; ("C-x C-b" . perp-list-buffers)
-  :custom
-  (persp-mode-prefix-key  (kbd "C-c M-p"))
-  :init
-  (persp-mode))
-
-;; Automatically install and use tree-sitter major modes in Emacs
-;; 29+. If the tree-sitter version can’t be used, fall back to the
-;; original major mode.
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
-;; limit clangd resources
-(setq lsp-clients-clangd-args '("--j=4" "--background-index=false" "--log=error"))
 
 ;; lsp
 (use-package lsp-mode
-  :ensure t
   :custom
   (lsp-completion-provider :none) ;; we use Corfu!
-
   :init
   (setq lsp-keymap-prefix "C-c l")
   (defun my/orderless-dispatch-flex-first (_pattern index _total)
@@ -996,19 +805,131 @@ with EXPORT_FILE_NAME."
     (add-hook 'before-save-hook #'lsp-organize-imports t t))
   (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
   (add-hook 'go-ts-mode-hook #'lsp-go-install-save-hooks))
-
 ;; optionally
 (use-package lsp-ui
-  :ensure t
   :commands lsp-ui-mode)
 (use-package lsp-treemacs
-  :ensure t
   :commands lsp-treemacs-errors-list)
-
 ;; optionally if you want to use debugger
-(use-package dap-mode
-  :ensure t)
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+(use-package dap-mode)
+
+(use-package elixir-mode)
+(use-package cmake-mode)
+(use-package go-mode)
+(use-package scala-mode
+  :interpreter
+    ("scala" . scala-mode))
+;; Enable sbt mode for executing sbt commands
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+   (setq sbt:program-options '("-Dsbt.supershell=false")))
+(use-package lsp-metals
+  :custom
+  ;; You might set metals server options via -J arguments. This might not always work, for instance when
+  ;; metals is installed using nix. In this case you can use JAVA_TOOL_OPTIONS environment variable.
+  (lsp-metals-server-args '(;; Metals claims to support range formatting by default but it supports range
+                            ;; formatting of multiline strings only. You might want to disable it so that
+                            ;; emacs can use indentation provided by scala-mode.
+                            "-J-Dmetals.allow-multiline-string-formatting=off"
+                            ;; Enable unicode icons. But be warned that emacs might not render unicode
+                            ;; correctly in all cases.
+                            "-J-Dmetals.icons=unicode"))
+  ;; In case you want semantic highlighting. This also has to be enabled in lsp-mode using
+  ;; `lsp-semantic-tokens-enable' variable. Also you might want to disable highlighting of modifiers
+  ;; setting `lsp-semantic-tokens-apply-modifiers' to `nil' because metals sends `abstract' modifier
+  ;; which is mapped to `keyword' face.
+  (lsp-metals-enable-semantic-highlighting t)
+  :hook (scala-mode . lsp))
+
+(use-package julia-mode)
+(use-package lua-mode)
+(use-package markdown-mode
+  :ensure t
+  ;; These extra modes help clean up the Markdown editing experience.
+  ;; `visual-line-mode' turns on word wrap and helps editing commands
+  ;; work with paragraphs of text. `flyspell-mode' turns on an
+  ;; automatic spell checker.
+  :hook ((markdown-mode . visual-line-mode)
+         (markdown-mode . flyspell-mode))
+  :init
+  (setq markdown-command "multimarkdown"))
+
+(use-package dockerfile-mode)
+
+;; Note that `php-mode' assumes php code is separate from HTML.
+;; If you prefer working with PHP and HTML in a single file you
+;; may prefer `web-mode'.
+(use-package php-mode)
+
+;; powershell mode
+(use-package powershell)
+
+(use-package rust-mode
+  :bind (:map rust-mode-map
+	      ("C-c C-r" . 'rust-run)
+	      ("C-c C-c" . 'rust-compile)
+	      ("C-c C-f" . 'rust-format-buffer)
+	      ("C-c C-t" . 'rust-test))
+  :hook (rust-mode . prettify-symbols-mode))
+
+;; TypeScript, JS, and JSX/TSX support.
+(use-package web-mode
+  :mode ("\\.ts\\'"
+         "\\.js\\'"
+         "\\.mjs\\'"
+         "\\.tsx\\'"
+         "\\.jsx\\'"
+         )
+  :custom
+   (web-mode-markup-indent-offset 2)
+   (web-mode-css-indent-offset 2)
+   (web-mode-code-indent-offset 2))
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
+(add-hook 'web-mode-hook  'my-web-mode-hook)
+
+(use-package clang-format)
+
+(use-package bazel)
+
+(use-package lsp-tailwindcss
+  :init
+  (setq lsp-tailwindcss-add-on-mode t))
+(use-package python-mode)
+(use-package anaconda-mode
+  :hook (python-mode . anaconda-mode))
+
+;; workspaces
+(use-package perspective
+  :bind
+  ;; ("C-x C-b" . perp-list-buffers)
+  :custom
+  (persp-mode-prefix-key  (kbd "C-c M-p"))
+  :init
+  (persp-mode))
+
+;; Automatically install and use tree-sitter major modes in Emacs
+;; 29+. If the tree-sitter version can’t be used, fall back to the
+;; original major mode.
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+;; limit clangd resources
+(setq lsp-clients-clangd-args '("--j=4" "--background-index=false" "--log=error"))
 
 
 ;;;
@@ -1025,7 +946,6 @@ with EXPORT_FILE_NAME."
 ;; would like to get into vc-mode. But I’m an advanced enough Git user
 ;; that something tailor-made carries its weight here.
 (use-package magit
-  :ensure t
   :defer 1
   :functions ltl/magit-clone-read-args-a
   :bind
@@ -1045,14 +965,12 @@ existing directory under `magit-clone-default-directory'."
 
 ;; show todos
 (use-package magit-todos
-  :ensure t
   :after magit
   :config (magit-todos-mode 1))
 
 ;; Git-Link
 ;; git-link grabs links to lines, regions, commits, or home pages.
 (use-package git-link
-  :ensure t
   :custom
   (git-link-use-commit t)
   (git-link-use-single-line-number t)
@@ -1069,14 +987,12 @@ existing directory under `magit-clone-default-directory'."
 ;; Treesitter
 ;; treesit-auto finds treesitter modes by naming convention.
 (use-package treesit-auto
-  :ensure t
   :demand t
   :config
   (global-treesit-auto-mode))
 
 ;; UUID Generation
 (use-package uuidgen
-  :ensure t
   :defer t)
 
 
@@ -1106,7 +1022,6 @@ existing directory under `magit-clone-default-directory'."
 ;; htmlize provides syntax highlighting for our code snippets when
 ;; exported to HTML.
 (use-package htmlize
-  :ensure t
   :after ox-html)
 
 
@@ -1125,7 +1040,6 @@ existing directory under `magit-clone-default-directory'."
 ;; rime
 ;; install librime/librime-dev
 (use-package rime
-  :ensure t
   :custom
   (default-input-method "rime"))
 
@@ -1143,17 +1057,14 @@ existing directory under `magit-clone-default-directory'."
 ;; approximately the same era as the last time anyone wanted a system
 ;; bell.
 (use-package mode-line-bell
-  :ensure
   :hook (on-first-input . mode-line-bell-mode))
 
 (use-package nyan-mode
-  :ensure t
   :config (nyan-mode))
 
 ;; Themes
 ;; Great looking theme
 (use-package spacemacs-theme
-  :ensure t
   :config (load-theme 'spacemacs-dark t))
 
 ;; font
@@ -1164,23 +1075,15 @@ existing directory under `magit-clone-default-directory'."
     ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
     (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))))
 (use-package all-the-icons
-  :ensure t
   :if (display-graphic-p))
 
 ;; frame scaling/zooming
 (use-package default-text-scale
-  :ensure t
   :config
   (default-text-scale-mode))
 
-;; (use-package modus-themes
-;;   :ensure t
-;;   :config
-;;   (load-theme 'modus-vivendi t))
-
-;; undo-tree
 (use-package undo-tree
-  :ensure t
+  :quelpa (undo-tree :repo "apchamberlain/undo-tree.el" :fetcher github)
   :diminish
   :config
   (global-undo-tree-mode)
@@ -1191,16 +1094,15 @@ existing directory under `magit-clone-default-directory'."
 ;;
 ;; Read more about projects here:
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
-(git-clone "breadcrumb" :repo "git@github.com:joaotavora/breadcrumb.git")
+;; (git-clone "breadcrumb" :repo "git@github.com:joaotavora/breadcrumb.git")
 (use-package breadcrumb
-  :load-path "elpa/breadcrumb"
+  :quelpa (breadcrumb :repo "joaotavora/breadcrumb" :fetcher github)
   :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
   :config (breadcrumb-imenu-crumbs))
 
 ;; A fancy and fast mode-line inspired by minimalism design.
 ;; doom-line not works will in terminal, use spaceline instead
 (use-package spaceline
-  :ensure t
   :config
   (require 'spaceline-config)
   (spaceline-spacemacs-theme))
@@ -1218,15 +1120,14 @@ existing directory under `magit-clone-default-directory'."
 ;; Marginalia annotates minibuffer completions with some useful info.
 (use-package marginalia
   :after vertico
-  :ensure t
   :init
   (marginalia-mode))
 
 (use-package orderless
-  :ensure t
   :custom
   (completion-styles '(orderless partial-completion basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
+
 
 ;; Consult
 ;; Consult provides several enhanced functions for completing-read. It
@@ -1236,7 +1137,6 @@ existing directory under `magit-clone-default-directory'."
 ;; obvious. consult-yank-from-kill-ring as a remapping of yank proved
 ;; a bit too disorienting.
 (use-package consult
-  :ensure t
   :bind
   ([remap switch-to-buffer] . consult-buffer)
   ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
@@ -1271,8 +1171,7 @@ existing directory under `magit-clone-default-directory'."
   (xref-show-xrefs-function 'consult-xref)
   (xref-show-definitions-function 'consult-xref))
 
-(use-package ag
-  :ensure t)
+(use-package ag)
 
 ;; window selection with ace-window
 (use-package ace-window
@@ -1282,11 +1181,9 @@ existing directory under `magit-clone-default-directory'."
 
 ;; better search in buffer
 (use-package swiper
-  :ensure t
   :config
   (global-set-key "\C-s" 'swiper))
 (use-package counsel
-  :ensure t
   :config
   (global-set-key (kbd "M-x") 'counsel-M-x))
 
@@ -1306,7 +1203,6 @@ existing directory under `magit-clone-default-directory'."
 ;; Vertico is a little bit nicer version of the builtin
 ;; icomplete-vertical.
 (use-package vertico
-  :ensure t
   :custom
   (vertico-cycle t)
   (read-buffer-completion-ignore-case t)
@@ -1314,7 +1210,6 @@ existing directory under `magit-clone-default-directory'."
   (completion-styles '(basic substring partial-completion flex))
   :init
   (vertico-mode))
-
 
 ;; Vertico indexed
 ;; vertico-indexed lets us select candidates by number with C-u
@@ -1361,10 +1256,8 @@ existing directory under `magit-clone-default-directory'."
 
 ;; treemacs
 (use-package treemacs
-  :ensure t
   :config
   (treemacs-git-mode 'deferred))
-
 
 ;;;
 ;;; Windows
@@ -1403,7 +1296,6 @@ This uses `split-window-right' but follows with the cursor."
 ;; blah. Neither :prefix-docstring nor :menu-item in bind-key seem to
 ;; do the trick.
 (use-package which-key
-  :ensure t
   :hook (on-first-input . which-key-mode)
   :diminish
   :custom
@@ -1430,7 +1322,6 @@ This uses `split-window-right' but follows with the cursor."
 ;; search and understand. This configuration uses the keybindings
 ;; recommended by the package author.
 (use-package helpful
-  :ensure t
   :bind (("C-h f" . #'helpful-callable)
          ("C-h v" . #'helpful-variable)
          ("C-h k" . #'helpful-key)

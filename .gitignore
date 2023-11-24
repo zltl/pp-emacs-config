@@ -24,3 +24,4 @@
 flycheck_init.el
 /*.elc
 /tree-sitter/
+/quelpa/
