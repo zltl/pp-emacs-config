@@ -69,6 +69,11 @@
         (progn (git-clone-command path :repo repo)
                (message "Finished"))))))
 
+;; utility hooks and functions from Doom Emacs
+(git-clone "on" :repo "git@github.com:ajgrf/on.el.git")
+(use-package on
+  :load-path "elpa/on")
+
 ;; I'll add an extra note here since user customizations are important.
 ;; Emacs actually offers a UI-based customization menu, "M-x customize".
 ;; You can use this menu to change variable values across Emacs. By default,
@@ -278,6 +283,7 @@
 ;; editorconfig
 (git-clone "editorconfig" :repo "git@github.com:editorconfig/editorconfig-emacs.git")
 (use-package editorconfig
+  :diminish
   :config
   (editorconfig-mode 1))
 
@@ -794,11 +800,11 @@ with EXPORT_FILE_NAME."
 ;; color parens
 (use-package rainbow-delimiters
   :ensure t
-  :diminish t
+  :diminish
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package highlight-thing
-  :diminish t
+  :diminish
   :ensure t
   :hook (prog-mode . highlight-thing-mode))
 
