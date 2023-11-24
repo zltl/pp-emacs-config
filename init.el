@@ -331,26 +331,26 @@
 ;; close to M-TAB and bound to a menubar command I don’t ever use.
 
 ;; TODO: use M-x copilot-login
-;; (use-package copilot
-;;   :quelpa (copilot :repo "zerolfx/copilot.el" :fetcher github)
-;;   :diminish
-;;   :custom
-;;   (copilot-disable-predicates '(always))
-;;   :hook
-;;   (prog-mode . copilot-mode)
-;;   :bind
-;;   ("M-`" . copilot-complete)
-;;   :bind
-;;   (:map ltl/toggles-map
-;;    ("`" . copilot-mode))
-;;   :bind
-;;   (:map copilot-completion-map
-;;    ("C-g" .  #'copilot-clear-overlay)
-;;    ("M-p" . #'copilot-previous-completion)
-;;    ("M-n" . #'copilot-next-completion)
-;;    ("TAB" . #'copilot-accept-completion)
-;;    ("M-f" . #'copilot-accept-completion-by-word)
-;;    ("M-<return>" . #'copilot-accept-completion-by-line)))
+(use-package copilot
+  :quelpa (copilot :repo "zerolfx/copilot.el" :fetcher github)
+  :diminish
+  :custom
+  (copilot-disable-predicates '(always))
+  :hook
+  (prog-mode . copilot-mode)
+  :bind
+  ("M-`" . copilot-complete)
+  :bind
+  (:map ltl/toggles-map
+   ("`" . copilot-mode))
+  :bind
+  (:map copilot-completion-map
+   ("C-g" .  #'copilot-clear-overlay)
+   ("M-p" . #'copilot-previous-completion)
+   ("M-n" . #'copilot-next-completion)
+   ("TAB" . #'copilot-accept-completion)
+   ("M-f" . #'copilot-accept-completion-by-word)
+   ("M-<return>" . #'copilot-accept-completion-by-line)))
 
 ;; A few more useful configurations...
 (use-package emacs
