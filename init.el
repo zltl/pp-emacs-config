@@ -956,6 +956,8 @@ with EXPORT_FILE_NAME."
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
+;; limit clangd resources
+(setq lsp-clients-clangd-args '("--j=4" "--background-index=false" "--log=error"))
 
 ;; lsp
 (use-package lsp-mode
