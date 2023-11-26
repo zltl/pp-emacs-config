@@ -82,7 +82,8 @@
   :mode ((rx ".cs" eos) . 'csharp-ts-mode)
   :hook (csharp-ts-mode . subword-mode))
 (use-package elixir-mode)
-(use-package cmake-mode)
+;; NOTE: too slow pulling
+;; (use-package cmake-mode)
 (use-package go-mode
   :hook (go-mode . lsp)
   :config
