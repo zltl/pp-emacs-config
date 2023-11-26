@@ -31,10 +31,10 @@
 ;;; Security
 ;; For the love of all that is holy, do not continue with untrusted
 ;; connections!
-(use-package gnutls
-  :defer t
-  :custom
-  (gnutls-verify-error t))
+;; (use-package gnutls
+;;   :defer t
+;;   :custom
+;;   (gnutls-verify-error t))
 
 ;; utility hooks and functions from Doom Emacs
 (use-package on
