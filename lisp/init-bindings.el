@@ -67,9 +67,7 @@
         which-key-replacement-alist))
 
 ;; C-h C-h shadows which-key with something less useful.
-(use-package help
-  :config
-  (ltl/unbind-all 'help-for-help))
+(ltl/unbind-all 'help-for-help)
 
 ;; Add extra context to Emacs documentation to help make it easier to
 ;; search and understand. This configuration uses the keybindings

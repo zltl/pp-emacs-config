@@ -70,7 +70,7 @@
 
 
 
-;; (require 'init-copilot)
+(require 'init-copilot)
 
 
 ;; Variables configured via the interactive 'customize' interface
