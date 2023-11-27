@@ -61,10 +61,8 @@
 ;; Dired
 ;; Dired should refresh the listing on each revisit.
 ;; C-\ to goggle input method
-(use-package dired
-  :defer
-  :custom
-  (dired-auto-revert-buffer t))
+(require 'dired)
+(setf dired-auto-revert-buffer t)
 
 (provide 'init-files)
 ;;; init-files.el ends here

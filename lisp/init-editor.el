@@ -1,5 +1,4 @@
 
-
 ;; Persist state
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I’m trying not to call until I die.
@@ -69,18 +68,15 @@
 ;; indent
 
 ;; Tabs are the devil’s whitespace.
-(use-package simple
-  :custom
-  ;; Killing
-  ;; Put the clipboard on the kill ring before killing something
-  ;; else. Emacs isn’t as violent as it sometimes sounds, I swear.
-  ;;
-  ;; We also don’t want to clutter the ring with consecutively duplicate
-  ;; values.
-  (save-interprogram-paste-before-kill t)
-  (kill-do-not-save-duplicates t)
-  :config
-  (setq-default indent-tabs-mode nil))
+;; Killing
+;; Put the clipboard on the kill ring before killing something
+;; else. Emacs isn’t as violent as it sometimes sounds, I swear.
+;;
+;; We also don’t want to clutter the ring with consecutively duplicate
+;; values.
+(setf save-interprogram-paste-before-kill t)
+(setf kill-do-not-save-duplicates t)
+(setq-default indent-tabs-mode nil)
 
 ;; editorconfig for emacs
 (use-package editorconfig
@@ -130,7 +126,7 @@
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 
 (use-package vundo
-  :quelpa (vundo :repo "casouri/vundo" :fetcher github)
+  :quelpa (vundo :repo "casouri/vundo" :fetcher github-ssh)
   :config
     ;; Take less on-screen space.
   (setq vundo-compact-display t))
@@ -141,7 +137,7 @@
 ;; Read more about projects here:
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
-  :quelpa (breadcrumb :repo "joaotavora/breadcrumb" :fetcher github)
+  :quelpa (breadcrumb :repo "joaotavora/breadcrumb" :fetcher github-ssh)
   :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
   :config (breadcrumb-imenu-crumbs))
 

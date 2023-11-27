@@ -43,9 +43,9 @@
   (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
   (add-to-list 'org-structure-template-alist '("json" . "src json")))
 
-(use-package ox-publish)
+(require 'ox-publish)
 (use-package toc-org)
-(use-package org-id)
+(require 'org-id)
 
 (use-package org-bullets
   :hook (org-mode . (lambda ()  org-bullets-mode 1)))

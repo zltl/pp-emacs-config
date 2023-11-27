@@ -10,7 +10,10 @@
 
 ;; TODO: use M-x copilot-login
 (use-package copilot
-  :quelpa (copilot :repo "zerolfx/copilot.el" :fetcher github)
+  :quelpa (copilot :fetcher github-ssh
+                   :repo "zerolfx/copilot.el"
+                   :branch "main"
+                   :files ("dist" "*.el"))
   :custom
   (copilot-disable-predicates '(always))
   :hook

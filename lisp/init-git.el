@@ -37,12 +37,4 @@ existing directory under `magit-clone-default-directory'."
   (git-link-use-single-line-number t)
   :commands (git-link git-link-commit git-link-homepage))
 
-;; Git-Related
-;; git-related sorts files in a project by a similarity score derived
-;; from how often they change in the same commit.
-(use-package git-related
-  :bind
-  (:map ltl/files-map
-   ("g" . git-related-find-file)))
-
 (provide 'init-git)

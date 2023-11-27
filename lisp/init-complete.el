@@ -109,46 +109,19 @@
   (read-file-name-completion-ignore-case t)
   (completion-styles '(basic substring partial-completion flex))
   :init
-  (vertico-mode))
-
-;; Vertico indexed
-;; vertico-indexed lets us select candidates by number with C-u
-;; RET. It’s an alternative to vertico-quick.
-(use-package vertico-indexed
-  :after vertico
-  :config (vertico-indexed-mode))
-
-;; Vertico repeat
-;; vertico-repeat resumes a prior completion session.
-(use-package vertico-repeat
-  :after vertico
-  :hook (minibuffer-setup . vertico-repeat-save)
-  :bind ("M-R" . vertico-repeat))
-
-;; Vertico directory
-;; vertico-directory does some smarter things when completing
-;; directories:
-;;
-;; RET continues completing in that directory instead of jumping to
-;; dired.
-;;
-;; M-DEL deletes whole directories at a time if the prompt ends in a
-;; slash. There’s a recommended binding for DEL, but I’d rather keep
-;; that deleting chars.
-;;
-;; I never understood vertico-directory-tidy before this demo. When we
-;; start with / or ~/, it cleans up the leading default prompt that’s
-;; “shadowed”.
-(use-package vertico-directory
-  :after vertico
+  (require 'vertico-indexed)
+  (vertico-indexed-mode)  (vertico-mode)
+  (require 'vertico-repeat)
+  (require 'vertico-directory)
+  (require 'vertico-multiform)
+  :hook
+  (minibuffer-setup . vertico-repeat-save)
+  :bind ("M-R" . vertico-repeat)
   :bind
   (:map vertico-map
    ("RET" . vertico-directory-enter)
    ("M-DEL" . vertico-directory-delete-word))
-  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
-;; Vertico multiform
-(use-package vertico-multiform
-  :after vertico
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :custom
   (vertico-multiform-commands '((git-related-find-file (vertico-sort-function . nil))))
   :config
