@@ -83,7 +83,7 @@
   :hook (csharp-ts-mode . subword-mode))
 (use-package elixir-mode)
 ;; NOTE: too slow pulling
-;; (use-package cmake-mode)
+(use-package cmake-mode)
 (use-package go-mode
   :hook (go-mode . lsp)
   :config
