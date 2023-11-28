@@ -4,6 +4,10 @@
 (use-package lsp-mode
   :custom
   (lsp-completion-provider :none) ;; we use Corfu!
+  :hook ((c-ts-mode . lsp)
+         (c-mode . lsp)
+         (c++-ts-mode . lsp)
+         (c++-mode . lsp))
   :init
   (setq lsp-keymap-prefix "C-c l")
   (defun my/orderless-dispatch-flex-first (_pattern index _total)
@@ -207,13 +211,10 @@
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode)
-  :hook ((c++-ts-mode . lsp)
-         (go-ts-mode . lsp)
-         (tsx-ts-mode . lsp)))
+  (global-treesit-auto-mode))
 
 ;; limit clangd resources
-(setq lsp-clients-clangd-args '("--j=4" "--background-index=false" "--log=error"))
+(setq lsp-clients-clangd-args '("--background-index=false" "--log=error"))
 
 ;; htmlize
 ;; htmlize provides syntax highlighting for our code snippets when

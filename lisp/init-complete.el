@@ -94,12 +94,6 @@
   (xref-show-xrefs-function 'consult-xref)
   (xref-show-definitions-function 'consult-xref))
 
-;; window selection with ace-window
-(use-package ace-window
-  :ensure t
-  :bind ("M-o" . ace-window)
-  :bind ("M-0" . treemacs-select-window))
-
 ;; Vertico is a little bit nicer version of the builtin
 ;; icomplete-vertical.
 (use-package vertico

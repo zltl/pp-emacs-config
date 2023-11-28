@@ -144,7 +144,14 @@
 ;; treemacs
 (use-package treemacs
   :config
-  (treemacs-git-mode 'deferred))
+  (treemacs-git-mode 'deferred)
+  :bind
+  ("M-0" . treemacs-select-window))
 
+;; window selection with ace-window
+(use-package ace-window
+  :ensure t
+  :bind (("M-o" . ace-window)
+         ("C-x o" . ace-window)))
 
 (provide 'init-editor)
