@@ -136,7 +136,9 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
   ;; :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
-  :config (breadcrumb-imenu-crumbs))
+  :config
+  (breadcrumb-imenu-crumbs)
+  (breadcrumb-mode))
 
 ;; treemacs
 (use-package treemacs

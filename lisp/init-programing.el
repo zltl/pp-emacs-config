@@ -6,21 +6,13 @@
 
 (use-package treesit-auto
   :straight (:host github :repo "renzmann/treesit-auto")
-  :hook (minemacs-after-startup . global-treesit-auto-mode)
-  :hook (minemacs-build-functions . treesit-auto-install-all)
+  ;; :hook (minemacs-after-startup . global-treesit-auto-mode)
+  ;; :hook (minemacs-build-functions . treesit-auto-install-all)
   :custom
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode)
-  (push (make-treesit-auto-recipe
-         :lang 'nix
-         :ts-mode 'nix-ts-mode
-         :remap 'nix-mode
-         :url "https://github.com/nix-community/tree-sitter-nix"
-         :ext "\\.nix\\'")
-        treesit-auto-recipe-list)
-  (setq treesit-auto-langs (seq-map #'treesit-auto-recipe-lang treesit-auto-recipe-list)))
+  (global-treesit-auto-mode))
 
 (use-package awk-ts-mode)
 
@@ -53,6 +45,15 @@ Examples:
 (use-package eglot
   :straight t
   :hook (eglot-managed-mode . eglot-inlay-hints-mode)
+  :hook ((go-mode
+          go-ts-mode
+          python-mode
+          python-ts-mode
+          web-mode
+          c++--mode
+          c++-ts-mode
+          c-mode
+          c-ts-mode) . eglot-ensure)
   :custom
   (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
   (eglot-sync-connect 0) ; async, do not block
@@ -184,9 +185,7 @@ Examples:
 (use-package elixir-mode)
 ;; NOTE: too slow pulling
 (use-package cmake-mode)
-(use-package go-mode
-  :hook (go-mode . eglot)
-  :hook (go-ts-mode .eglot))
+(use-package go-mode)
 (use-package scala-mode
   :interpreter
     ("scala" . scala-mode))
