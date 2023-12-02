@@ -27,14 +27,20 @@
 ;; customize menu. The following setting instead writes customizations to a
 ;; separate file, custom.el, to keep your init.el clean.
 (setf custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (and custom-file
+           (file-exists-p custom-file))
+  (load custom-file nil :nomessage))
 
+
+
+(require 'init-const)
 (require 'init-elpa)
 
 
+;; (use-package better-defaults)
 (use-package scratch)
 ;; Show event history and command history of some or all buffers.
 (use-package command-log-mode)
-
 (require 'init-themes)
 (require 'init-bindings)
 (require 'init-files)
@@ -73,8 +79,21 @@
 (require 'init-copilot)
 
 
-;; Variables configured via the interactive 'customize' interface
-(when (file-exists-p custom-file)
-  (load custom-file))
+(use-package gcmh
+  :hook (minemacs-lazy . gcmh-mode)
+  :custom
+  ;; Set the delay to 20s instead of the default 15. I tried using `auto', but
+  ;; with the default 20 of `gcmh-auto-idle-delay-factor', it triggers GC each
+  ;; 1s on my machine. Setting the factor to a higher value should solve the
+  ;; issue on my machine, but I don't think it is right to assume it will work
+  ;; the same way on other machines. So we switch back to a fixed delay of 20s.
+  (gcmh-idle-delay 20)
+  ;; The default `gcmh's 1GB is probably too high. We set it to 256MB on 64bit
+  ;; systems, or 16MB on 32bit ones.
+  (gcmh-high-cons-threshold (* 1024 1024 (if (string-suffix-p "64" (symbol-name sys/arch)) 256 16))))
+
+
 
 ;;; init.el ends here
+
+

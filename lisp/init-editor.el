@@ -1,11 +1,10 @@
 
+
 ;; Persist state
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I’m trying not to call until I die.
 (use-package persist-state
-  :quelpa (persist-state
-           :url "https://codeberg.org/bram85/emacs-persist-state.git"
-           :fetcher git)
+  :straight nil
   :diminish
   :config
   (persist-state-mode))
@@ -126,7 +125,6 @@
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 
 (use-package vundo
-  :quelpa (vundo :repo "casouri/vundo" :fetcher github-ssh)
   :config
     ;; Take less on-screen space.
   (setq vundo-compact-display t))
@@ -137,8 +135,7 @@
 ;; Read more about projects here:
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
-  :quelpa (breadcrumb :repo "joaotavora/breadcrumb" :fetcher github-ssh)
-  :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
+  ;; :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
   :config (breadcrumb-imenu-crumbs))
 
 ;; treemacs
