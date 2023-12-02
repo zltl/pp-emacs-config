@@ -5,6 +5,63 @@
 
 ;; Org
 
+;; (defvar-local org-image-scaling-factor 1.0)
+;; (with-eval-after-load 'org
+;;   (defun org--create-inline-image (file width)
+;;     "Create image located at FILE, or return nil.
+;; WIDTH is the width of the image.  The image may not be created
+;; according to the value of `org-display-remote-inline-images'."
+;;     (let* ((remote? (file-remote-p file))
+;;        (file-or-data
+;;         (pcase org-display-remote-inline-images
+;;               ((guard (not remote?)) file)
+;;               (`download (with-temp-buffer
+;;                (set-buffer-multibyte nil)
+;;                (insert-file-contents-literally file)
+;;                (buffer-string)))
+;;               (`cache (let ((revert-without-query '(".")))
+;;             (with-current-buffer (find-file-noselect file)
+;;               (buffer-string))))
+;;               (`skip nil)
+;;               (other
+;;                (message "Invalid value of `org-display-remote-inline-images': %S"
+;;             other)
+;;                nil))))
+;;       (when file-or-data
+;;     (create-image file-or-data
+;;               (and (image-type-available-p 'imagemagick)
+;;                width
+;;                'imagemagick)
+;;               remote?
+;;               :width width :scale org-image-scaling-factor)))))
+
+(setq org-preview-latex-default-process 'dvisvgm) ;No blur when scaling
+(defun my/text-scale-adjust-latex-previews ()
+  "Adjust the size of latex preview fragments when changing the
+buffer's text scale."
+  (pcase major-mode
+    ('latex-mode
+     (dolist (ov (overlays-in (point-min) (point-max)))
+       (if (eq (overlay-get ov 'category)
+               'preview-overlay)
+           (my/text-scale--resize-fragment ov))))
+    ('org-mode
+     (dolist (ov (overlays-in (point-min) (point-max)))
+       (if (eq (overlay-get ov 'org-overlay-type)
+               'org-latex-overlay)
+           (my/text-scale--resize-fragment ov))))))
+
+(defun my/text-scale--resize-fragment (ov)
+  (overlay-put
+   ov 'display
+   (cons 'image
+         (plist-put
+          (cdr (overlay-get ov 'display))
+          :scale (+ 1.0 (* 1.25 text-scale-mode-amount))))))
+
+(add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews)
+
+
 (use-package org-contrib
   :after org
   :demand t)
