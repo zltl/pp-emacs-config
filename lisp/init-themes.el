@@ -33,8 +33,10 @@
 
 ;; Themes
 ;; Great looking theme
-(use-package spacemacs-theme
-  :config (load-theme 'spacemacs-dark t))
+;; (use-package spacemacs-theme
+;;   :config (load-theme 'spacemacs-dark t))
+(use-package modus-themes
+  :config (load-theme 'modus-vivendi))
 
 ;; Minimization: let’s not {#minimization-let’s-not} #
 ;; I don’t much care for minimizing windows in the first place, and
@@ -53,10 +55,10 @@
   :config (nyan-mode))
 ;; A fancy and fast mode-line inspired by minimalism design.
 ;; doom-line not works will in terminal, use spaceline instead
-(use-package spaceline
-  :config
-  (require 'spaceline-config)
-  (spaceline-spacemacs-theme))
+;; (use-package spaceline
+;;   :config
+;;   (require 'spaceline-config)
+;;   (spaceline-spacemacs-theme))
 
 ;; Initialization page
 ;; I don’t need a dashboard and I know where the manuals are. I prefer
@@ -77,10 +79,10 @@
 ;; font
 (when (display-graphic-p)
   (progn
-    (set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal)
-    (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal))
+    (set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal :height 130)
+    (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal :height 130))
     ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
-    (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal))))
+    (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal :height 130))))
 (use-package all-the-icons
   :if (display-graphic-p))
 
@@ -93,6 +95,32 @@
 ;; wheel. This makes it feel less like a trip back to a time before
 ;; scroll wheels.
 (pixel-scroll-precision-mode)
+
+(use-package doom-modeline
+  :hook (minemacs-after-startup . doom-modeline-mode)
+  :custom
+  (doom-modeline-height 28)
+  (doom-modeline-bar-width 8)
+  (doom-modeline-time-icon nil)
+  (doom-modeline-buffer-encoding 'nondefault)
+  (doom-modeline-unicode-fallback t)
+  (doom-modeline-enable-word-count t)
+  (doom-modeline-continuous-word-count-modes
+   '(markdown-mode gfm-mode org-mode rst-mode latex-mode tex-mode text-mode))
+  :config
+  ;; HACK: Add some padding to the right
+  (doom-modeline-def-modeline 'main
+    '(eldoc bar workspace-name window-number modals matches follow buffer-info
+      remote-host buffer-position word-count parrot selection-info)
+    '(compilation objed-state misc-info persp-name battery grip irc mu4e gnus
+      github debug repl lsp minor-modes input-method indent-info buffer-encoding
+      major-mode process vcs checker time "  ")))
+
+(use-package solaire-mode
+  :config
+  (solaire-global-mode +1)
+  (dolist (face '(mode-line mode-line-active mode-line-inactive mode-line-emphasis))
+    (setf (alist-get face solaire-mode-remap-alist) nil)))
 
 
 (provide 'init-themes)

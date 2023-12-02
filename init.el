@@ -92,8 +92,6 @@
   ;; systems, or 16MB on 32bit ones.
   (gcmh-high-cons-threshold (* 1024 1024 (if (string-suffix-p "64" (symbol-name sys/arch)) 256 16))))
 
-
-
 ;;; init.el ends here
 
 
