@@ -43,7 +43,8 @@
 ;; Unless we've already fetched (and cached) the package archives,
 ;; refresh them.
 (package-initialize)
-(package-refresh-contents)
+(unless package-archive-contents
+  (package-refresh-contents))
 
 
 
