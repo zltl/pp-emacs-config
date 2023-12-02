@@ -4,6 +4,7 @@
 
 (use-package better-defaults)
 (global-set-key (kbd "C-x C-f") #'find-file-at-point)
+(global-set-key (kbd "C-x b") #'switch-to-buffer)
 
 ;; Don't prompt to confirm theme safety. This avoids problems with
 ;; first-time startup on Emacs > 26.3.

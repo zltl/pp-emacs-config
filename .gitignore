@@ -30,3 +30,4 @@ flycheck_init.el
 /bookmarks
 /snippets
 /anaconda-mode/
+*.swp

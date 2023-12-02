@@ -59,6 +59,8 @@ Examples:
   (eglot-sync-connect 0) ; async, do not block
   (eglot-extend-to-xref t) ; can be interesting!
   (eglot-report-progress nil) ; disable annoying messages in echo area!
+  :bind (:map eglot-mode-map
+              ("C-c l a" . #'eglot-code-actions))
   :config
   (+eglot-register
     '(c++-mode c++-ts-mode c-mode c-ts-mode)
@@ -76,10 +78,15 @@ Examples:
       "--pch-storage=memory")
     "ccls")
 
-  (+eglot-register '(awk-mode awk-ts-mode) "awk-language-server"))
+  (+eglot-register '(awk-mode awk-ts-mode) "awk-language-server")
+
+  (defun eglot-format-buffer-on-save ()
+    (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+  (add-hook 'go-mode-hook #'eglot-format-buffer-on-save))
 
 (use-package consult-eglot
-  :after consult eglot)
+  :after consult eglot
+  :bind (:map eglot-mode-map ("C-c l t")))
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-at-point-mode)
