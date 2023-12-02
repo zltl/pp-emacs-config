@@ -10,6 +10,7 @@
 
 ;; TODO: use M-x copilot-login
 (use-package copilot
+  :diminish
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
   :custom
   (copilot-disable-predicates '(always))
