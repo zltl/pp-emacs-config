@@ -127,12 +127,8 @@
 (use-package vundo
   :config
     ;; Take less on-screen space.
-  (setq vundo-compact-display t))
-
-;; Breadcrumb adds, well, breadcrumbs to the top of your open buffers
-;; and works great with project.el, the Emacs project manager.
-;;
-;; Read more about projects here:
+  (setq vundo-compact-display t)
+  (global-set-key (kbd "C-x u") #'vundo))
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
   ;; :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
