@@ -8,12 +8,19 @@
 (use-package corfu
   :init
   (global-corfu-mode)
+  :hook (corfu-mode . corfu-popupinfo-mode)
+  :hook (corfu-mode . corfu-history-mode)
   :custom
-  (corfu-auto t)
-  ;; You may want to play with delay/prefix/styles to suit your preferences.
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 0)
-  (completion-styles '(orderless)))
+  (corfu-auto t) ; Enable auto completion
+  (corfu-cycle t) ; Allows cycling through candidates
+  (corfu-min-width 25)
+  (corfu-auto-delay 0.2)
+  (corfu-auto-prefix 1)
+  :config
+  (unless (bound-and-true-p savehist-mode)
+    (savehist-mode 1))
+  (add-to-list 'savehist-additional-variables 'corfu-history))
+
 (use-package prescient)
 (use-package corfu-prescient
   :hook (corfu-mode . corfu-prescient-mode))
@@ -23,18 +30,21 @@
   :hook (vertico-mode . vertico-prescient-mode))
 (use-package cape)
 (use-package popon
-  :quelpa (popon :fetcher git
-                 :url "https://codeberg.org/akib/emacs-popon.git"))
+  :straight (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
 
 ;; corfu cannot used in terminal
 ;; try corfu-terminal
 (use-package corfu-terminal
-  :quelpa (corfu-terminal
-           :fetcher git
-           :url "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :straight (corfu-terminal
+             :type git
+             :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :hook (corfu-mode . corfu-terminal-mode))
+(use-package nerd-icons-corfu
+  :after corfu
+  :demand t
   :config
-  (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
 (use-package yasnippet
   :diminish
   :config
@@ -51,6 +61,17 @@
   :after vertico
   :init
   (marginalia-mode))
+
+(use-package nerd-icons-completion
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
+
+(use-package orderless
+  :straight t
+  :after minemacs-loaded
+  :demand t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
 
 ;; Consult
 ;; Consult provides several enhanced functions for completing-read. It
@@ -94,6 +115,21 @@
   (xref-show-xrefs-function 'consult-xref)
   (xref-show-definitions-function 'consult-xref))
 
+(use-package consult-dir
+  :straight t
+  :bind (("C-x C-d" . consult-dir)
+         :package vertico
+         :map vertico-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
+
+(use-package embark)
+
+(use-package embark-consult
+  :after embark consult
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
+
 ;; Vertico is a little bit nicer version of the builtin
 ;; icomplete-vertical.
 (use-package vertico
@@ -113,13 +149,17 @@
   :bind ("M-R" . vertico-repeat)
   :bind
   (:map vertico-map
-   ("RET" . vertico-directory-enter)
-   ("M-DEL" . vertico-directory-delete-word))
+        ("RET" . vertico-directory-enter)
+        ("M-DEL" . vertico-directory-delete-word))
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :custom
   (vertico-multiform-commands '((git-related-find-file (vertico-sort-function . nil))))
   :config
   (vertico-multiform-mode))
 
+(use-package wgrep
+  :commands wgrep-change-to-wgrep-mode
+  :custom
+  (wgrep-auto-save-buffer t))
 
 (provide 'init-complete)

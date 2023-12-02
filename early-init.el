@@ -15,6 +15,11 @@
 ;; this file is neither needed nor loaded on those versions.
 (setq package-enable-at-startup nil)
 
+;; UX: Respect DEBUG envvar as an alternative to --debug-init, and to make are
+;;   startup sufficiently verbose from this point on.
+(when (getenv-internal "DEBUG")
+  (setq init-file-debug t
+        debug-on-error t))
 
 
 

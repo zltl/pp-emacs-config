@@ -4,69 +4,83 @@
 ;;; Code:
 
 ;; Org
-;; Org Mode’s timestamps are sadly not aware of time zones, but we can
-;; crudely approximate support by setting org-time-stamp-formats.
-(use-package org
-  :hook (org-mode . org-indent-mode)
+
+(use-package org-contrib
+  :after org
+  :demand t)
+
+(use-package engrave-faces
+  :after org)
+
+;; Org export
+(use-package ox-hugo
+  :after ox
+  :demand t)
+
+
+(use-package ox-extra
+  :after ox
+  :demand t
   :config
-  (setf org-src-preserve-indentation nil
-        org-edit-src-content-indentation 0
-        org-ellipsis " ▾"
-        org-hide-emphasis-markers t
-        org-src-fontify-natively t
-        org-fontify-quote-and-verse-blocks t
-        org-src-tab-acts-natively t
-        org-edit-src-content-indentation 2
-        org-hide-block-startup nil
-        org-src-preserve-indentation nil
-        org-startup-folded 'content
-        org-cycle-separator-lines 2)
-        ;; make title look better
-  (org-bullets-mode 1)
-  (setq org-time-stamp-formats '("<%Y-%m-%d %a>" . "<%Y-%m-%d %a %H:%M %Z>"))
-  (setf org-startup-folded 'show2levels)
-  (setq org-modules
-    '(org-crypt
-        org-habit
-        org-bookmark
-        org-eshell
-        org-irc))
+  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
-  ;; This is needed as of Org 9.2
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
-  (add-to-list 'org-structure-template-alist '("ts" . "src typescript"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("go" . "src go"))
-  (add-to-list 'org-structure-template-alist '("yaml" . "src yaml"))
-  (add-to-list 'org-structure-template-alist '("json" . "src json")))
+;; Other Org features
+(use-package org-appear
+  :hook (org-mode . org-appear-mode)
+  :custom
+  (org-appear-inside-latex t)
+  (org-appear-autokeywords t)
+  (org-appear-autoentities t)
+  (org-appear-autoemphasis t)
+  (org-appear-autosubmarkers t)
+  (org-appear-autolinks 'just-brackets)
+  :config
+  ;; For proper first-time setup, `org-appear--set-elements' needs to be run after other hooks have acted.
+  (run-at-time nil nil #'org-appear--set-elements))
 
+(use-package org-modern
+  :hook (org-mode . org-modern-mode)
+  :hook (org-agenda-finalize . org-modern-agenda)
+  :custom-face
+  ;; Force monospaced font for tags
+  (org-modern-tag ((t (:inherit org-verbatim :weight regular :foreground "black" :background "LightGray" :box "black"))))
+  :custom
+  (org-modern-star '("◉" "○" "◈" "◇" "✳" "◆" "✸" "▶"))
+  (org-modern-table-vertical 5)
+  (org-modern-table-horizontal 2)
+  (org-modern-list '((?+ . "➤") (?- . "–") (?* . "•")))
+  (org-modern-block-fringe nil)
+  (org-modern-checkbox nil) ;; Not that interesting! Maybe it depends on the used font
+  (org-modern-todo-faces
+   ;; Tweak colors, and force it to be monospaced, useful when using `mixed-pitch-mode'.
+   '(("IDEA" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "goldenrod"))
+     ("NEXT" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "IndianRed1"))
+     ("STRT" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "OrangeRed"))
+     ("WAIT" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "coral"))
+     ("KILL" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "DarkGreen"))
+     ("PROJ" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "LimeGreen"))
+     ("HOLD" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "orange"))
+     ("DONE" . (:inherit org-verbatim :weight semi-bold :foreground "black" :background "LightGray")))))
+
+
+;; For latex fragments
+(use-package org-fragtog
+  :straight t
+  :hook (org-mode . org-fragtog-mode)
+  :custom
+  (org-fragtog-preview-delay 0.2))
+
+(use-package org-re-reveal
+  :straight t)
+
+(use-package oer-reveal
+  :straight t
+  :hook (minemacs-build-functions . oer-reveal-setup-submodules))
+
+(require 'org)
 (require 'ox-publish)
 (use-package toc-org)
 (require 'org-id)
-
-(use-package org-bullets
-  :hook (org-mode . (lambda ()  org-bullets-mode 1)))
-
-;; ox-hugo
-;; We use ox-hugo for publishing.
-;;
-;; ltl/ox-hugo-update-lastmod can be used to update the timestamp of
-;; the exported tree at the current point.
-(use-package ox-hugo
-  :after org
-  :config
-  (defun ltl/ox-hugo-update-lastmod ()
-    "Updates the EXPORT_HUGO_LAST_MOD property of the nearest element
-with EXPORT_FILE_NAME."
-    (interactive)
-    (save-excursion
-      (when-let* ((elem (car (org-hugo--get-elem-with-prop :EXPORT_FILE_NAME)))
-                  (begin (org-element-property :begin elem))
-                  (time (format-time-string (org-time-stamp-format t) (current-time))))
-        (org-entry-put begin "EXPORT_HUGO_LASTMOD" time)))))
 
 ;; ox-slack
 ;; Mostly useful for org-slack-export-to-clipboard-as-slack.
@@ -93,11 +107,6 @@ with EXPORT_FILE_NAME."
   (("C-c n n" . denote)
    ("C-c n f" . denote-open-or-create)
    ("C-c n i" . denote-link)))
-
-;; Whitespace butler
-(use-package ws-butler
-  :hook (on-first-buffer . ws-butler-global-mode)
-  :diminish)
 
 (provide 'init-org)
 ;;; init-org.el ends here
