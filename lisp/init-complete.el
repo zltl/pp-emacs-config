@@ -39,11 +39,6 @@
              :type git
              :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :hook (corfu-mode . corfu-terminal-mode))
-(use-package nerd-icons-corfu
-  :after corfu
-  :demand t
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package yasnippet
   :diminish
@@ -61,9 +56,6 @@
   :after vertico
   :init
   (marginalia-mode))
-
-(use-package nerd-icons-completion
-  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 (use-package orderless
   :straight t
