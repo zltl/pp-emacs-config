@@ -74,9 +74,6 @@
 (use-package uuidgen
   :defer t)
 
-(use-package vterm)
-
-
 
 
 (require 'init-copilot)
