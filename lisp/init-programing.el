@@ -90,8 +90,9 @@ Examples:
 
 (use-package eldoc-box
   :diminish
-  :hook (prog-mode . eldoc-box-hover-at-point-mode)
-  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+  ;; :hook (prog-mode . eldoc-box-hover-at-point-mode)
+  ;; :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode)
+  )
 
 (use-package compile-multi)
 
