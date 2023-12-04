@@ -37,7 +37,7 @@
 (require 'init-elpa)
 
 
-;; (use-package better-defaults)
+
 (use-package scratch)
 ;; Show event history and command history of some or all buffers.
 (use-package command-log-mode)

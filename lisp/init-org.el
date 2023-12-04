@@ -102,7 +102,7 @@ buffer's text scale."
   ;; Force monospaced font for tags
   (org-modern-tag ((t (:inherit org-verbatim :weight regular :foreground "black" :background "LightGray" :box "black"))))
   :custom
-  (org-modern-star '("◉" "○" "◈" "◇" "✳" "◆" "✸" "▶"))
+  ;; (org-modern-star '("◉" "○" "◈" "◇" "✳" "◆" "✸" "▶"))
   (org-modern-table-vertical 5)
   (org-modern-table-horizontal 2)
   (org-modern-list '((?+ . "➤") (?- . "–") (?* . "•")))
@@ -118,7 +118,6 @@ buffer's text scale."
      ("PROJ" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "LimeGreen"))
      ("HOLD" . (:inherit org-verbatim :weight semi-bold :foreground "white" :background "orange"))
      ("DONE" . (:inherit org-verbatim :weight semi-bold :foreground "black" :background "LightGray")))))
-
 
 ;; For latex fragments
 (use-package org-fragtog
@@ -139,15 +138,18 @@ buffer's text scale."
 (use-package toc-org)
 (require 'org-id)
 
+(setq org-startup-folded 'show2levels)
+(add-hook 'org-mode-hook #'org-indent-mode)
+
 ;; ox-slack
 ;; Mostly useful for org-slack-export-to-clipboard-as-slack.
 (use-package ox-slack
   :after org
   :bind
   (:map org-mode-map
-   :prefix-map ltl/org-mode-map
-   :prefix "C-c m"
-   ("w" . org-slack-export-to-clipboard-as-slack)))
+        :prefix-map ltl/org-mode-map
+        :prefix "C-c m"
+        ("w" . org-slack-export-to-clipboard-as-slack)))
 
 ;; `org-mode' is great but Denote makes it even better by adding
 ;; features that you'd find in something like Obsidian (like
