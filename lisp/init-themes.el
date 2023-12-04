@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package better-defaults)
+;; (use-package better-defaults)
 (global-set-key (kbd "C-x C-f") #'find-file-at-point)
 (global-set-key (kbd "C-x b") #'switch-to-buffer)
 
