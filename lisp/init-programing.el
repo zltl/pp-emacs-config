@@ -65,7 +65,7 @@ Examples:
   (+eglot-register
     '(c++-mode c++-ts-mode c-mode c-ts-mode)
     '("clangd"
-      "--background-index"
+      "--background-index=false"
       "-j=12"
       "--query-driver=/usr/bin/**/clang-*,/bin/clang,/bin/clang++,/usr/bin/gcc,/usr/bin/g++"
       "--clang-tidy"
