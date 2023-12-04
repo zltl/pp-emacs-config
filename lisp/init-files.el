@@ -34,6 +34,7 @@
 ;; project/projectile
 (use-package project
   :config
+  (setq project-vc-extra-root-markers '("go.mod" "*.csproj" "package.json"))
   (defun project-find-go-module (dir)
     (when-let ((root (locate-dominating-file dir "go.mod")))
       (cons 'go-module root)))
@@ -45,7 +46,18 @@
 (use-package projectile
   :diminish
   :config
-  (projectile-mode))
+  (projectile-mode)
+  (defun my-project-try-cargo-toml (dir)
+    "Try to locate a Rust project."
+    (when (locate-dominating-file dir "Cargo.toml")
+      `(transient . ,dir)))
+  (defun my-project-try-go-mod (dir)
+    "Try to locate a Rust project."
+    (when (locate-dominating-file dir "go.mod")
+      `(transient . ,dir)))  
+  ;; Try rust projects before version-control (vc) projects
+  (add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
+  (add-hook 'project-find-functions 'my-project-try-go-mod nil nil))
 
 ;; ffap, short for “find file at point,” guesses a default file from
 ;; the point. ffap-bindings rebinds several commands with ffap
