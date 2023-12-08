@@ -31,3 +31,4 @@ flycheck_init.el
 /snippets
 /anaconda-mode/
 *.swp
+/emacs-reveal-submodules/
