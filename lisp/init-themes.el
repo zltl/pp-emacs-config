@@ -112,7 +112,6 @@
 (pixel-scroll-precision-mode)
 
 (use-package doom-modeline
-  :hook (minemacs-after-startup . doom-modeline-mode)
   :custom
   (doom-modeline-height 28)
   (doom-modeline-bar-width 8)
@@ -129,7 +128,8 @@
       remote-host buffer-position word-count parrot selection-info)
     '(compilation objed-state misc-info persp-name battery grip irc mu4e gnus
       github debug repl lsp minor-modes input-method indent-info buffer-encoding
-      major-mode process vcs checker time "  ")))
+      major-mode process vcs checker time "  "))
+  (doom-modeline-mode))
 
 (use-package solaire-mode
   :config

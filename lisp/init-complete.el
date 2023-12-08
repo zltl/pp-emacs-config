@@ -59,7 +59,6 @@
 
 (use-package orderless
   :straight t
-  :after minemacs-loaded
   :demand t
   :custom
   (completion-styles '(orderless basic))

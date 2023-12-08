@@ -4,10 +4,10 @@
 
 ;;; Code:
 
+
 (use-package treesit-auto
   :straight (:host github :repo "renzmann/treesit-auto")
-  ;; :hook (minemacs-after-startup . global-treesit-auto-mode)
-  ;; :hook (minemacs-build-functions . treesit-auto-install-all)
+  ;; TODO: M-x treesit-auto-install-all
   :custom
   (treesit-auto-install 'prompt)
   :config

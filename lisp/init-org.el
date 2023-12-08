@@ -131,7 +131,7 @@ buffer's text scale."
 
 (use-package oer-reveal
   :straight t
-  :hook (minemacs-build-functions . oer-reveal-setup-submodules))
+  :config (oer-reveal-setup-submodules))
 
 (require 'org)
 (require 'ox-publish)
