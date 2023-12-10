@@ -49,7 +49,10 @@ Examples:
           go-ts-mode
           python-mode
           python-ts-mode
-          web-mode
+          tsx-mode
+          tsx-ts-mode
+          js-jsx-mode
+          js-ts-mode
           c++--mode
           c++-ts-mode
           c-mode
@@ -243,22 +246,22 @@ Examples:
   :hook (rust-mode . prettify-symbols-mode))
 
 ;; TypeScript, JS, and JSX/TSX support.
-(use-package web-mode
-  :mode ("\\.ts\\'"
-         "\\.js\\'"
-         "\\.mjs\\'"
-         "\\.tsx\\'"
-         "\\.jsx\\'"
-         )
-  :custom
-   (web-mode-markup-indent-offset 2)
-   (web-mode-css-indent-offset 2)
-   (web-mode-code-indent-offset 2))
-(defun my-web-mode-hook ()
-  "Hooks for Web mode."
-  (setq web-mode-markup-indent-offset 2)
-  (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
-(add-hook 'web-mode-hook  'my-web-mode-hook)
+;; (use-package web-mode
+;;   :mode ("\\.ts\\'"
+;;          "\\.js\\'"
+;;          "\\.mjs\\'"
+;;          "\\.tsx\\'"
+;;          "\\.jsx\\'"
+;;          )
+;;   :custom
+;;    (web-mode-markup-indent-offset 2)
+;;    (web-mode-css-indent-offset 2)
+;;    (web-mode-code-indent-offset 2))
+;; (defun my-web-mode-hook ()
+;;   "Hooks for Web mode."
+;;   (setq web-mode-markup-indent-offset 2)
+;;   (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
+;; (add-hook 'web-mode-hook  'my-web-mode-hook)
 
 (use-package bazel)
 
