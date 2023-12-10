@@ -65,6 +65,7 @@ Examples:
   :bind (:map eglot-mode-map
               ("C-c l a" . #'eglot-code-actions))
   :config
+  (add-to-list 'eglot-server-programs '(web-mode . ("typescript-language-server" "--stdio")))
   (+eglot-register
     '(c++-mode c++-ts-mode c-mode c-ts-mode)
     '("clangd"
@@ -246,22 +247,23 @@ Examples:
   :hook (rust-mode . prettify-symbols-mode))
 
 ;; TypeScript, JS, and JSX/TSX support.
-;; (use-package web-mode
-;;   :mode ("\\.ts\\'"
-;;          "\\.js\\'"
-;;          "\\.mjs\\'"
-;;          "\\.tsx\\'"
-;;          "\\.jsx\\'"
-;;          )
-;;   :custom
-;;    (web-mode-markup-indent-offset 2)
-;;    (web-mode-css-indent-offset 2)
-;;    (web-mode-code-indent-offset 2))
-;; (defun my-web-mode-hook ()
-;;   "Hooks for Web mode."
-;;   (setq web-mode-markup-indent-offset 2)
-;;   (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
-;; (add-hook 'web-mode-hook  'my-web-mode-hook)
+(use-package web-mode
+  :mode ("\\.ts\\'"
+         "\\.js\\'"
+         "\\.mjs\\'"
+         "\\.tsx\\'"
+         "\\.jsx\\'"
+         )
+  :custom
+   (web-mode-markup-indent-offset 2)
+   (web-mode-css-indent-offset 2)
+   (web-mode-code-indent-offset 2))
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setf (alist-get 'web-mode lsp--formatting-indent-alist) 'web-mode-code-indent-offset))
+(add-hook 'web-mode-hook  'my-web-mode-hook)
+
 
 (use-package bazel)
 

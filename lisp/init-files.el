@@ -49,6 +49,12 @@
   :config
   (add-to-list 'projectile-project-root-files-bottom-up "go.mod")
   (add-to-list 'projectile-project-root-files-bottom-up ".envrc")
+  (projectile-register-project-type 'npm '("package.json")
+                                    :project-file "package.json"
+				    :compile "npm install"
+				    :test "npm test"
+				    :run "npm start"
+				    :test-suffix ".spec")
   (projectile-mode)
   (defun my-project-try-cargo-toml (dir)
     "Try to locate a Rust project."
