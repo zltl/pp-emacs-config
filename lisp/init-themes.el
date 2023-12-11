@@ -52,7 +52,7 @@
   (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-  
+
 ;; Minimization: let’s not {#minimization-let’s-not} #
 ;; I don’t much care for minimizing windows in the first place, and
 ;; particularly not my favorite window with a keybinding that’s too
@@ -98,8 +98,18 @@
     (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal :height font-size))
     ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
     (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal :height font-size))))
+
+(defun my/font-installed-p (font-name)
+  "Check if font with FONT-NAME is available."
+  (if (find-font (font-spec :name font-name)) t nil))
+
 (use-package all-the-icons
-  :if (display-graphic-p))
+  :if (display-graphic-p)
+  :config
+  (unless (my/font-installed-p "all-the-icons")
+    (all-the-icons-install-fonts t)))
+
+(use-package nerd-icons)
 
 ;; Menu
 ;; Dialog boxes are an unemacsian abomination.
@@ -113,7 +123,7 @@
 
 (use-package doom-modeline
   :custom
-  (doom-modeline-height 28)
+  (doom-modeline-height 18)
   (doom-modeline-bar-width 8)
   (doom-modeline-time-icon nil)
   (doom-modeline-buffer-encoding 'nondefault)
@@ -125,10 +135,10 @@
   ;; HACK: Add some padding to the right
   (doom-modeline-def-modeline 'main
     '(eldoc bar workspace-name window-number modals matches follow buffer-info
-      remote-host buffer-position word-count parrot selection-info)
+            remote-host buffer-position word-count parrot selection-info)
     '(compilation objed-state misc-info persp-name battery grip irc mu4e gnus
-      github debug repl lsp minor-modes input-method indent-info buffer-encoding
-      major-mode process vcs checker time "  "))
+                  github debug repl lsp minor-modes input-method indent-info buffer-encoding
+                  major-mode process vcs checker time "  "))
   (doom-modeline-mode))
 
 (use-package solaire-mode
