@@ -82,12 +82,11 @@ Examples:
       "--pch-storage=memory")
     "ccls")
 
-  (+eglot-register '(awk-mode awk-ts-mode) "awk-language-server")
-
-  (defun eglot-format-buffer-on-save ()
-    (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
-  (add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
-  (add-hook 'go-ts-mode-hook #'eglot-format-buffer-on-save))
+  (+eglot-register '(awk-mode awk-ts-mode) "awk-language-server"))
+(defun eglot-format-buffer-on-save ()
+  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+(add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
+(add-hook 'go-ts-mode-hook #'eglot-format-buffer-on-save)
 
 (use-package consult-eglot
   :after consult eglot

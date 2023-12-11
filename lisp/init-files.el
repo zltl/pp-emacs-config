@@ -55,6 +55,10 @@
 				    :test "npm test"
 				    :run "npm start"
 				    :test-suffix ".spec")
+
+  (projectile-register-project-type 'go #'projectile-go-project-p
+                                    :project-file '("go.mod"))
+  
   (projectile-mode)
   (defun my-project-try-cargo-toml (dir)
     "Try to locate a Rust project."
