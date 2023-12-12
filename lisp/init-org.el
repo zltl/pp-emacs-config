@@ -35,6 +35,8 @@
 ;;               remote?
 ;;               :width width :scale org-image-scaling-factor)))))
 
+;; get rid of the extra white space that’s added inside code blocks.
+(setq org-src-preserve-indentation t)
 (setq org-preview-latex-default-process 'dvisvgm) ;No blur when scaling
 (defun my/text-scale-adjust-latex-previews ()
   "Adjust the size of latex preview fragments when changing the
