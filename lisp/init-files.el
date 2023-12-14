@@ -32,45 +32,10 @@
   (:map ltl/files-map
         ("r" . recentf-open)))
 
-;; project/projectile
-;; (use-package project
-;;   :config
-;;   (setq project-vc-extra-root-markers '("go.mod" "*.csproj" "package.json"))
-;;   (defun project-find-go-module (dir)
-;;     (when-let ((root (locate-dominating-file dir "go.mod")))
-;;       (cons 'go-module root)))
-;;   :config
-;;   (cl-defmethod project-root ((project (head go-module)))
-;;     (cdr project))
-;;   :config
-;;   (add-hook 'project-find-functions #'project-find-go-module))
 (use-package projectile
   :diminish
   :config
-  (add-to-list 'projectile-project-root-files-bottom-up "go.mod")
-  (add-to-list 'projectile-project-root-files-bottom-up ".envrc")
-  (projectile-register-project-type 'npm '("package.json")
-                                    :project-file "package.json"
-				    :compile "npm install"
-				    :test "npm test"
-				    :run "npm start"
-				    :test-suffix ".spec")
-
-  (projectile-register-project-type 'go #'projectile-go-project-p
-                                    :project-file '("go.mod"))
-  
-  (projectile-mode)
-  (defun my-project-try-cargo-toml (dir)
-    "Try to locate a Rust project."
-    (when (locate-dominating-file dir "Cargo.toml")
-      `(transient . ,dir)))
-  (defun my-project-try-go-mod (dir)
-    "Try to locate a Rust project."
-    (when (locate-dominating-file dir "go.mod")
-      `(transient . ,dir)))
-  ;; Try rust projects before version-control (vc) projects
-  (add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
-  (add-hook 'project-find-functions 'my-project-try-go-mod nil nil))
+  (projectile-mode))
 
 ;; ffap, short for “find file at point,” guesses a default file from
 ;; the point. ffap-bindings rebinds several commands with ffap

@@ -40,7 +40,7 @@
 (use-package gcmh
   :diminish
   :config (gcmh-mode)
-  :custom
+  ;; :custom
   ;; Set the delay to 20s instead of the default 15. I tried using `auto', but
   ;; with the default 20 of `gcmh-auto-idle-delay-factor', it triggers GC each
   ;; 1s on my machine. Setting the factor to a higher value should solve the
