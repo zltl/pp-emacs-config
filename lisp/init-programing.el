@@ -53,6 +53,7 @@ Examples:
           tsx-ts-mode
           js-jsx-mode
           js-ts-mode
+          web-mode
           c++--mode
           c++-ts-mode
           c-mode
@@ -65,7 +66,10 @@ Examples:
   :bind (:map eglot-mode-map
               ("C-c l a" . #'eglot-code-actions))
   :config
-  (add-to-list 'eglot-server-programs '(web-mode . ("typescript-language-server" "--stdio")))
+  ;; (add-to-list 'eglot-server-programs '(web-mode . ("typescript-language-server" "--stdio")))
+  (+eglot-register
+    '(typescript-mode typescript-ts-mode)
+    '("typescript-language-server" "--stdio"))
   (+eglot-register
     '(c++-mode c++-ts-mode c-mode c-ts-mode)
     '("clangd"
@@ -247,11 +251,11 @@ Examples:
 
 ;; TypeScript, JS, and JSX/TSX support.
 (use-package web-mode
-  :mode ("\\.ts\\'"
-         "\\.js\\'"
-         "\\.mjs\\'"
-         "\\.tsx\\'"
-         "\\.jsx\\'"
+;;   :mode (;; "\\.ts\\'"
+;;          ;; "\\.js\\'"
+;;          ;; "\\.mjs\\'"
+;;          ;; "\\.tsx\\'"
+;;          ;; "\\.jsx\\'"
          )
   :custom
    (web-mode-markup-indent-offset 2)
