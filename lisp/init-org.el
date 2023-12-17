@@ -35,9 +35,22 @@
 ;;               remote?
 ;;               :width width :scale org-image-scaling-factor)))))
 
+
+(use-package org
+  :custom
+  (org-format-latex-options
+   '(:foreground default
+                 :background default
+                 :scale 2.0
+                 :html-foreground "Black"
+                 :html-background "Transparent"
+                 :html-scale 2.0
+                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
+
+
 ;; get rid of the extra white space that’s added inside code blocks.
 (setq org-src-preserve-indentation t)
-(setq org-preview-latex-default-process 'dvisvgm) ;No blur when scaling
+;; (setq org-preview-latex-default-process 'dvisvgm) ;No blur when scaling
 (defun my/text-scale-adjust-latex-previews ()
   "Adjust the size of latex preview fragments when changing the
 buffer's text scale."
