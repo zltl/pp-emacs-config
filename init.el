@@ -52,11 +52,24 @@
   ;; (gcmh-high-cons-threshold (* 1024 1024 1024 (if (string-suffix-p "64" (symbol-name sys/arch)) 30 2)))
   )
 
+;; Increase the amount of data which Emacs reads from the process#
+;; Again the emacs default is too low 4k considering that the some of
+;; the language server responses are in 800k - 3M range.
+(setq read-process-output-max (* 1024 1024 4))
+
 
 
 (use-package scratch)
 ;; Show event history and command history of some or all buffers.
 (use-package command-log-mode)
+;; load PATH from shell
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (when (daemonp)
+    (exec-path-from-shell-initialize)))
+
 (require 'init-themes)
 (require 'init-bindings)
 (require 'init-files)

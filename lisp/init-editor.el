@@ -87,7 +87,8 @@
 (use-package pangu-spacing
   :diminish
   :config
-  (global-pangu-spacing-mode 1))
+  ;; (global-pangu-spacing-mode 1)
+)
 (add-hook 'org-mode-hook
           #'(lambda ()
               (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
@@ -131,7 +132,8 @@
   (global-set-key (kbd "C-x u") #'vundo))
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
-  ;; :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
+  ;; disable breadcrumb whel using lsp-mode, because lsp have this feature already.
+  :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
   :config
   (breadcrumb-imenu-crumbs)
   (breadcrumb-mode))

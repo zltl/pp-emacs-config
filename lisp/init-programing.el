@@ -4,7 +4,6 @@
 
 ;;; Code:
 
-
 (use-package treesit-auto
   :straight (:host github :repo "renzmann/treesit-auto")
   ;; TODO: M-x treesit-auto-install-all
@@ -28,79 +27,51 @@
   (combobulate-key-prefix "C-c o"))
 
 
-(defun +eglot-register (modes &rest servers)
-  "Register MODES with LSP SERVERS.
-Examples:
-  (+eglot-register 'vhdl-mode \"vhdl_ls\")
-  (+eglot-register 'lua-mode \"lua-language-server\" \"lua-lsp\")
-  (+eglot-register '(c-mode c++-mode) '(\"clangd\" \"--clang-tidy\" \"-j=12\") \"ccls\")"
-  (declare (indent 0))
-  (with-eval-after-load 'eglot
-    (add-to-list
-     'eglot-server-programs
-     (cons modes (if (length> servers 1)
-                     (eglot-alternatives (ensure-list servers))
-                   (ensure-list (car servers)))))))
-
-(use-package eglot
-  :straight t
-  :hook (eglot-managed-mode . eglot-inlay-hints-mode)
-  :hook ((go-mode
-          go-ts-mode
-          python-mode
-          python-ts-mode
-          tsx-mode
-          tsx-ts-mode
-          js-jsx-mode
-          js-ts-mode
-          web-mode
-          c++--mode
-          c++-ts-mode
-          c-mode
-          c-ts-mode) . eglot-ensure)
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook ((go-mode . lsp)
+         (go-ts-mode. lsp)
+         (typescript-ts-mode . lsp)
+         (python-mode . lsp)
+         (python-ts-mode . lsp)
+         (web-mode . lsp)
+         (c-mode . lsp)
+         (c++-mode . lsp)
+         (c++-ts-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
   :custom
-  (eglot-autoshutdown t) ; shutdown after closing the last managed buffer
-  (eglot-sync-connect 0) ; async, do not block
-  (eglot-extend-to-xref t) ; can be interesting!
-  (eglot-report-progress nil) ; disable annoying messages in echo area!
-  :bind (:map eglot-mode-map
-              ("C-c l a" . #'eglot-code-actions))
-  :config
-  ;; (add-to-list 'eglot-server-programs '(web-mode . ("typescript-language-server" "--stdio")))
-  (+eglot-register
-    '(typescript-mode typescript-ts-mode)
-    '("typescript-language-server" "--stdio"))
-  (+eglot-register
-    '(c++-mode c++-ts-mode c-mode c-ts-mode)
-    '("clangd"
-      "--background-index=false"
-      "-j=12"
-      "--query-driver=/usr/bin/**/clang-*,/bin/clang,/bin/clang++,/usr/bin/gcc,/usr/bin/g++"
-      "--clang-tidy"
-      ;; "--clang-tidy-checks=*"
-      "--all-scopes-completion"
-      "--cross-file-rename"
-      "--completion-style=detailed"
-      "--header-insertion-decorators"
-      "--header-insertion=iwyu"
-      "--pch-storage=memory")
-    "ccls")
+  (lsp-idle-delay 0.5)
+  (lsp-log-io nil)
+  (lsp-clients-clangd-args '("--background-index=false"
+                             "--query-driver=/usr/bin/**/clang-*,/bin/clang,/bin/clang++,/usr/bin/gcc,/usr/bin/g++"
+                             "--clang-tidy"
+                             ;; "--clang-tidy-checks=*"
+                             "--all-scopes-completion"
+                             "--cross-file-rename"
+                             "--completion-style=detailed"
+                             "--header-insertion-decorators"
+                             "--header-insertion=iwyu"
+                             "--pch-storage=memory"))
+  :commands lsp)
 
-  (+eglot-register '(awk-mode awk-ts-mode) "awk-language-server"))
-(defun eglot-format-buffer-on-save ()
-  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
-(add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
-(add-hook 'go-ts-mode-hook #'eglot-format-buffer-on-save)
+(add-hook 'go-mode-hook
+          #'(add-hook 'before-save-hook #'lsp-format-buffer nil 'local))
+(add-hook 'go-mode-hook
+          (add-hook 'before-save-hook #'lsp-organize-imports nil 'local))
 
-(use-package consult-eglot
-  :after consult eglot
-  :bind (:map eglot-mode-map ("C-c l t")))
+;; optionally
+(use-package lsp-ui :commands lsp-ui-mode)
+;; if you are helm user
+(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
 (use-package eldoc-box
-  :diminish
-  ;; :hook (prog-mode . eldoc-box-hover-at-point-mode)
-  ;; :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode)
-  )
+  :diminish)
 
 (use-package compile-multi)
 
