@@ -32,7 +32,7 @@
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
   :hook ((go-mode . lsp)
-         (go-ts-mode. lsp)
+         (go-ts-mode . lsp)
          (typescript-ts-mode . lsp)
          (python-mode . lsp)
          (python-ts-mode . lsp)
@@ -57,10 +57,19 @@
                              "--pch-storage=memory"))
   :commands lsp)
 
-(add-hook 'go-mode-hook
-          #'(add-hook 'before-save-hook #'lsp-format-buffer nil 'local))
-(add-hook 'go-mode-hook
-          (add-hook 'before-save-hook #'lsp-organize-imports nil 'local))
+(with-eval-after-load 'go-mode
+  (progn
+  (add-hook 'go-mode-hook
+            #'(lambda () (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)))
+  (add-hook 'go-mode-hook
+            #'(lambda () (add-hook 'before-save-hook #'lsp-organize-imports nil 'local)))))
+
+(with-eval-after-load 'go-ts-mode
+  (progn
+    (add-hook 'go-ts-mode-hook
+              #'(lambda () (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)))
+    (add-hook 'go-ts-mode-hook
+              #'(lambda () (add-hook 'before-save-hook #'lsp-organize-imports nil 'local)))))
 
 ;; optionally
 (use-package lsp-ui :commands lsp-ui-mode)
