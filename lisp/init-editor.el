@@ -151,4 +151,6 @@
   :bind (("M-o" . ace-window)
          ("C-x o" . ace-window)))
 
+(winner-mode +1)
+
 (provide 'init-editor)
