@@ -39,18 +39,17 @@
 
 (use-package gcmh
   :diminish
-  :config (gcmh-mode)
+  :config
+  (gcmh-mode)
+  :custom
+  (gcmh-high-cons-threshold 33554432)
   ;; :custom
   ;; Set the delay to 20s instead of the default 15. I tried using `auto', but
   ;; with the default 20 of `gcmh-auto-idle-delay-factor', it triggers GC each
   ;; 1s on my machine. Setting the factor to a higher value should solve the
   ;; issue on my machine, but I don't think it is right to assume it will work
   ;; the same way on other machines. So we switch back to a fixed delay of 20s.
-  ;; (gcmh-idle-delay 20)
-
-  ;; I use large ram, shutup and take my money~
-  ;; (gcmh-high-cons-threshold (* 1024 1024 1024 (if (string-suffix-p "64" (symbol-name sys/arch)) 30 2)))
-  )
+  (gcmh-idle-delay 20))
 
 ;; Increase the amount of data which Emacs reads from the process#
 ;; Again the emacs default is too low 4k considering that the some of
