@@ -36,6 +36,7 @@
          (typescript-ts-mode . lsp)
          (python-mode . lsp)
          (python-ts-mode . lsp)
+         (tsx-ts-mode . lsp)
          (web-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
@@ -70,6 +71,10 @@
               #'(lambda () (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)))
     (add-hook 'go-ts-mode-hook
               #'(lambda () (add-hook 'before-save-hook #'lsp-organize-imports nil 'local)))))
+
+;; indent 2 space on web
+(setq-default js-indent-level 2)
+(setq-default typescript-indent-level 2)
 
 ;; optionally
 (use-package lsp-ui :commands lsp-ui-mode)
@@ -248,11 +253,13 @@
 (use-package lsp-tailwindcss
   :init
   (setq lsp-tailwindcss-add-on-mode t))
-(use-package python-mode
-  ;; :hook (python-mode . lsp)
-  )
+(use-package python-mode)
 (use-package anaconda-mode
   :hook (python-mode . anaconda-mode))
+(use-package pet
+  :config
+  (add-hook 'python-base-mode-hook 'pet-mode -10)
+  (add-hook 'python-ts-mode-hook 'pet-mode -10))
 
 ;; workspaces
 (use-package perspective
