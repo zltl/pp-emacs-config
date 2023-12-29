@@ -153,4 +153,6 @@
 
 (winner-mode +1)
 
+(use-package writeroom-mode)
+
 (provide 'init-editor)
