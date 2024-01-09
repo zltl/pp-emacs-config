@@ -108,8 +108,14 @@
   :config
   (unless (my/font-installed-p "all-the-icons")
     (all-the-icons-install-fonts t)))
-
 (use-package nerd-icons)
+(use-package all-the-icons-nerd-fonts
+  :straight
+  (all-the-icons-nerd-fonts :host github :repo "mohkale/all-the-icons-nerd-fonts")
+  :after all-the-icons
+  :demand t
+  :config
+  (all-the-icons-nerd-fonts-prefer))
 
 ;; Menu
 ;; Dialog boxes are an unemacsian abomination.

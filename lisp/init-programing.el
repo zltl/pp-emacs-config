@@ -60,10 +60,10 @@
 
 (with-eval-after-load 'go-mode
   (progn
-  (add-hook 'go-mode-hook
-            #'(lambda () (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)))
-  (add-hook 'go-mode-hook
-            #'(lambda () (add-hook 'before-save-hook #'lsp-organize-imports nil 'local)))))
+    (add-hook 'go-mode-hook
+              #'(lambda () (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)))
+    (add-hook 'go-mode-hook
+              #'(lambda () (add-hook 'before-save-hook #'lsp-organize-imports nil 'local)))))
 
 (with-eval-after-load 'go-ts-mode
   (progn
