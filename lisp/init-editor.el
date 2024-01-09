@@ -144,6 +144,9 @@
   (treemacs-git-mode 'deferred)
   :bind
   ("M-0" . treemacs-select-window))
+(use-package treemacs-nerd-icons
+  :config
+  (treemacs-load-theme "nerd-icons"))
 
 ;; window selection with ace-window
 (use-package ace-window

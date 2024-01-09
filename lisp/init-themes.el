@@ -37,21 +37,21 @@
 
 ;; Themes
 ;; Great looking theme
-;; (use-package spacemacs-theme
-;;   :config (load-theme 'spacemacs-dark t))
+(use-package spacemacs-theme
+  :config (load-theme 'spacemacs-dark t))
 ;; (use-package modus-themes
 ;;   :config (load-theme 'modus-vivendi))
-(use-package doom-themes
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (load-theme 'doom-one t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
-  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+;; (use-package doom-themes
+;;   :config
+;;   (setq doom-themes-enable-bold t
+;;         doom-themes-enable-italic t)
+;;   (load-theme 'doom-one t)
+;;   (doom-themes-visual-bell-config)
+;;   (doom-themes-neotree-config)
+;;   ;; (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+;;   (doom-themes-treemacs-config)
+;;   ;; Corrects (and improves) org-mode's native fontification.
+;;   (doom-themes-org-config))
 
 ;; Minimization: let’s not {#minimization-let’s-not} #
 ;; I don’t much care for minimizing windows in the first place, and
