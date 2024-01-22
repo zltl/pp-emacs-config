@@ -284,11 +284,5 @@
 (use-package htmlize
   :after ox-html)
 
-;; rime
-;; install librime/librime-dev
-(use-package rime
-  :custom
-  (default-input-method "rime")
-  (rime-show-candidate 'popup))
-
 (provide 'init-programing)
+;;; init-programing.el ends here
