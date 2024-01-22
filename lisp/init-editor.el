@@ -158,4 +158,6 @@
 
 (use-package writeroom-mode)
 
+(use-package polymode)
+
 (provide 'init-editor)

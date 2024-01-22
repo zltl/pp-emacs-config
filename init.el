@@ -102,6 +102,13 @@
 (use-package uuidgen
   :defer t)
 
+;; rime
+;; install librime/librime-dev
+(use-package rime
+  :custom
+  (default-input-method "rime")
+  (rime-show-candidate 'popup))
+
 
 
 (require 'init-copilot)
