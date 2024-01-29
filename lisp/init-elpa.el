@@ -78,15 +78,6 @@
   :config
   (benchmark-init/activate))
 
-;; This Emacs library provides a global mode which displays ugly form
-;; feed characters as tidy horizontal rules.
-;;
-;; I use ^L to break sections on lisp
-(use-package page-break-lines
-  :diminish
-  :hook ((lisp-mode . page-break-lines-mode)
-         (emacs-lisp-mode . page-break-lines-mode)))
-
 ;;; No littering
 ;; Many packages leave crumbs in user-emacs-directory or even
 ;; $HOME. Finding and configuring them individually is a hassle, so we
