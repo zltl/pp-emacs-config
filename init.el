@@ -60,7 +60,7 @@
 
 (use-package scratch)
 ;; Show event history and command history of some or all buffers.
-(use-package command-log-mode)
+;; (use-package command-log-mode)
 ;; load PATH from shell
 (use-package exec-path-from-shell
   :config
