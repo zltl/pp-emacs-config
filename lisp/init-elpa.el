@@ -63,10 +63,6 @@
 ;; We also want to “diminish” most minor-mode indicators on the mode
 ;; line. They’re only interesting if they’re in an unexpected state.
 (use-package diminish)
-;; compilations, enhence elisp.
-(require 'cl-lib)
-(require 'subr-x)
-(require 'bytecomp)
 
 ;; Benchmark
 ;; benchmark-init is a simple package that may or may not carry its
