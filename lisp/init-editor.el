@@ -4,7 +4,7 @@
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I’m trying not to call until I die.
 (use-package persist-state
-  :straight nil
+  ;; :straight nil
   :diminish
   :config
   (persist-state-mode))

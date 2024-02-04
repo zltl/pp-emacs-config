@@ -63,10 +63,6 @@
 ;; We also want to “diminish” most minor-mode indicators on the mode
 ;; line. They’re only interesting if they’re in an unexpected state.
 (use-package diminish)
-;; compilations, enhence elisp.
-(require 'cl-lib)
-(require 'subr-x)
-(require 'bytecomp)
 
 ;; Benchmark
 ;; benchmark-init is a simple package that may or may not carry its
@@ -77,15 +73,6 @@
   :hook (after-init . benchmark-init/deactivate)
   :config
   (benchmark-init/activate))
-
-;; This Emacs library provides a global mode which displays ugly form
-;; feed characters as tidy horizontal rules.
-;;
-;; I use ^L to break sections on lisp
-(use-package page-break-lines
-  :diminish
-  :hook ((lisp-mode . page-break-lines-mode)
-         (emacs-lisp-mode . page-break-lines-mode)))
 
 ;;; No littering
 ;; Many packages leave crumbs in user-emacs-directory or even
