@@ -284,5 +284,14 @@
 (use-package htmlize
   :after ox-html)
 
+;; This Emacs library provides a global mode which displays ugly form
+;; feed characters as tidy horizontal rules.
+;;
+;; I use ^L to break sections on lisp
+(use-package page-break-lines
+  :diminish
+  :hook (emacs-lisp-mode . page-break-lines-mode))
+
+
 (provide 'init-programing)
 ;;; init-programing.el ends here
