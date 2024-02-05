@@ -244,12 +244,12 @@
 
 ;; TypeScript, JS, and JSX/TSX support.
 (use-package web-mode
-  ;; :mode ( "\\.ts\\'"
-  ;;         "\\.js\\'"
-  ;;         "\\.mjs\\'"
-  ;;         "\\.tsx\\'"
-  ;;         "\\.jsx\\'"
-  ;;         )
+  :mode ( "\\.ts\\'"
+          "\\.js\\'"
+          "\\.mjs\\'"
+          "\\.tsx\\'"
+          "\\.jsx\\'"
+          )
   :custom
    (web-mode-markup-indent-offset 2)
    (web-mode-css-indent-offset 2)
