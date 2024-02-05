@@ -16,6 +16,7 @@
   (corfu-min-width 25)
   (corfu-auto-delay 0.2)
   (corfu-auto-prefix 1)
+  (corfu-quit-no-match 'separator)
   :config
   (unless (bound-and-true-p savehist-mode)
     (savehist-mode 1))

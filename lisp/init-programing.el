@@ -22,6 +22,7 @@
           css-ts-mode
           yaml-ts-mode
           typescript-ts-mode
+          web-mode
           tsx-ts-mode) . combobulate-mode)
   :custom
   (combobulate-key-prefix "C-c o"))
@@ -44,6 +45,7 @@
          ;; if you want which-key integration
          (lsp-mode . lsp-enable-which-key-integration))
   :custom
+  (lsp-completion-provider :none)
   (lsp-idle-delay 0.5)
   (lsp-log-io nil)
   (lsp-clients-clangd-args '("--background-index=false"
@@ -56,7 +58,13 @@
                              "--header-insertion-decorators"
                              "--header-insertion=iwyu"
                              "--pch-storage=memory"))
+  :config
+  (setf (alist-get 'styles
+		   (alist-get 'lsp-capf completion-category-defaults))
+	'(orderless))
   :commands lsp)
+
+
 
 (with-eval-after-load 'go-mode
   (progn
@@ -236,12 +244,12 @@
 
 ;; TypeScript, JS, and JSX/TSX support.
 (use-package web-mode
-  :mode ( "\\.ts\\'"
-          "\\.js\\'"
-          "\\.mjs\\'"
-          "\\.tsx\\'"
-          "\\.jsx\\'"
-          )
+  ;; :mode ( "\\.ts\\'"
+  ;;         "\\.js\\'"
+  ;;         "\\.mjs\\'"
+  ;;         "\\.tsx\\'"
+  ;;         "\\.jsx\\'"
+  ;;         )
   :custom
    (web-mode-markup-indent-offset 2)
    (web-mode-css-indent-offset 2)
@@ -252,9 +260,9 @@
 (add-hook 'haskell-mode-hook #'lsp)
 (add-hook 'haskell-literate-mode-hook #'lsp)
 
-(use-package js2-mode)
-(use-package rjsx-mode)
-(use-package typescript-mode)
+;; (use-package js2-mode)
+;; (use-package rjsx-mode)
+;; (use-package typescript-mode)
 
 (use-package bazel)
 
