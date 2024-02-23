@@ -93,7 +93,7 @@
 
 ;; font
 (when (display-graphic-p)
-  (let ((font-size 100))
+  (let ((font-size 110))
     (set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal :height font-size)
     (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal :height font-size))
     ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
