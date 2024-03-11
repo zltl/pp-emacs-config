@@ -4,6 +4,18 @@
 
 ;;; Code:
 
+(use-package tree-sitter
+  :ensure t
+  :config
+  ;; activate tree-sitter on any buffer containing code for which it has a parser available
+  (global-tree-sitter-mode)
+  ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
+  ;; by switching on and off
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter)
+
 (use-package treesit-auto
   :straight (:host github :repo "renzmann/treesit-auto")
   ;; TODO: M-x treesit-auto-install-all
@@ -198,7 +210,7 @@
 (use-package go-mode)
 (use-package scala-mode
   :interpreter
-    ("scala" . scala-mode))
+  ("scala" . scala-mode))
 ;; Enable sbt mode for executing sbt commands
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -209,8 +221,8 @@
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map)
-   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
-   (setq sbt:program-options '("-Dsbt.supershell=false")))
+  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
 
 (use-package julia-mode)
 (use-package markdown-mode
@@ -229,7 +241,7 @@
 ;; Note that `php-mode' assumes php code is separate from HTML.
 ;; If you prefer working with PHP and HTML in a single file you
 ;; may prefer `web-mode'.
-(use-package php-mode)
+;;(use-package php-mode)
 
 ;; powershell mode
 (use-package powershell)
@@ -243,26 +255,58 @@
   :hook (rust-mode . prettify-symbols-mode))
 
 ;; TypeScript, JS, and JSX/TSX support.
-(use-package web-mode
-  :mode ( "\\.ts\\'"
-          "\\.js\\'"
-          "\\.mjs\\'"
-          "\\.tsx\\'"
-          "\\.jsx\\'"
-          )
-  :custom
-   (web-mode-markup-indent-offset 2)
-   (web-mode-css-indent-offset 2)
-   (web-mode-code-indent-offset 2))
+;; (use-package web-mode
+;;   :mode ( "\\.ts\\'"
+;;           "\\.js\\'"
+;;           "\\.mjs\\'"
+;;           "\\.tsx\\'"
+;;           "\\.jsx\\'"
+;;           )
+;;   :custom
+;;    (web-mode-markup-indent-offset 2)
+;;    (web-mode-css-indent-offset 2)
+;;    (web-mode-code-indent-offset 2))
 
 (use-package haskell-mode)
 (use-package lsp-haskell)
 (add-hook 'haskell-mode-hook #'lsp)
 (add-hook 'haskell-literate-mode-hook #'lsp)
 
-;; (use-package js2-mode)
-;; (use-package rjsx-mode)
-;; (use-package typescript-mode)
+(use-package js2-mode)
+(use-package rjsx-mode)
+(use-package typescript-mode
+  :after tree-sitter
+  :config
+  ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
+  ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
+  (define-derived-mode typescriptreact-mode typescript-mode
+    "TypeScript TSX")
+
+  ;; use our derived mode for tsx files
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
+  ;; by default, typescript-mode is mapped to the treesitter typescript parser
+  ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+;; https://github.com/orzechowskid/tsi.el/
+;; great tree-sitter-based indentation for typescript/tsx, css, json
+(use-package tsi
+  :after tree-sitter
+  :straight (tsi :host github :repo "orzechowskid/tsi.el")
+  ;; define autoload definitions which when actually invoked will cause package to be loaded
+  :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
+  :init
+  (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
+  (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
+  (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
+  (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1))))
+
+;; auto-format different source code files extremely intelligently
+;; https://github.com/radian-software/apheleia
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1))
+
 
 (use-package bazel)
 
@@ -289,8 +333,8 @@
 ;; htmlize
 ;; htmlize provides syntax highlighting for our code snippets when
 ;; exported to HTML.
-(use-package htmlize
-  :after ox-html)
+;; (use-package htmlize
+;;   :after ox-html)
 
 ;; This Emacs library provides a global mode which displays ugly form
 ;; feed characters as tidy horizontal rules.
