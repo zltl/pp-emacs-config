@@ -55,7 +55,8 @@
          (c++-mode . lsp)
          (c++-ts-mode . lsp)
          ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
+         (lsp-mode . lsp-enable-which-key-integration)
+         (typescriptreact-mode . lsp))
   :custom
   (lsp-completion-provider :none)
   (lsp-idle-delay 0.5)
