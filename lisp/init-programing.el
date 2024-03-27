@@ -227,7 +227,7 @@
 
 (use-package julia-mode)
 (use-package markdown-mode
-  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
   ;; These extra modes help clean up the Markdown editing experience.
   ;; `visual-line-mode' turns on word wrap and helps editing commands
   ;; work with paragraphs of text. `flyspell-mode' turns on an
