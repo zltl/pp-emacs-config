@@ -144,7 +144,7 @@
             remote-host buffer-position word-count parrot selection-info)
     '(compilation objed-state misc-info persp-name battery grip irc mu4e gnus
                   github debug repl lsp minor-modes input-method indent-info buffer-encoding
-                  major-mode process vcs checker time "  "))
+                  major-mode process vcs time "  "))
   (doom-modeline-mode))
 
 (use-package solaire-mode
