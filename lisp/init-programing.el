@@ -23,7 +23,8 @@
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (global-treesit-auto-mode)
+  (delete 'go treesit-auto-langs))
 
 (use-package awk-ts-mode)
 
