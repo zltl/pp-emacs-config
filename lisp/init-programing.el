@@ -27,19 +27,6 @@
 
 (use-package awk-ts-mode)
 
-(use-package combobulate
-  :straight t
-  :hook ((python-ts-mode
-          js-ts-mode
-          css-ts-mode
-          yaml-ts-mode
-          typescript-ts-mode
-          web-mode
-          tsx-ts-mode) . combobulate-mode)
-  :custom
-  (combobulate-key-prefix "C-c o"))
-
-
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
