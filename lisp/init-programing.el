@@ -60,9 +60,9 @@
                              "--header-insertion=iwyu"
                              "--pch-storage=memory"))
   :config
-  (setf (alist-get 'styles
-		   (alist-get 'lsp-capf completion-category-defaults))
-	'(orderless))
+  (defun corfu-lsp-setup ()
+    (setq-local completion-category-defaults nil))
+  (add-hook 'lsp-mode-hook #'corfu-lsp-setup)
   :commands lsp)
 
 
