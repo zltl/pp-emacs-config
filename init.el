@@ -42,6 +42,13 @@
 
 (require 'init-elpa)
 
+;; some usefull libraies
+(use-package async
+  :commands (async-start))
+(use-package dash)
+(use-package s)
+
+;; gc
 (use-package gcmh
   :diminish
   :config
