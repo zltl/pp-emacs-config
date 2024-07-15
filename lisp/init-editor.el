@@ -43,7 +43,11 @@
       load-prefer-newer t
       backup-by-copying t
       ;; Backups are placed into your Emacs directory, e.g. xxxx/backups
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups"))))
+      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+      delete-old-versions 1
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)
 
 ;; Character radix
 ;; Make C-q read a hex sequence instead of the default octal. Obscure,
@@ -88,7 +92,7 @@
   :diminish
   :config
   ;; (global-pangu-spacing-mode 1)
-)
+  )
 (add-hook 'org-mode-hook
           #'(lambda ()
               (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
@@ -127,7 +131,7 @@
 
 (use-package vundo
   :config
-    ;; Take less on-screen space.
+  ;; Take less on-screen space.
   (setq vundo-compact-display t)
   (global-set-key (kbd "C-x u") #'vundo))
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
