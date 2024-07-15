@@ -81,8 +81,8 @@
 ;; early, because many of the crumb droppers are configured below!
 (use-package no-littering
   :init
-  (setq no-littering-etc-directory "~/.cache/emacs/etc/"
-	no-littering-var-directory "~/.cache/emacs/var/"))
+  (setq no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory)
+	no-littering-var-directory (expand-file-name "var/" user-emacs-directory)))
 (use-package recentf)
 (add-to-list 'recentf-exclude
 	     (recentf-expand-file-name no-littering-var-directory))
