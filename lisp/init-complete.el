@@ -49,7 +49,7 @@
         (boolean :style "cod" :icon "symbol_boolean" :face font-lock-builtin-face)
         ;; ...
         (t :style "cod" :icon "code" :face font-lock-warning-face)))
-        ;; Remember to add an entry for `t', the library uses that as default.
+;; Remember to add an entry for `t', the library uses that as default.
 ;; The Custom interface is also supported for tuning the variable above.
 
 
@@ -166,5 +166,9 @@
   :commands wgrep-change-to-wgrep-mode
   :custom
   (wgrep-auto-save-buffer t))
+
+;; auto-currects the workd you mistype on pressing space.
+(setq save-abbrevs 'silently)
+(setq-default abbrev-mode t)
 
 (provide 'init-complete)
