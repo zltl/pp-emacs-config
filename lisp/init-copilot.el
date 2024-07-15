@@ -1,4 +1,8 @@
+;;; package -- init-copilot -- setup copilot
 
+;;; Commentary:
+
+;;; Code:
 
 ;; copilot
 ;; I think Copilot’s training was unethical, and I’m skeptical of its
@@ -9,27 +13,29 @@
 ;; close to M-TAB and bound to a menubar command I don’t ever use.
 
 ;; TODO: use M-x copilot-login
-(use-package copilot
-  :diminish
-  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
-  :custom
-  (copilot-disable-predicates '(always))
-  :hook
-  (prog-mode . copilot-mode)
-  :bind
-  ("M-`" . copilot-complete)
-  :bind
-  (:map ltl/toggles-map
-   ("`" . copilot-mode))
-  :bind
-  (:map copilot-completion-map
-   ("C-g" .  #'copilot-clear-overlay)
-   ("M-p" . #'copilot-previous-completion)
-   ("M-n" . #'copilot-next-completion)
-   ("TAB" . #'copilot-accept-completion)
-   ("M-f" . #'copilot-accept-completion-by-word)
-   ("M-<return>" . #'copilot-accept-completion-by-line)))
+(when (executable-find "node")
+  (use-package copilot
+    :diminish
+    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :custom
+    (copilot-disable-predicates '(always))
+    :hook
+    (prog-mode . copilot-mode)
+    :bind
+    ("M-`" . copilot-complete)
+    :bind
+    (:map ltl/toggles-map
+          ("`" . copilot-mode))
+    :bind
+    (:map copilot-completion-map
+          ("C-g" .  #'copilot-clear-overlay)
+          ("M-p" . #'copilot-previous-completion)
+          ("M-n" . #'copilot-next-completion)
+          ("TAB" . #'copilot-accept-completion)
+          ("M-f" . #'copilot-accept-completion-by-word)
+          ("M-<return>" . #'copilot-accept-completion-by-line))))
 
 (provide 'init-copilot)
-;; init-copilot.el ends here
+
+;;; init-copilot.el ends here
 
