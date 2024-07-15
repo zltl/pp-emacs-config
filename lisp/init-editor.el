@@ -1,5 +1,4 @@
 
-
 ;; Persist state
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I’m trying not to call until I die.

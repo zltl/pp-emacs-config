@@ -59,6 +59,11 @@
 ;; easy to hit.
 (global-set-key (kbd "C-z") nil)
 
+;; Mac has an anoying bug when visibly warning you about errors. I hate it.
+;; And while we're at it, let's ask emacs to ignore the audible warning too.
+(setq visible-bell nil)
+(setq ring-bell-function 'ignore)
+
 ;; Beep beep, your ass
 ;; Decades ago, there was a meme of Wile E. Coyote, having finally
 ;; caught Road Runner, saying “Beep beep your ass.” This comes from
