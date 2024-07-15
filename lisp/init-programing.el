@@ -100,9 +100,6 @@
 
 (use-package apheleia)
 
-(use-package editorconfig
-  :hook (prog-mode . editorconfig-mode))
-
 (use-package clang-format)
 (use-package gitlab-ci-mode)
 (use-package vimrc-mode)
@@ -332,6 +329,26 @@
 (use-package page-break-lines
   :diminish
   :hook (emacs-lisp-mode . page-break-lines-mode))
+
+
+;; .env
+(use-package dotenv-mode
+  :mode "\\.env\\..*\\'")
+;; .gitignore
+(use-package gitignore-templates
+  :commands (gitignore-templates-insert
+	     gitignore-templates-new-file))
+;; docker
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+;; jenkins
+(use-package jenkinsfile-mode
+  :mode "Jenkinsfile\\'")
+;; crontab
+(use-package crontab-mode
+  :mode "/crontab\\(\\.X*[[:alnum:]]+\\)?\\'")
+(use-package nginx-mode)
+
 
 
 (provide 'init-programing)
