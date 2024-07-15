@@ -108,7 +108,7 @@
 (use-package vimrc-mode)
 (use-package rust-mode)
 (use-package cuda-mode)
-(use-package opencl-mode)
+;; (use-package opencl-mode)
 (use-package dumb-jump)
 (use-package hl-todo
   :straight (:host github :repo "tarsius/hl-todo")
