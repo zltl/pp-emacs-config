@@ -15,6 +15,9 @@
 ;; this file is neither needed nor loaded on those versions.
 (setq package-enable-at-startup nil)
 
+;; https://emacs-lsp.github.io/lsp-mode/page/performance/
+(setenv "LSP_USE_PLISTS" "true")
+
 ;; UX: Respect DEBUG envvar as an alternative to --debug-init, and to make are
 ;;   startup sufficiently verbose from this point on.
 (when (getenv-internal "DEBUG")
