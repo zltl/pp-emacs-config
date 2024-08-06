@@ -33,7 +33,10 @@
           ("M-n" . #'copilot-next-completion)
           ("TAB" . #'copilot-accept-completion)
           ("M-f" . #'copilot-accept-completion-by-word)
-          ("M-<return>" . #'copilot-accept-completion-by-line))))
+          ("M-<return>" . #'copilot-accept-completion-by-line))
+    :config
+    (and (not (copilot-installed-version))
+         (copilot-install-server))))
 
 (provide 'init-copilot)
 
