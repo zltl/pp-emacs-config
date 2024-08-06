@@ -20,7 +20,7 @@
   :straight (:host github :repo "renzmann/treesit-auto")
   ;; TODO: M-x treesit-auto-install-all
   :custom
-  (treesit-auto-install 'prompt)
+  (treesit-auto-install t)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode)
@@ -28,6 +28,7 @@
 
 (use-package awk-ts-mode)
 
+(setq lsp-use-plists t)
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -38,6 +39,7 @@
          (python-mode . lsp)
          (python-ts-mode . lsp)
          (tsx-ts-mode . lsp)
+         (js . lsp)
          (web-mode . lsp)
          (c-mode . lsp)
          (c++-mode . lsp)
@@ -298,7 +300,18 @@
 
 (use-package lsp-tailwindcss
   :init
-  (setq lsp-tailwindcss-add-on-mode t))
+  (setq lsp-tailwindcss-add-on-mode t)
+  :config
+  (dolist (tw-major-mode
+           '(css-mode
+             css-ts-mode
+             typescript-mode
+             typescript-ts-mode
+             tsx-ts-mode
+             js2-mode
+             js-ts-mode
+             clojure-mode))
+    (add-to-list 'lsp-tailwindcss-major-modes tw-major-mode)))
 (use-package python-mode)
 (use-package anaconda-mode
   :hook (python-mode . anaconda-mode))
@@ -321,15 +334,6 @@
 ;; exported to HTML.
 ;; (use-package htmlize
 ;;   :after ox-html)
-
-;; This Emacs library provides a global mode which displays ugly form
-;; feed characters as tidy horizontal rules.
-;;
-;; I use ^L to break sections on lisp
-(use-package page-break-lines
-  :diminish
-  :hook (emacs-lisp-mode . page-break-lines-mode))
-
 
 ;; .env
 (use-package dotenv-mode

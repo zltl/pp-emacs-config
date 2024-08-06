@@ -16,7 +16,7 @@
 (when (executable-find "node")
   (use-package copilot
     :diminish
-    :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+    :straight (:host github :repo "copilot-emacs/copilot.el")
     :custom
     (copilot-disable-predicates '(always))
     :hook
