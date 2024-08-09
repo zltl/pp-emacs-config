@@ -4,6 +4,14 @@
 
 ;;; Code:
 
+;; indent 2 space on web
+(setq js-indent-level 2)
+(setq js-jsx-indent-level 2)
+(setq typescript-indent-level 2)
+(setq typescript-ts-mode-indent-offset 2)
+(setq typescript-auto-indent-flag t
+      typescript-ts-mode-indent-offset 2)
+
 (use-package tree-sitter
   :ensure t
   :config
@@ -24,12 +32,16 @@
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode)
-  (delete 'go treesit-auto-langs))
+  (delete 'go treesit-auto-langs)
+  ;; (delete 'tsx treesit-auto-langs)
+  ;; (delete 'jsx treesit-auto-langs)
+  )
 
 (use-package awk-ts-mode)
 
 (setq lsp-use-plists t)
 (use-package lsp-mode
+  :commands (lsp lsp-deffered)
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-c l")
@@ -39,8 +51,8 @@
          (python-mode . lsp)
          (python-ts-mode . lsp)
          (tsx-ts-mode . lsp)
-         (js . lsp)
-         (web-mode . lsp)
+         (js-mode . lsp)
+         (web-mode . lsp-deferred)
          (c-mode . lsp)
          (c++-mode . lsp)
          (c++-ts-mode . lsp)
@@ -64,10 +76,23 @@
   :config
   (defun corfu-lsp-setup ()
     (setq-local completion-category-defaults nil))
-  (add-hook 'lsp-mode-hook #'corfu-lsp-setup)
-  :commands lsp)
+  (add-hook 'lsp-mode-hook #'corfu-lsp-setup))
 
+(with-eval-after-load 'lsp-mode
+  (progn
+    (add-to-list 'lsp--formatting-indent-alist '(tsx-ts-mode . typescript-indent-level))
+    (add-hook 'before-save-hook
+              (lambda () (when (eq 'tsx-ts-mode major-mode)
+                           (lsp-format-buffer))))))
 
+(use-package tide
+  :hook ((typescript-ts-mode . tide-setup)
+         (tsx-ts-mode . tide-setup)
+         (typescript-ts-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save))
+  :config
+  (setq tide-format-options
+        '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil :indentSize 2 :tabSize 2)))
 
 (with-eval-after-load 'go-mode
   (progn
@@ -83,9 +108,6 @@
     (add-hook 'go-ts-mode-hook
               #'(lambda () (add-hook 'before-save-hook #'lsp-organize-imports nil 'local)))))
 
-;; indent 2 space on web
-(setq-default js-indent-level 2)
-(setq-default typescript-indent-level 2)
 
 ;; optionally
 (use-package lsp-ui :commands lsp-ui-mode)
@@ -242,58 +264,17 @@
 	      ("C-c C-t" . 'rust-test))
   :hook (rust-mode . prettify-symbols-mode))
 
-;; TypeScript, JS, and JSX/TSX support.
-;; (use-package web-mode
-;;   :mode ( "\\.ts\\'"
-;;           "\\.js\\'"
-;;           "\\.mjs\\'"
-;;           "\\.tsx\\'"
-;;           "\\.jsx\\'"
-;;           )
-;;   :custom
-;;    (web-mode-markup-indent-offset 2)
-;;    (web-mode-css-indent-offset 2)
-;;    (web-mode-code-indent-offset 2))
-
 (use-package haskell-mode)
 (use-package lsp-haskell)
 (add-hook 'haskell-mode-hook #'lsp)
 (add-hook 'haskell-literate-mode-hook #'lsp)
 
-(use-package js2-mode)
-(use-package rjsx-mode)
-(use-package typescript-mode
-  :after tree-sitter
-  :config
-  ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
-  ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
-  (define-derived-mode typescriptreact-mode typescript-mode
-    "TypeScript TSX")
-
-  ;; use our derived mode for tsx files
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
-  ;; by default, typescript-mode is mapped to the treesitter typescript parser
-  ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
-  (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
-;; https://github.com/orzechowskid/tsi.el/
-;; great tree-sitter-based indentation for typescript/tsx, css, json
-(use-package tsi
-  :after tree-sitter
-  :straight (tsi :host github :repo "orzechowskid/tsi.el")
-  ;; define autoload definitions which when actually invoked will cause package to be loaded
-  :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
-  :init
-  (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
-  (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
-  (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
-  (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1))))
-
 ;; auto-format different source code files extremely intelligently
 ;; https://github.com/radian-software/apheleia
-(use-package apheleia
-  :ensure t
-  :config
-  (apheleia-global-mode +1))
+;; (use-package apheleia
+;;   :ensure t
+;;   :config
+;;   (apheleia-global-mode +1))
 
 
 (use-package bazel)
@@ -352,8 +333,6 @@
 (use-package crontab-mode
   :mode "/crontab\\(\\.X*[[:alnum:]]+\\)?\\'")
 (use-package nginx-mode)
-
-
 
 (provide 'init-programing)
 ;;; init-programing.el ends here
