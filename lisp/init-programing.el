@@ -37,7 +37,7 @@
   ;; (delete 'jsx treesit-auto-langs)
   )
 (use-package cc-mode)
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
 (use-package protobuf-mode)
 (use-package awk-ts-mode)
 
