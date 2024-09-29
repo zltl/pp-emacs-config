@@ -36,7 +36,9 @@
   ;; (delete 'tsx treesit-auto-langs)
   ;; (delete 'jsx treesit-auto-langs)
   )
-
+(use-package cc-mode)
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(use-package protobuf-mode)
 (use-package awk-ts-mode)
 
 (setq lsp-use-plists t)
