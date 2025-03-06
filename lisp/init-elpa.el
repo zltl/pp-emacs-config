@@ -6,65 +6,77 @@
 ;;; Packages, .emacs.d folders
 ;;;
 
-;; For Chinese user, elpa may blocked by the Great-Fucking-Wirewall
-(require 'package)
-(setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
-
 ;; Work-around for https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341
 (when (and (version< emacs-version "26.3") (boundp 'libgnutls-version) (>= libgnutls-version 30604))
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 
+;;; elpaca
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-(setq straight-vc-git-default-clone-depth 1)
-(setq straight-vc-git-auto-fast-forward t)
-;; (setq straight-vc-git-default-protocol "ssh")
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-(setq use-package-always-ensure t)
+(defvar elpaca-installer-version 0.9)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-;; Unless we've already fetched (and cached) the package archives,
-;; refresh them.
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+(elpaca elpaca-use-package
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
+(setq elpaca-use-package-by-default t)
+
+(and os/win
+     (elpaca-no-symlink-mode))
 
 
-
-
 ;;; Security
 ;; For the love of all that is holy, do not continue with untrusted
 ;; connections!
 (use-package gnutls
-  :defer t
+  :ensure nil
   :custom
   (gnutls-verify-error t))
 
-;; utility hooks and functions from Doom Emacs
+;; ;; utility hooks and functions from Doom Emacs
 (use-package on
-  :straight (on :type git :repo "ajgrf/on.el" :host github))
+  :ensure (on :repo "ajgrf/on.el" :host github))
 ;; We also want to “diminish” most minor-mode indicators on the mode
 ;; line. They’re only interesting if they’re in an unexpected state.
 (use-package diminish)
 
-;; Benchmark
+;;; Benchmark
 ;; benchmark-init is a simple package that may or may not carry its
 ;; weight versus usepackage-compute-statistics. Run
 ;; benchmark-init/show-durations-tabulated to check this one out.
@@ -73,25 +85,6 @@
   :hook (after-init . benchmark-init/deactivate)
   :config
   (benchmark-init/activate))
-
-;;; No littering
-;; Many packages leave crumbs in user-emacs-directory or even
-;; $HOME. Finding and configuring them individually is a hassle, so we
-;; rely on the community configuration of no-littering. Run this
-;; early, because many of the crumb droppers are configured below!
-(use-package no-littering
-  :init
-  (setq no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory)
-	no-littering-var-directory (expand-file-name "var/" user-emacs-directory)))
-(use-package recentf)
-(add-to-list 'recentf-exclude
-	     (recentf-expand-file-name no-littering-var-directory))
-(add-to-list 'recentf-exclude
-	     (recentf-expand-file-name no-littering-etc-directory))
-
-
-(setq create-lockfiles nil)
-(setq warning-minimum-level :error)
 
 
 ;; This Emacs library provides a global mode which displays ugly form

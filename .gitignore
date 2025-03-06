@@ -32,4 +32,5 @@ flycheck_init.el
 /anaconda-mode/
 *.swp
 /emacs-reveal-submodules/
-lisp/flycheck_init-programing.el
+/.chatgpt-shell.el
+lisp/flycheck_*

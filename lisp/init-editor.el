@@ -3,16 +3,22 @@
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I’m trying not to call until I die.
 (use-package persist-state
-  ;; :straight nil
   :diminish
   :config
   (persist-state-mode))
 
+;; Newline at end of file
+(setq require-final-newline t)
+
 ;; This mode saves our place for when we revisit a file.
 (use-package saveplace
-  :hook (on-first-buffer . save-place-mode))
+  :ensure nil
+  :hook (on-first-buffer . save-place-mode)
+  :config
+  (setq save-place-file (expand-file-name "var/.saved-places" user-emacs-directory)))
 
-;; auto-saving changed files
+;; automatically save buffers associated with files on buffer switch
+;; and on windows switch
 (use-package super-save
   :defer 1
   :diminish
@@ -24,7 +30,7 @@
 ;; mostly configured as a hook in those major modes. The only thing we
 ;; customize about it is not wanting it cluttering the mode line.
 (use-package subword
-  :defer t
+  :ensure nil
   :diminish)
 
 ;;; Exiting
@@ -58,7 +64,7 @@
 ;; Delete Selection Mode #
 ;; Typing over an active section should delete the section.
 (use-package delsel
-  :defer t
+  :ensure nil
   :custom
   (delete-selection-mode))
 
@@ -86,21 +92,28 @@
   :config
   (editorconfig-mode 1))
 
-;; space between chinese and english
-(use-package pangu-spacing
-  :diminish
-  :config
-  ;; (global-pangu-spacing-mode 1)
-  )
-(add-hook 'org-mode-hook
-          #'(lambda ()
-              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
-(add-hook 'markdown-mode-hook
-          #'(lambda ()
-              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
+(use-package smart-hungry-delete
+  :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+	       ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+	       ([remap delete-char] . smart-hungry-delete-forward-char))
+  :init (smart-hungry-delete-add-default-hooks))
+
+;; ;; space between chinese and english
+;; (use-package pangu-spacing
+;;   :diminish
+;;   :config
+;;   ;; (global-pangu-spacing-mode 1)
+;;   )
+;; (add-hook 'org-mode-hook
+;;           #'(lambda ()
+;;               (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
+;; (add-hook 'markdown-mode-hook
+;;           #'(lambda ()
+;;               (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
 
 ;; Persist bookmarks each time we set one, not when Emacs exits.
 (use-package bookmark
+  :ensure nil
   :custom
   (bookmark-save-flag 1))
 
@@ -114,19 +127,67 @@
 ;; Automatically save your place in files
 (save-place-mode t)
 ;; Save history in minibuffer to keep recent commands easily accessible
-(savehist-mode t)
-;; Keep track of open files
-(recentf-mode t)
+(setq savehist-additional-variables
+      ;; search entries
+      '(search-ring regexp-search-ring)
+      ;; save every minute
+      savehist-autosave-interval 60
+      savehist-file (expand-file-name
+                     "history"
+                     (ltl/ensure-dir
+                      (expand-file-name "var" user-emacs-directory))))
+(savehist-mode +1)
+
 ;; Keep files up-to-date when they change outside Emacs
 (global-auto-revert-mode t)
 
+(use-package smartparens
+  :ensure t
+  :hook (prog-mode text-mode markdown-mode)
+  :config
+  (require 'smartparens-config)
+  (defvar-keymap sp/forward-barf|slurp
+    :doc "Forward barf/slurp"
+    "b" #'sp-forward-barf-sexp
+    "s" #'sp-forward-slurp-sexp)
+  (defvar-keymap sp/backward-barf|slurp
+    :doc "Backward barf/slurp"
+    "b" #'sp-backward-barf-sexp
+    "s" #'sp-backward-slurp-sexp)
+  (defvar-keymap sp/navigation
+    :doc "navigation"
+    "f" #'sp-forward-sexp
+    "b" #'sp-backward-sexp
+    "n" #'sp-next-sexp
+    "p" #'sp-previous-sexp
+    "d" #'sp-down-sexp
+    "a" #'sp-beginning-of-sexp
+    "e" #'sp-end-of-sexp
+    "u" #'sp-up-sexp)
+  (keymap-set ltl/smartparen "f" sp/forward-barf|slurp)
+  (keymap-set ltl/smartparen "b" sp/backward-barf|slurp)
+  (keymap-set ltl/smartparen "n" sp/navigation)
+  (which-key-add-keymap-based-replacements ltl/smartparen
+    "f" `("Forward" . ,sp/forward-barf|slurp)
+    "b" `("Backward" . ,sp/backward-barf|slurp)
+    "n" `("Navigation" . ,sp/navigation))
+  :bind
+  (:map ltl/smartparen
+        ("h" . #'sp-cheat-sheet)
+        ("k" . #'sp-kill-sexp)
+        ("u" . #'sp-unwrap-sexp)))
+
 ;; multi cursor
 (use-package multiple-cursors
-  :config
-  (global-set-key (kbd "C-c C-c") 'mc/edit-lines)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+  :bind
+  (:map ltl/multicursor
+        ("l" . #'mc/edit-lines)
+        ("a" . #'mc/edit-beginnings-of-lines)
+        ("e" . #'mc/edit-ends-of-lines)
+        ("m" . #'mc/mark-all-like-this)
+        ("s" . #'mc/mark-all-in-region)
+        ("h" . #'mc/mark-all-dwim)
+        ("w" . #'mc/mark-all-word-like-this)))
 
 (use-package vundo
   :config
@@ -163,4 +224,8 @@
 
 (use-package polymode)
 
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
+
 (provide 'init-editor)
+;;; init-editor.el ends here
