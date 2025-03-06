@@ -16,6 +16,7 @@
 
 ;; Auto-revert
 (use-package autorevert
+  :ensure nil
   :diminish
   :hook (on-first-buffer . global-auto-revert-mode)
   :custom
@@ -27,7 +28,19 @@
 ;; MacOS' list of recent files?
 ;; C-c f r open recentf
 (use-package recentf
+  :ensure nil
   :hook (on-first-file-hook . recentf-mode)
+  :bind
+)
+(use-package recentf
+  :ensure nil
+  :after no-ittering
+  :config
+  (add-to-list 'recentf-exclude
+	       (recentf-expand-file-name no-littering-var-directory))
+  (add-to-list 'recentf-exclude
+	       (recentf-expand-file-name no-littering-etc-directory))
+  (recentf-mode +1)
   :bind
   (:map ltl/files-map
         ("r" . recentf-open)))
@@ -35,12 +48,13 @@
 (use-package projectile
   :diminish
   :config
-  (projectile-mode))
+  (projectile-mode t))
 
 ;; ffap, short for “find file at point,” guesses a default file from
 ;; the point. ffap-bindings rebinds several commands with ffap
 ;; equivalents.
 (use-package ffap
+  :ensure nil
   :hook (on-first-input . ffap-bindings))
 
 ;; Counting words

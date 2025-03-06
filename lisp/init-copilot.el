@@ -16,7 +16,7 @@
 (when (executable-find "node")
   (use-package copilot
     :diminish
-    :straight (:host github :repo "copilot-emacs/copilot.el")
+    :ensure (:host github :repo "copilot-emacs/copilot.el")
     :custom
     (copilot-disable-predicates '(always))
     :hook
@@ -25,7 +25,7 @@
     ("M-`" . copilot-complete)
     :bind
     (:map ltl/toggles-map
-          ("`" . copilot-mode))
+          ("`" . #'copilot-mode))
     :bind
     (:map copilot-completion-map
           ("C-g" .  #'copilot-clear-overlay)
@@ -37,6 +37,20 @@
     :config
     (and (not (copilot-installed-version))
          (copilot-install-server))))
+
+
+(use-package shell-maker
+  :ensure (:host github :repo "xenodium/shell-maker" :files ("shell-maker*.el")))
+
+(use-package chatgpt-shell
+  :ensure (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell*.el")))
+
+(use-package copilot-chat
+  :ensure (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+  :after (request org markdown-mode shell-maker)
+  :bind
+  (:map ltl/toggles-map
+        ("c" . #'copilot-chat-display)))
 
 (provide 'init-copilot)
 

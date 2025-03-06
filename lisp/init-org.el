@@ -4,38 +4,6 @@
 ;;; Code:
 
 ;; Org
-
-;; (defvar-local org-image-scaling-factor 1.0)
-;; (with-eval-after-load 'org
-;;   (defun org--create-inline-image (file width)
-;;     "Create image located at FILE, or return nil.
-;; WIDTH is the width of the image.  The image may not be created
-;; according to the value of `org-display-remote-inline-images'."
-;;     (let* ((remote? (file-remote-p file))
-;;        (file-or-data
-;;         (pcase org-display-remote-inline-images
-;;               ((guard (not remote?)) file)
-;;               (`download (with-temp-buffer
-;;                (set-buffer-multibyte nil)
-;;                (insert-file-contents-literally file)
-;;                (buffer-string)))
-;;               (`cache (let ((revert-without-query '(".")))
-;;             (with-current-buffer (find-file-noselect file)
-;;               (buffer-string))))
-;;               (`skip nil)
-;;               (other
-;;                (message "Invalid value of `org-display-remote-inline-images': %S"
-;;             other)
-;;                nil))))
-;;       (when file-or-data
-;;     (create-image file-or-data
-;;               (and (image-type-available-p 'imagemagick)
-;;                width
-;;                'imagemagick)
-;;               remote?
-;;               :width width :scale org-image-scaling-factor)))))
-
-
 (use-package org
   :custom
   (org-format-latex-options
@@ -46,7 +14,6 @@
                  :html-background "Transparent"
                  :html-scale 2.0
                  :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
-
 
 ;; get rid of the extra white space that’s added inside code blocks.
 (setq org-src-preserve-indentation t)
@@ -90,11 +57,11 @@ buffer's text scale."
   :demand t)
 
 
-(use-package ox-extra
-  :after ox
-  :demand t
-  :config
-  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
+;; (use-package ox-extra
+;;   :after ox
+;;   :demand t
+;;   :config
+;;   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
 ;; Other Org features
 (use-package org-appear
@@ -136,16 +103,14 @@ buffer's text scale."
 
 ;; For latex fragments
 (use-package org-fragtog
-  :straight t
   :hook (org-mode . org-fragtog-mode)
   :custom
   (org-fragtog-preview-delay 0.2))
 
 (use-package org-re-reveal
-  :straight t)
+  :ensure t)
 
 (use-package oer-reveal
-  :straight t
   :config (oer-reveal-setup-submodules))
 
 (require 'org)
@@ -156,15 +121,6 @@ buffer's text scale."
 (setq org-startup-folded 'show2levels)
 (add-hook 'org-mode-hook #'org-indent-mode)
 
-;; ox-slack
-;; Mostly useful for org-slack-export-to-clipboard-as-slack.
-(use-package ox-slack
-  :after org
-  :bind
-  (:map org-mode-map
-        :prefix-map ltl/org-mode-map
-        :prefix "C-c m"
-        ("w" . org-slack-export-to-clipboard-as-slack)))
 
 ;; `org-mode' is great but Denote makes it even better by adding
 ;; features that you'd find in something like Obsidian (like

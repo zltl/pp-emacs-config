@@ -1,18 +1,12 @@
 
-
-(use-package orderless
-  :custom
-  (completion-styles '(orderless partial-completion basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-
 (use-package corfu
   :init
   (global-corfu-mode)
   :hook (corfu-mode . corfu-popupinfo-mode)
   :hook (corfu-mode . corfu-history-mode)
   :custom
-  (corfu-auto t) ; Enable auto completion
-  (corfu-cycle t) ; Allows cycling through candidates
+  (corfu-auto t)                   ; Enable auto completion
+  (corfu-cycle t)                  ; Allows cycling through candidates
   (corfu-min-width 25)
   (corfu-auto-delay 0.2)
   (corfu-auto-prefix 1)
@@ -31,18 +25,20 @@
   :hook (vertico-mode . vertico-prescient-mode))
 (use-package cape)
 (use-package popon
-  :straight (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
+  :ensure (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
 
 ;; corfu cannot used in terminal
 ;; try corfu-terminal
 (use-package corfu-terminal
-  :straight (corfu-terminal
+  :ensure (corfu-terminal
              :type git
              :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :hook (corfu-mode . corfu-terminal-mode))
 
-(use-package nerd-icons-corfu)
-(add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)
+(use-package nerd-icons-corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
 ;; Optionally:
 (setq nerd-icons-corfu-mapping
       '((array :style "cod" :icon "symbol_array" :face font-lock-type-face)
@@ -71,11 +67,10 @@
   :init
   (marginalia-mode))
 
+
 (use-package orderless
-  :straight t
-  :demand t
   :custom
-  (completion-styles '(orderless basic))
+  (completion-styles '(orderless partial-completion basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
 ;; Consult
@@ -121,7 +116,6 @@
   (xref-show-definitions-function 'consult-xref))
 
 (use-package consult-dir
-  :straight t
   :bind (("C-x C-d" . consult-dir)
          :package vertico
          :map vertico-map
@@ -133,7 +127,6 @@
 (use-package embark-consult
   :after embark consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
-
 
 ;; Vertico is a little bit nicer version of the builtin
 ;; icomplete-vertical.
@@ -161,11 +154,6 @@
   (vertico-multiform-commands '((git-related-find-file (vertico-sort-function . nil))))
   :config
   (vertico-multiform-mode))
-
-(use-package wgrep
-  :commands wgrep-change-to-wgrep-mode
-  :custom
-  (wgrep-auto-save-buffer t))
 
 ;; auto-currects the workd you mistype on pressing space.
 (setq save-abbrevs 'silently)
