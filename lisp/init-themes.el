@@ -94,7 +94,12 @@
 
 ;; Highlight the current line
 (use-package hl-line
+  :ensure nil
   :hook (on-first-buffer . global-hl-line-mode))
+
+(use-package volatile-highlights
+  :config
+  (volatile-highlights-mode t))
 
 ;; font
 (when (display-graphic-p)
@@ -115,7 +120,7 @@
     (all-the-icons-install-fonts t)))
 (use-package nerd-icons)
 (use-package all-the-icons-nerd-fonts
-  :straight
+  :ensure
   (all-the-icons-nerd-fonts :host github :repo "mohkale/all-the-icons-nerd-fonts")
   :after all-the-icons
   :demand t

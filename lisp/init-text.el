@@ -8,6 +8,7 @@
 ;; These do-what-I-mean bindings are newer than the classic
 ;; keybindings, but a better default.
 (use-package emacs
+  :ensure nil
   :bind
   ([remap capitalize-word] . capitalize-dwim)
   ([remap downcase-word] . downcase-dwim)

@@ -1,5 +1,4 @@
 
-
 ;; Magit
 ;; I have known people to leave Emacs, but continuing to use Magit for
 ;; version control. It’s that good.
@@ -7,9 +6,13 @@
 ;; I am giving built-ins the benefit of the doubt in this config, and
 ;; would like to get into vc-mode. But I’m an advanced enough Git user
 ;; that something tailor-made carries its weight here.
+
+(use-package transient)
+
+
 (use-package magit
-  :defer 1
   :functions ltl/magit-clone-read-args-a
+  :after org
   :bind
   ("C-x g" . magit-status)
   :custom

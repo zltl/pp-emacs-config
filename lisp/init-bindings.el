@@ -6,10 +6,17 @@
 ;;; key bindings
 ;;;
 
+
+;; windows
+(setq w32-apps-modifier 'hyper)
+(setq w32-lwindow-modifier 'super)
+(setq w32-rwindow-modifier 'hyper)
+
 ;; use-package is built-in as of Emacs 29, but since we use :bind, we
 ;; need to load bind-key. If we forget, we get the error: Symbol's
 ;; value as variable is void: personal-keybindings.
 (use-package bind-key
+  :ensure nil
   :demand t
   :bind
   (:prefix-map ltl/files-map
@@ -19,7 +26,13 @@
                :prefix "C-c t")
   :bind
   (:prefix-map ltl/goto
-               :prefix "C-c j"))
+               :prefix "C-c j")
+  :bind
+  (:prefix-map ltl/smartparen
+               :prefix "C-c p")
+  :bind
+  (:prefix-map ltl/multicursor
+               :prefix "C-c m"))
 
 ;; use evil when "C-c t e"
 (use-package evil
@@ -38,6 +51,9 @@
 ;; avy is a GNU Emacs package for jumping to visible text using a
 ;; char-based decision tree
 (use-package avy
+  :config
+  (setq avy-background t)
+  (setq avy-style 'at-full)
   :bind
   (:map ltl/goto
         ("c" . #'avy-goto-char)
