@@ -1,5 +1,16 @@
-;;; init-elpa.el --- Settings and helpers for package.el -*- lexical-binding: t -*-
+;;; init-elpa.el --- Package manager configuration (Elpaca) -*- lexical-binding: t -*-
+
 ;;; Commentary:
+;;
+;; This module configures the Elpaca package manager (v0.11).
+;; Elpaca is a modern, async package manager for Emacs that:
+;; - Supports multiple package sources (MELPA, GNU ELPA, GitHub, etc.)
+;; - Provides fast parallel package installation
+;; - Integrates seamlessly with use-package
+;; - Offers a powerful UI for package management
+;;
+;; For more details, see: https://github.com/progfolio/elpaca
+;;
 ;;; Code:
 
 ;;;
@@ -13,7 +24,7 @@
 
 ;;; elpaca
 
-(defvar elpaca-installer-version 0.9)
+(defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -28,7 +39,7 @@
   (add-to-list 'load-path (if (file-exists-p build) build repo))
   (unless (file-exists-p repo)
     (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
+    (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
         (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
                   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
@@ -48,7 +59,7 @@
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
@@ -57,7 +68,7 @@
   (elpaca-use-package-mode))
 (setq elpaca-use-package-by-default t)
 
-(and os/win
+(and sys/win32p
      (elpaca-no-symlink-mode))
 
 

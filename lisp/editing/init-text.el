@@ -1,4 +1,14 @@
-;;; init-text.el
+;;; init-text.el --- Text editing and manipulation -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; This module configures text editing enhancements:
+;; - DWIM (Do What I Mean) case operations
+;; - Title case conversion
+;; - Multiple cursors
+;; - Text manipulation utilities
+;;
+;;; Code:
 
 ;;;
 ;;; Text

@@ -32,7 +32,14 @@
 
 (when (file-exists-p  ltl/lisp-path)
   (message "Loading configuration files in %s..." ltl/lisp-path)
-  (add-to-list 'load-path ltl/lisp-path))
+  (add-to-list 'load-path ltl/lisp-path)
+  ;; Add subdirectories to load-path
+  (add-to-list 'load-path (expand-file-name "core" ltl/lisp-path))
+  (add-to-list 'load-path (expand-file-name "ui" ltl/lisp-path))
+  (add-to-list 'load-path (expand-file-name "editing" ltl/lisp-path))
+  (add-to-list 'load-path (expand-file-name "tools" ltl/lisp-path))
+  (add-to-list 'load-path (expand-file-name "lang" ltl/lisp-path))
+  (add-to-list 'load-path (expand-file-name "apps" ltl/lisp-path)))
 
 ;; I'll add an extra note here since user customizations are important.
 ;; Emacs actually offers a UI-based customization menu, "M-x customize".
@@ -48,7 +55,9 @@
 
 
 
+;; Load core constants and package manager first
 (require 'init-const)
+(require 'init-custom-vars)
 
 ;; compilations, enhence elisp.
 (require 'cl-lib)
@@ -64,6 +73,17 @@
   (or (file-directory-p pathname)
       (make-directory pathname t))
   pathname)
+
+(defun ltl/safe-require (module)
+  "Safely load MODULE with error handling and logging."
+  (condition-case err
+      (progn
+        (require module)
+        (message "✓ Loaded %s" module)
+        t)
+    (error
+     (message "✗ Failed to load %s: %s" module (error-message-string err))
+     nil)))
 
 ;; some usefull libraies
 (use-package async
@@ -119,18 +139,53 @@
   (when (daemonp)
     (exec-path-from-shell-initialize)))
 
-(require 'init-org)
-(require 'init-themes)
-(require 'init-bindings)
-(require 'init-files)
-(require 'init-text)
-(require 'init-git)
-(require 'init-editor)
-(require 'init-complete)
-(require 'init-search)
-(require 'init-programing)
-(require 'init-shell)
-(require 'init-dashboard)
+;; Load configuration modules with error handling
+(message "Loading configuration modules...")
+
+;; Core modules (init-const and init-custom-vars already loaded above)
+(ltl/safe-require 'init-doctor)
+
+;; UI modules
+(ltl/safe-require 'init-themes)
+(ltl/safe-require 'init-dashboard)
+
+;; Editing modules
+(ltl/safe-require 'init-editor)
+(ltl/safe-require 'init-text)
+(ltl/safe-require 'init-complete)
+
+;; Tool modules
+(ltl/safe-require 'init-bindings)
+(ltl/safe-require 'init-files)
+(ltl/safe-require 'init-git)
+(ltl/safe-require 'init-search)
+
+;; Programming modules
+(ltl/safe-require 'init-programing-core)
+(ltl/safe-require 'init-programing-systems)
+(ltl/safe-require 'init-programing-web)
+(ltl/safe-require 'init-programing-scripting)
+(ltl/safe-require 'init-programing-misc)
+
+;; Application modules
+(ltl/safe-require 'init-org)
+(ltl/safe-require 'init-shell)
+(ltl/safe-require 'init-copilot)
+(ltl/safe-require 'init-applications)
+
+;;; Report loading status
+(message "")
+(message "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+(message "✓ Emacs configuration loaded successfully!")
+(message "  Run M-x ltl/doctor to check your configuration health")
+(message "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+(message "")
+
+(provide 'init)
+;;; init.el ends here
+
+(provide 'init)
+;;; init.el ends here
 
 
 ;;;
