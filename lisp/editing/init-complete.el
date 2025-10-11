@@ -1,3 +1,17 @@
+;;; init-complete.el --- Completion framework configuration -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; This module configures the completion framework using:
+;; - Corfu: In-buffer completion popup (replaces Company)
+;; - Vertico: Vertical completion UI for minibuffer
+;; - Orderless: Flexible matching style
+;; - Marginalia: Rich annotations in minibuffer
+;; - Embark: Contextual actions on completion candidates
+;; - Consult: Enhanced search and navigation commands
+;; - Cape: Additional completion backends
+;;
+;;; Code:
 
 (use-package corfu
   :init

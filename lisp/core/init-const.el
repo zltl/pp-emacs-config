@@ -1,26 +1,18 @@
-;; init-const.el --- Define constants.	-*- lexical-binding: t -*-
+;;; init-const.el --- Define constants and system detection -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;;
-;; Define constants.
+;; This module defines constants and detects the operating system.
+;; It provides variables for:
+;; - System type detection (Linux, macOS, Windows, BSD)
+;; - Emacs version checks
+;; - Platform-specific configurations
 ;;
-
+;; All system detection variables use the 'sys/' prefix for consistency.
+;;
 ;;; Code:
 
-(defconst os/linux (eq system-type 'gnu/linux) "Non-nil on GNU/Linux systems.")
-(defconst os/bsd (and (memq system-type '(berkeley-unix gnu/kfreebsd)) t) "Non-nil on BSD systems.")
-(defconst os/win (and (memq system-type '(cygwin windows-nt ms-dos)) t) "Non-nil on Windows systems.")
-(defconst os/mac (eq system-type 'darwin) "Non-nil on MacOS systems.")
-
-(defconst sys/arch (intern (car (split-string system-configuration "-")))
-  "The system's architecture read from `system-configuration'.
-It return a symbol like `x86_64', `aarch64', `armhf', ...")
-
-
-(defconst sys/win32p
-  (eq system-type 'windows-nt)
-  "Are we running on a WinTel system?")
-
+;;; Operating System Detection
 (defconst sys/linuxp
   (eq system-type 'gnu/linux)
   "Are we running on a GNU/Linux system?")
@@ -28,6 +20,23 @@ It return a symbol like `x86_64', `aarch64', `armhf', ...")
 (defconst sys/macp
   (eq system-type 'darwin)
   "Are we running on a Mac system?")
+
+(defconst sys/win32p
+  (eq system-type 'windows-nt)
+  "Are we running on a Windows system?")
+
+(defconst sys/bsdp
+  (memq system-type '(berkeley-unix gnu/kfreebsd))
+  "Are we running on a BSD system?")
+
+(defconst sys/cygwinp
+  (eq system-type 'cygwin)
+  "Are we running on a Cygwin system?")
+
+;;; System Architecture
+(defconst sys/arch (intern (car (split-string system-configuration "-")))
+  "The system's architecture read from `system-configuration'.
+It return a symbol like `x86_64', `aarch64', `armhf', ...")
 
 (defconst sys/mac-x-p
   (and (display-graphic-p) sys/macp)
@@ -49,10 +58,7 @@ It return a symbol like `x86_64', `aarch64', `armhf', ...")
   (and (display-graphic-p) sys/linuxp)
   "Are we running under X on a GNU/Linux system?")
 
-(defconst sys/cygwinp
-  (eq system-type 'cygwin)
-  "Are we running on a Cygwin system?")
-
+;;; User Detection
 (defconst sys/rootp
   (string-equal "root" (getenv "USER"))
   "Are you using ROOT user?")

@@ -1,10 +1,24 @@
+;;; init-git.el --- Git integration and version control -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; This module configures Git integration using:
+;; - Magit: The legendary Git porcelain for Emacs
+;; - Git-gutter: Show Git diff in the fringe
+;; - Git-timemachine: Browse historic versions of files
+;; - Transient: Command interface framework (required by Magit)
+;;
+;; Magit is considered one of the best Git interfaces available,
+;; even attracting users who don't otherwise use Emacs.
+;;
+;;; Code:
 
 ;; Magit
 ;; I have known people to leave Emacs, but continuing to use Magit for
-;; version control. It’s that good.
+;; version control. It's that good.
 ;;
 ;; I am giving built-ins the benefit of the doubt in this config, and
-;; would like to get into vc-mode. But I’m an advanced enough Git user
+;; would like to get into vc-mode. But I'm an advanced enough Git user
 ;; that something tailor-made carries its weight here.
 
 (use-package transient)

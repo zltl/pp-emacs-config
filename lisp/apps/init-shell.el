@@ -1,6 +1,12 @@
-;;; package --- terminal emulator
-;;; Commentary:
+;;; init-shell.el --- Terminal emulator and shell configuration -*- lexical-binding: t -*-
 
+;;; Commentary:
+;;
+;; This module configures terminal emulators and shells:
+;; - Eat: Modern terminal emulator for Emacs
+;; - Eshell: Emacs built-in shell
+;; - Vterm: Fast terminal emulator (if available)
+;;
 ;;; Code:
 
 (use-package eat

@@ -1,7 +1,14 @@
-;;; package -- init-copilot -- setup copilot
+;;; init-copilot.el --- GitHub Copilot and AI assistance -*- lexical-binding: t -*-
 
 ;;; Commentary:
-
+;;
+;; This module configures AI-powered coding assistance:
+;; - GitHub Copilot: AI pair programmer
+;; - ChatGPT integration: AI chat in Emacs
+;;
+;; Note: Requires Node.js and proper authentication.
+;; Can be disabled via `ltl/enable-copilot` variable.
+;;
 ;;; Code:
 
 ;; copilot
@@ -39,18 +46,28 @@
          (copilot-install-server))))
 
 
-(use-package shell-maker
-  :ensure (:host github :repo "xenodium/shell-maker" :files ("shell-maker*.el")))
-
-(use-package chatgpt-shell
-  :ensure (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell*.el")))
-
-(use-package copilot-chat
-  :ensure (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
-  :after (request org markdown-mode shell-maker)
-  :bind
-  (:map ltl/toggles-map
-        ("c" . #'copilot-chat-display)))
+;; ChatGPT Shell - AI chat integration (optional)
+;; Note: Requires shell-maker v0.77.1+
+;; Uncomment to enable after ensuring dependencies are up to date:
+;;
+;; (use-package shell-maker
+;;   :defer t
+;;   :ensure (:host github :repo "xenodium/shell-maker" :files ("shell-maker*.el")))
+;; 
+;; (use-package chatgpt-shell
+;;   :defer t
+;;   :ensure (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell*.el"))
+;;   :after shell-maker
+;;   :commands (chatgpt-shell chatgpt-shell-mode))
+;; 
+;; (use-package copilot-chat
+;;   :defer t
+;;   :ensure (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+;;   :after (request org markdown-mode shell-maker)
+;;   :commands (copilot-chat-display)
+;;   :bind
+;;   (:map ltl/toggles-map
+;;         ("c" . #'copilot-chat-display)))
 
 (provide 'init-copilot)
 

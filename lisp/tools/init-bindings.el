@@ -1,5 +1,15 @@
-;;; init-bindings.el --- Configure key bindings -*- lexical-binding: t -*-
+;;; init-bindings.el --- Global key bindings configuration -*- lexical-binding: t -*-
+
 ;;; Commentary:
+;;
+;; This module defines global key bindings for:
+;; - Window management (ace-window, window navigation)
+;; - Buffer operations
+;; - Common editing commands
+;; - Custom functions and utilities
+;;
+;; Uses which-key to display available bindings.
+;;
 ;;; Code:
 
 ;;;

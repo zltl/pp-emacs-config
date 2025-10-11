@@ -1,7 +1,21 @@
+;;; init-editor.el --- Editor behavior and editing enhancements -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; This module configures core editing behaviors including:
+;; - State persistence (save-place, recentf)
+;; - Whitespace handling and cleanup
+;; - Auto-pairing (parentheses, quotes)
+;; - Selection and deletion behaviors
+;; - Undo/redo functionality
+;; - Line numbers and visual aids
+;; - And more editing conveniences
+;;
+;;; Code:
 
 ;; Persist state
 ;; Persist State flushes state that is normally flushed in
-;; kill-emacs-hook, which I’m trying not to call until I die.
+;; kill-emacs-hook, which I'm trying not to call until I die.
 (use-package persist-state
   :diminish
   :config
@@ -121,11 +135,9 @@
 (electric-pair-mode t)
 ;; Visualize matching parens
 (show-paren-mode 1)
-(electric-pair-mode t)
 ;; Prefer spaces to tabs
 (setq-default indent-tabs-mode nil)
-;; Automatically save your place in files
-(save-place-mode t)
+;; Note: save-place-mode is configured above with use-package
 ;; Save history in minibuffer to keep recent commands easily accessible
 (setq savehist-additional-variables
       ;; search entries
