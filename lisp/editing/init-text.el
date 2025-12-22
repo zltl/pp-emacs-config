@@ -27,6 +27,7 @@
 ;; Title case
 ;; Gosh, I wish I’d had this when I was so active on MusicBrainz.
 (use-package titlecase
+  :ensure (titlecase :host github :repo "ShuguangSun/titlecase.el" :inherit nil)
   :defer t)
 
 ;; Jinx is a just-in-time spell checker.
