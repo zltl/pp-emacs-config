@@ -61,6 +61,12 @@ Requires Emacs 29+ with tree-sitter support."
   :type 'boolean
   :group 'ltl)
 
+(defcustom ltl/enable-reveal nil
+  "Whether to enable reveal.js support in Org mode.
+Includes org-re-reveal and oer-reveal packages."
+  :type 'boolean
+  :group 'ltl)
+
 ;;; Programming Settings
 
 (defcustom ltl/indent-level 4

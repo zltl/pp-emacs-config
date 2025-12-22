@@ -17,6 +17,7 @@
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I'm trying not to call until I die.
 (use-package persist-state
+  :ensure (persist-state :host github :repo "emacsmirror/persist-state" :inherit nil)
   :diminish
   :config
   (persist-state-mode))
@@ -232,7 +233,11 @@
 
 (winner-mode +1)
 
-(use-package writeroom-mode)
+(use-package visual-fill-column
+  :ensure (visual-fill-column :host github :repo "joostkremers/visual-fill-column" :inherit nil))
+
+(use-package writeroom-mode
+  :ensure (writeroom-mode :host github :repo "joostkremers/writeroom-mode" :inherit nil))
 
 (use-package polymode)
 

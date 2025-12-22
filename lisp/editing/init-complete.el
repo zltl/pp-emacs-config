@@ -39,14 +39,14 @@
   :hook (vertico-mode . vertico-prescient-mode))
 (use-package cape)
 (use-package popon
-  :ensure (popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
+  :ensure (popon :type git :repo "https://github.com/cimisc/emacs-popon.git"))
 
 ;; corfu cannot used in terminal
 ;; try corfu-terminal
 (use-package corfu-terminal
   :ensure (corfu-terminal
              :type git
-             :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+             :repo "https://github.com/cimisc/emacs-corfu-terminal.git")
   :hook (corfu-mode . corfu-terminal-mode))
 
 (use-package nerd-icons-corfu

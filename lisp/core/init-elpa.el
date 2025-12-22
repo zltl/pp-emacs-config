@@ -103,8 +103,10 @@
 ;;
 ;; I use ^L to break sections on lisp
 (use-package page-break-lines
+  :ensure (page-break-lines :host github :repo "purcell/page-break-lines")
   :diminish
-  :hook (emacs-lisp-mode . page-break-lines-mode))
+  :config
+  (global-page-break-lines-mode))
 
 (provide 'init-elpa)
 ;;; init-elpa.el ends here
