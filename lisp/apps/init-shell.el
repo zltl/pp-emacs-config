@@ -10,8 +10,8 @@
 ;;; Code:
 
 (use-package eat
-  :ensure (eat :fetcher git
-               :url "https://codeberg.org/akib/emacs-eat"
+  :ensure (eat :host github :repo "jamescherti/emacs-eat"
+               :inherit nil
                :files ("*.el" ("term" "term/*.el") "*.texi"
                        "*.ti" ("terminfo/e" "terminfo/e/*")
                        ("terminfo/65" "terminfo/65/*")

@@ -128,7 +128,8 @@
 
 
 
-(use-package scratch)
+(use-package scratch
+  :ensure (scratch :host github :repo "ffevotte/scratch.el" :inherit nil))
 ;; Show event history and command history of some or all buffers.
 ;; (use-package command-log-mode)
 ;; load PATH from shell
@@ -216,6 +217,42 @@
   (rime-show-candidate 'popup))
 
 
+    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
+    └ 2 lines...
+
+ ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
+   └ 29 lines read
+
+ ○ Check function definition
+   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
+
+    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
+    └ 2 lines...
+
+ ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
+   └ 29 lines read
+
+ ○ Check function definition
+   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
+
+    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
+    └ 2 lines...
+
+ ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
+   └ 29 lines read
+
+ ○ Check function definition
+   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
+
+    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
+    └ 2 lines...
+
+ ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
+   └ 29 lines read
+
+ ○ Check function definition
+   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
+
 
 (require 'init-copilot)
 

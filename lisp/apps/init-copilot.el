@@ -21,6 +21,10 @@
 
 ;; TODO: use M-x copilot-login
 (when (executable-find "node")
+  (use-package track-changes
+    :ensure (:host github :repo "emacs-straight/track-changes"
+             :files ("*.el")))
+
   (use-package copilot
     :diminish
     :ensure (:host github :repo "copilot-emacs/copilot.el")
@@ -42,8 +46,9 @@
           ("M-f" . #'copilot-accept-completion-by-word)
           ("M-<return>" . #'copilot-accept-completion-by-line))
     :config
-    (and (not (copilot-installed-version))
-         (copilot-install-server))))
+    (when (not (copilot-installed-version))
+      (let ((display-buffer-alist (cons '("^\\*copilot-install-server\\*" display-buffer-no-window (allow-no-window . t)) display-buffer-alist)))
+        (copilot-install-server)))))
 
 
 ;; ChatGPT Shell - AI chat integration (optional)

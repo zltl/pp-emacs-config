@@ -107,11 +107,12 @@ buffer's text scale."
   :custom
   (org-fragtog-preview-delay 0.2))
 
-(use-package org-re-reveal
-  :ensure t)
+(when ltl/enable-reveal
+  (use-package org-re-reveal
+    :ensure t)
 
-(use-package oer-reveal
-  :config (oer-reveal-setup-submodules))
+  (use-package oer-reveal
+    :config (oer-reveal-setup-submodules)))
 
 (require 'org)
 (require 'ox-publish)
