@@ -172,6 +172,7 @@
 (ltl/safe-require 'init-org)
 (ltl/safe-require 'init-shell)
 (ltl/safe-require 'init-copilot)
+(ltl/safe-require 'init-copilot-cli)
 (ltl/safe-require 'init-applications)
 
 ;;; Report loading status
@@ -215,44 +216,6 @@
   :custom
   (default-input-method "rime")
   (rime-show-candidate 'popup))
-
-
-    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
-    └ 2 lines...
-
- ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
-   └ 29 lines read
-
- ○ Check function definition
-   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
-
-    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
-    └ 2 lines...
-
- ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
-   └ 29 lines read
-
- ○ Check function definition
-   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
-
-    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
-    └ 2 lines...
-
- ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
-   └ 29 lines read
-
- ○ Check function definition
-   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
-
-    $ grep -n "defun copilot-async-start-process" ./elpaca/repos/copilot/copilot.el
-    └ 2 lines...
-
- ✔ Read ./elpaca/repos/copilot/copilot.el:347-370
-   └ 29 lines read
-
- ○ Check function definition
-   $ emacs --batch --eval "(message \"%s\" (symbol-function 'display-buffer-no-window))"
-
 
 (require 'init-copilot)
 
