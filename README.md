@@ -26,7 +26,7 @@ This is a well-organized Emacs configuration designed for developers, especially
 
 ## ✨ Highlights
 
-> 📢 **Latest Update (2025-01-11):** Configuration fully optimized and restructured into modular structure v3.0
+> 📢 **Latest Update (2024-12-24):** Added GitHub Copilot CLI deep integration with `eat` terminal
 
 - 🚀 **Fast Startup** - Optimized with lazy loading (30+ packages deferred) and native compilation
 - 📁 **Modular Structure** - 22 modules organized in 6 categories (v3.0) ⭐
@@ -124,6 +124,8 @@ emacs
 # ⚙️ Language-Specific Setup
 
 ## 🤖 GitHub Copilot
+
+### Copilot Inline Completion
 **Requirements:** Node.js must be installed.
 
 **Setup:**
@@ -136,6 +138,42 @@ emacs
 - `TAB` - Accept suggestion
 - `M-n`/`M-p` - Next/previous suggestion
 - `C-c t `` - Toggle Copilot mode
+
+### Copilot CLI (Terminal Agent) ⭐ NEW
+**Requirements:** GitHub Copilot CLI installed (`copilot` command).
+
+**Install Copilot CLI:**
+```bash
+# Install via npm
+npm install -g @anthropic-ai/copilot
+
+# Or via GitHub CLI extension
+gh extension install github/gh-copilot
+```
+
+**Usage (C-c c prefix):**
+| Key | Command | Description |
+|-----|---------|-------------|
+| `C-c c c` | `copilot-cli` | Start Copilot CLI session |
+| `C-c c s` | `copilot-cli-send-buffer` | Send current buffer |
+| `C-c c r` | `copilot-cli-send-region` | Send selected region |
+| `C-c c e` | `copilot-cli-explain` | Explain code |
+| `C-c c v` | `copilot-cli-review` | Review code |
+| `C-c c f` | `copilot-cli-fix-error` | Fix errors (with flycheck/flymake) |
+| `C-c c t` | `copilot-cli-generate-tests` | Generate unit tests |
+| `C-c c R` | `copilot-cli-refactor` | Refactor with instruction |
+| `C-c c q` | `copilot-cli-quit` | Quit CLI session |
+
+**In CLI Terminal:**
+- `C-c C-b` - Insert @file reference to source buffer
+- `C-c C-s` - Insert @file reference (choose file)
+- `C-c C-q` - Quit
+
+**Features:**
+- Uses `eat` terminal emulator for proper terminal handling
+- Side-by-side layout: source code on left, CLI on right
+- Auto project directory detection
+- Integrates with flycheck/flymake for error context
 
 ## 🐹 Go
 **Install Go:**
@@ -515,7 +553,8 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │   │
 │   └── apps/              # Applications
 │       ├── init-applications.el # Dictionary, UUID, Rime, etc.
-│       ├── init-copilot.el      # AI assistants
+│       ├── init-copilot.el      # AI inline completion
+│       ├── init-copilot-cli.el  # GitHub Copilot CLI integration ⭐ NEW
 │       ├── init-org.el          # Org-mode
 │       └── init-shell.el        # Terminal (Eat/Eshell/Vterm)
 │
@@ -569,7 +608,8 @@ The configuration is organized into **6 logical categories** with **22 modules**
 
 ### Applications (`lisp/apps/`)
 - **init-applications.el** - Utilities (Dictionary, UUID, Rime input, etc.)
-- **init-copilot.el** - AI assistants (GitHub Copilot, ChatGPT)
+- **init-copilot.el** - GitHub Copilot inline completion
+- **init-copilot-cli.el** - GitHub Copilot CLI integration (terminal agent) ⭐ NEW
 - **init-org.el** - Org-mode with modern styling and export features
 - **init-shell.el** - Terminal emulation (Eat, Eshell, Vterm)
 
@@ -600,7 +640,8 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - **magit-todos** - TODO tracking
 
 ### AI Assistance
-- **GitHub Copilot** - AI pair programming
+- **GitHub Copilot** - AI pair programming (inline completion)
+- **GitHub Copilot CLI** - Terminal-based AI agent for code tasks ⭐ NEW
 - **ChatGPT Shell** - Interactive AI assistant
 
 ## 🔑 Important Keybindings
@@ -611,8 +652,15 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - `C-c t` - **Toggles**
   - `C-c t $` - Spell check (jinx-mode)
   - `C-c t `` - Copilot mode
+  - `C-c t C` - Copilot CLI
   - `C-c t e` - Evil mode
   - `C-c t c` - Copilot chat
+- `C-c c` - **Copilot CLI commands** ⭐ NEW
+  - `C-c c c` - Start CLI session
+  - `C-c c s` - Send buffer
+  - `C-c c e` - Explain code
+  - `C-c c v` - Review code
+  - `C-c c f` - Fix errors
 - `C-c j` - **Jump/Goto**
   - `C-c j c` - Jump to char (avy)
   - `C-c j j` - Jump to word (avy)
