@@ -14,28 +14,51 @@
 
 ;;; C/C++
 
-(defun ltl/clang-format-get-style-setting (key)
-  "Get a setting value from .clang-format file in project."
-  (when-let* ((project-root (or (locate-dominating-file default-directory ".clang-format")
-                                (and (fboundp 'project-current)
-                                     (project-current)
-                                     (project-root (project-current)))))
-              (clang-format-file (expand-file-name ".clang-format" project-root)))
-    (when (file-exists-p clang-format-file)
-      (with-temp-buffer
-        (insert-file-contents clang-format-file)
+(defvar ltl/clang-format-base-styles
+  '(("LLVM"       . (:indent-width 2 :use-tab nil :tab-width 8))
+    ("Google"     . (:indent-width 2 :use-tab nil :tab-width 8))
+    ("Chromium"   . (:indent-width 2 :use-tab nil :tab-width 8))
+    ("Mozilla"    . (:indent-width 2 :use-tab nil :tab-width 8))
+    ("WebKit"     . (:indent-width 4 :use-tab nil :tab-width 8))
+    ("Microsoft"  . (:indent-width 4 :use-tab nil :tab-width 4))
+    ("GNU"        . (:indent-width 2 :use-tab nil :tab-width 8)))
+  "Predefined clang-format base styles with their default values.")
+
+(defun ltl/clang-format-parse-file ()
+  "Parse .clang-format file and return plist of settings.
+Searches upward from current directory for .clang-format file."
+  (when-let* ((clang-format-dir (locate-dominating-file default-directory ".clang-format"))
+              (clang-format-file (expand-file-name ".clang-format" clang-format-dir)))
+    (with-temp-buffer
+      (insert-file-contents clang-format-file)
+      (let (result base-style)
+        ;; Parse BasedOnStyle first
         (goto-char (point-min))
-        (when (re-search-forward (format "^%s:\\s-*\\(.+\\)" key) nil t)
-          (string-trim (match-string 1)))))))
+        (when (re-search-forward "^BasedOnStyle:\\s-*\\(.+\\)" nil t)
+          (setq base-style (string-trim (match-string 1)))
+          (when-let ((defaults (cdr (assoc base-style ltl/clang-format-base-styles))))
+            (setq result (copy-sequence defaults))))
+        ;; Override with explicit values
+        (goto-char (point-min))
+        (when (re-search-forward "^IndentWidth:\\s-*\\([0-9]+\\)" nil t)
+          (setq result (plist-put result :indent-width (string-to-number (match-string 1)))))
+        (goto-char (point-min))
+        (when (re-search-forward "^TabWidth:\\s-*\\([0-9]+\\)" nil t)
+          (setq result (plist-put result :tab-width (string-to-number (match-string 1)))))
+        (goto-char (point-min))
+        (when (re-search-forward "^UseTab:\\s-*\\(.+\\)" nil t)
+          (setq result (plist-put result :use-tab (not (string= (string-trim (match-string 1)) "Never")))))
+        result))))
 
 (defun ltl/apply-clang-format-style ()
   "Apply .clang-format settings to cc-mode indentation."
-  (when-let ((indent-width (ltl/clang-format-get-style-setting "IndentWidth")))
-    (setq-local c-basic-offset (string-to-number indent-width)))
-  (when-let ((use-tabs (ltl/clang-format-get-style-setting "UseTab")))
-    (setq-local indent-tabs-mode (not (string= use-tabs "Never"))))
-  (when-let ((tab-width (ltl/clang-format-get-style-setting "TabWidth")))
-    (setq-local tab-width (string-to-number tab-width))))
+  (when-let ((settings (ltl/clang-format-parse-file)))
+    (when-let ((indent-width (plist-get settings :indent-width)))
+      (setq-local c-basic-offset indent-width))
+    (when-let ((use-tab (plist-get settings :use-tab)))
+      (setq-local indent-tabs-mode use-tab))
+    (when-let ((tab-width (plist-get settings :tab-width)))
+      (setq-local tab-width tab-width))))
 
 (use-package cc-mode
   :ensure nil
