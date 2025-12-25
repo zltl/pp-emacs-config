@@ -14,9 +14,33 @@
 
 ;;; C/C++
 
+(defun ltl/clang-format-get-style-setting (key)
+  "Get a setting value from .clang-format file in project."
+  (when-let* ((project-root (or (locate-dominating-file default-directory ".clang-format")
+                                (and (fboundp 'project-current)
+                                     (project-current)
+                                     (project-root (project-current)))))
+              (clang-format-file (expand-file-name ".clang-format" project-root)))
+    (when (file-exists-p clang-format-file)
+      (with-temp-buffer
+        (insert-file-contents clang-format-file)
+        (goto-char (point-min))
+        (when (re-search-forward (format "^%s:\\s-*\\(.+\\)" key) nil t)
+          (string-trim (match-string 1)))))))
+
+(defun ltl/apply-clang-format-style ()
+  "Apply .clang-format settings to cc-mode indentation."
+  (when-let ((indent-width (ltl/clang-format-get-style-setting "IndentWidth")))
+    (setq-local c-basic-offset (string-to-number indent-width)))
+  (when-let ((use-tabs (ltl/clang-format-get-style-setting "UseTab")))
+    (setq-local indent-tabs-mode (not (string= use-tabs "Never"))))
+  (when-let ((tab-width (ltl/clang-format-get-style-setting "TabWidth")))
+    (setq-local tab-width (string-to-number tab-width))))
+
 (use-package cc-mode
   :ensure nil
-  :hook ((c-mode c++-mode) . lsp))
+  :hook ((c-mode c++-mode) . lsp)
+  :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/apply-clang-format-style))
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
 
