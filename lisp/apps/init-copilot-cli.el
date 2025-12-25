@@ -121,7 +121,12 @@
         ;; Add local keybindings
         (local-set-key (kbd "C-c C-q") #'copilot-cli-quit)
         (local-set-key (kbd "C-c C-s") #'copilot-cli-send-file)
-        (local-set-key (kbd "C-c C-b") #'copilot-cli-insert-source-file)))
+        (local-set-key (kbd "C-c C-b") #'copilot-cli-insert-source-file)
+        ;; Ensure mode switching keys are available
+        (local-set-key (kbd "C-c C-j") #'eat-semi-char-mode)
+        (local-set-key (kbd "C-c C-e") #'eat-emacs-mode)
+        ;; Start in semi-char mode (input mode)
+        (eat-semi-char-mode)))
     ;; Return to source window
     (select-window source-win)))
 
