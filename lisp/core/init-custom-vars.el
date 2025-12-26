@@ -160,10 +160,10 @@ Safer but slower."
 
 ;;; Completion Settings
 
-(defcustom ltl/completion-framework 'corfu
+(defcustom ltl/completion-framework 'company
   "Completion framework to use."
-  :type '(choice (const :tag "Corfu (recommended)" corfu)
-                 (const :tag "Company" company)
+  :type '(choice (const :tag "Company (recommended)" company)
+                 (const :tag "Corfu" corfu)
                  (const :tag "None" nil))
   :group 'ltl)
 

@@ -2,77 +2,149 @@
 
 ;;; Commentary:
 ;;
-;; This module configures the completion framework using:
-;; - Corfu: In-buffer completion popup (replaces Company)
+;; This module configures a modern completion framework using:
+;; - Company: In-buffer completion popup (works well in terminal & GUI)
 ;; - Vertico: Vertical completion UI for minibuffer
 ;; - Orderless: Flexible matching style
 ;; - Marginalia: Rich annotations in minibuffer
 ;; - Embark: Contextual actions on completion candidates
 ;; - Consult: Enhanced search and navigation commands
-;; - Cape: Additional completion backends
 ;;
 ;;; Code:
 
-(use-package corfu
-  :init
-  (global-corfu-mode)
-  :hook (corfu-mode . corfu-popupinfo-mode)
-  :hook (corfu-mode . corfu-history-mode)
+;;; ============================================================================
+;;; Company Mode - Modern In-buffer Completion
+;;; ============================================================================
+
+(use-package company
+  :diminish
+  :hook (after-init . global-company-mode)
+  :bind
+  (:map company-mode-map
+        ("C-M-i" . company-complete)
+        ("M-/" . company-complete))
+  (:map company-active-map
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous)
+        ("C-s" . company-filter-candidates)
+        ("C-M-s" . company-search-candidates)
+        ("<tab>" . company-complete-common-or-cycle)
+        ("TAB" . company-complete-common-or-cycle)
+        ("<backtab>" . company-select-previous)
+        ("RET" . company-complete-selection)
+        ("<return>" . company-complete-selection)
+        ("C-w" . nil)  ; Don't interfere with kill-region
+        ("C-h" . company-show-doc-buffer))
   :custom
-  (corfu-auto t)                   ; Enable auto completion
-  (corfu-cycle t)                  ; Allows cycling through candidates
-  (corfu-min-width 25)
-  (corfu-auto-delay 0.2)
-  (corfu-auto-prefix 1)
-  (corfu-quit-no-match 'separator)
+  ;; Performance
+  (company-idle-delay 0.1)
+  (company-minimum-prefix-length 1)
+  (company-tooltip-limit 14)
+  
+  ;; Behavior
+  (company-selection-wrap-around t)
+  (company-require-match nil)
+  (company-show-quick-access t)
+  (company-quick-access-keys '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
+  (company-quick-access-modifier 'meta)  ; Use M-1, M-2 etc to select
+  
+  ;; Appearance
+  (company-tooltip-align-annotations t)
+  (company-tooltip-annotation-padding 1)
+  (company-tooltip-margin 1)
+  (company-format-margin-function #'company-text-icons-margin)
+  
+  ;; Backends
+  (company-backends '((company-capf        ; completion-at-point-functions
+                       company-files       ; file paths
+                       company-keywords    ; programming keywords
+                       company-yasnippet)  ; snippets
+                      company-dabbrev-code ; code completions from buffer
+                      company-dabbrev))    ; text completions from buffer
+  
+  ;; Dabbrev settings
+  (company-dabbrev-other-buffers t)
+  (company-dabbrev-ignore-case t)
+  (company-dabbrev-downcase nil)
+  
   :config
-  (unless (bound-and-true-p savehist-mode)
-    (savehist-mode 1))
-  (add-to-list 'savehist-additional-variables 'corfu-history))
+  ;; Better completion in comments and strings
+  (setq company-dabbrev-char-regexp "\\sw\\|\\s_")
+  
+  ;; Make company work better with LSP
+  (setq company-transformers '(delete-consecutive-dups
+                               company-sort-by-occurrence
+                               company-sort-prefer-same-case-prefix)))
 
-(use-package prescient)
-(use-package corfu-prescient
-  :hook (corfu-mode . corfu-prescient-mode))
-(use-package ivy-prescient
-  :hook (ivy-mode . ivy-prescient-mode))
-(use-package vertico-prescient
-  :hook (vertico-mode . vertico-prescient-mode))
-(use-package cape)
-(use-package popon
-  :ensure (popon :type git :repo "https://github.com/cimisc/emacs-popon.git"))
-
-;; corfu cannot used in terminal
-;; try corfu-terminal
-(use-package corfu-terminal
-  :ensure (corfu-terminal
-             :type git
-             :repo "https://github.com/cimisc/emacs-corfu-terminal.git")
-  :hook (corfu-mode . corfu-terminal-mode))
-
-(use-package nerd-icons-corfu
+;; Prescient - Intelligent sorting and filtering
+(use-package prescient
   :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+  (setq prescient-filter-method '(literal regexp initialism fuzzy))
+  (setq prescient-sort-full-matches-first t)
+  (prescient-persist-mode 1))
 
-;; Optionally:
-(setq nerd-icons-corfu-mapping
-      '((array :style "cod" :icon "symbol_array" :face font-lock-type-face)
-        (boolean :style "cod" :icon "symbol_boolean" :face font-lock-builtin-face)
-        ;; ...
-        (t :style "cod" :icon "code" :face font-lock-warning-face)))
-;; Remember to add an entry for `t', the library uses that as default.
-;; The Custom interface is also supported for tuning the variable above.
+(use-package company-prescient
+  :after (company prescient)
+  :config
+  (company-prescient-mode 1))
 
+;; Company-box - Better UI for GUI Emacs
+(use-package company-box
+  :if (display-graphic-p)
+  :diminish
+  :hook (company-mode . company-box-mode)
+  :custom
+  (company-box-show-single-candidate t)
+  (company-box-backends-colors nil)
+  (company-box-doc-enable t)
+  (company-box-doc-delay 0.3)
+  (company-box-scrollbar nil))
 
+;; Company-quickhelp - Documentation popup for terminal
+(use-package company-quickhelp
+  :unless (display-graphic-p)
+  :hook (company-mode . company-quickhelp-mode)
+  :custom
+  (company-quickhelp-delay 0.3))
+
+;;; ============================================================================
+;;; Yasnippet - Snippet expansion
+;;; ============================================================================
 
 (use-package yasnippet
-  :diminish
+  :diminish yas-minor-mode
+  :hook (after-init . yas-global-mode)
   :config
-  (yas-global-mode 1))
-;; flycheck
+  (setq yas-verbosity 1)
+  (setq yas-wrap-around-region t))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
+
+;;; ============================================================================
+;;; Flycheck - Syntax checking
+;;; ============================================================================
+
 (use-package flycheck
   :diminish
-  :init
-  (global-flycheck-mode))
+  :hook (after-init . global-flycheck-mode)
+  :custom
+  (flycheck-emacs-lisp-load-path 'inherit)
+  (flycheck-indication-mode 'left-fringe)
+  (flycheck-check-syntax-automatically '(save mode-enabled idle-change))
+  (flycheck-idle-change-delay 0.5))
+
+;;; ============================================================================
+;;; Vertico Prescient
+;;; ============================================================================
+
+(use-package vertico-prescient
+  :after vertico
+  :config
+  (vertico-prescient-mode 1))
+
+(use-package ivy-prescient
+  :hook (ivy-mode . ivy-prescient-mode))
 
 ;; Marginalia
 ;; Marginalia annotates minibuffer completions with some useful info.

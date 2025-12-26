@@ -11,18 +11,10 @@
 ;;; Code:
 
 ;;; Tree-sitter Configuration
-
-(use-package tree-sitter
-  :config
-  ;; activate tree-sitter on any buffer containing code for which it has a parser available
-  (global-tree-sitter-mode)
-  ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
-  ;; by switching on and off
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-
-(use-package tree-sitter-langs
-  :ensure t
-  :after tree-sitter)
+;;
+;; Emacs 29+ has built-in tree-sitter support via `treesit`.
+;; We no longer need the external tree-sitter/tree-sitter-langs packages
+;; which require tsc-dyn.so (has GLIBC compatibility issues).
 
 (use-package treesit
   :ensure nil
@@ -91,7 +83,7 @@
 ;;; Combobulate - Structural Editing
 
 (use-package combobulate
-  :after treesit-sitter
+  :after treesit
   :ensure (combobulate :host github :repo "mickeynp/combobulate")
   :custom
   (combobulate-key-prefix "C-c o")

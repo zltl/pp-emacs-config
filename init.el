@@ -91,7 +91,6 @@
 (use-package dash)
 (use-package s)
 
-
 ;;; No littering
 ;; Many packages leave crumbs in user-emacs-directory or even
 ;; $HOME. Finding and configuring them individually is a hassle, so we
