@@ -63,7 +63,8 @@ Searches upward from current directory for .clang-format file."
 (use-package cc-mode
   :ensure nil
   :hook ((c-mode c++-mode) . lsp)
-  :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/apply-clang-format-style))
+  :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/apply-clang-format-style)
+  :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . (lambda () (electric-indent-local-mode 1))))
 
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
 

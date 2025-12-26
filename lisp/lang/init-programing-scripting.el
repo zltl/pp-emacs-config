@@ -19,8 +19,9 @@
                          (require 'lsp-pyright)
                          (lsp))))
 
-(use-package python-mode
-  :defer t
+;; Use built-in python.el (provides python-mode)
+(use-package python
+  :ensure nil  ; built-in, no need to install
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode))
 
