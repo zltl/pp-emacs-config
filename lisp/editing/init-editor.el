@@ -134,6 +134,8 @@
 
 ;; Automatically insert closing parens
 (electric-pair-mode t)
+;; Enable electric indent mode for auto-indentation on RET
+(electric-indent-mode t)
 ;; Visualize matching parens
 (show-paren-mode 1)
 ;; Prefer spaces to tabs
