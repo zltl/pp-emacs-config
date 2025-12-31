@@ -170,7 +170,7 @@
 ;; Application modules
 (ltl/safe-require 'init-org)
 (ltl/safe-require 'init-shell)
-(ltl/safe-require 'init-copilot)
+;; (ltl/safe-require 'init-copilot)
 (ltl/safe-require 'init-copilot-cli)
 (ltl/safe-require 'init-applications)
 
@@ -216,7 +216,6 @@
   (default-input-method "rime")
   (rime-show-candidate 'popup))
 
-(require 'init-copilot)
 
 
 
