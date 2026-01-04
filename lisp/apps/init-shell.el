@@ -17,9 +17,7 @@
                        ("terminfo/65" "terminfo/65/*")
                        ("integration" "integration/*")
                        (:exclude ".dir-locals.el" "*-tests.el")))
-  :config
-  (add-hook 'eshell-load-hook #'eat-eshell-mode)
-  )
+  :hook (eshell-load-hook . eat-eshell-mode))
 
 
 (provide 'init-shell)

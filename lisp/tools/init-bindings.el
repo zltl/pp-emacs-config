@@ -42,7 +42,10 @@
                :prefix "C-c p")
   :bind
   (:prefix-map ltl/multicursor
-               :prefix "C-c m"))
+               :prefix "C-c m")
+  :bind
+  (:prefix-map ltl/lsp-map
+               :prefix "C-c l"))
 
 ;; use evil when "C-c t e"
 (use-package evil
@@ -95,10 +98,21 @@
 ;; C-h C-h shadows which-key with something less useful.
 (ltl/unbind-all 'help-for-help)
 
+;; Add descriptions for prefix maps
+(with-eval-after-load 'which-key
+  (which-key-add-keymap-based-replacements global-map
+    "C-c f" "files"
+    "C-c t" "toggles"
+    "C-c j" "goto"
+    "C-c p" "smartparens"
+    "C-c m" "multicursor"
+    "C-c l" "lsp/eglot"))
+
 ;; Add extra context to Emacs documentation to help make it easier to
 ;; search and understand. This configuration uses the keybindings
 ;; recommended by the package author.
 (use-package helpful
+  :defer t
   :bind (("C-h f" . #'helpful-callable)
          ("C-h v" . #'helpful-variable)
          ("C-h k" . #'helpful-key)

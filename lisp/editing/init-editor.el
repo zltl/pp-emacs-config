@@ -212,7 +212,7 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
   ;; disable breadcrumb whel using lsp-mode, because lsp have this feature already.
-  :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
+  ;; :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
   :config
   (breadcrumb-imenu-crumbs)
   (breadcrumb-mode))
@@ -224,6 +224,7 @@
   :bind
   ("M-0" . treemacs-select-window))
 (use-package treemacs-nerd-icons
+  :after treemacs
   :config
   (treemacs-load-theme "nerd-icons"))
 
@@ -241,7 +242,8 @@
 (use-package writeroom-mode
   :ensure (writeroom-mode :host github :repo "joostkremers/writeroom-mode" :inherit nil))
 
-(use-package polymode)
+(use-package polymode
+  :defer t)
 
 (use-package envrc
   :hook (after-init . envrc-global-mode))

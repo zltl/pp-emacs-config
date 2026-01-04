@@ -45,7 +45,7 @@ Requires proper Copilot authentication."
   :group 'ltl)
 
 (defcustom ltl/enable-lsp t
-  "Whether to enable LSP mode for programming languages.
+  "Whether to enable LSP (Eglot) for programming languages.
 Disabling this can improve performance on slower machines."
   :type 'boolean
   :group 'ltl)
@@ -136,7 +136,7 @@ Default is 100MB. Increase if you experience stuttering."
 
 (defcustom ltl/read-process-output-max (* 1024 1024)
   "Maximum bytes to read from subprocess in a single chunk.
-Default is 1MB. Increase for better LSP performance."
+Default is 1MB. Increase for better LSP/Eglot performance."
   :type 'integer
   :group 'ltl)
 
@@ -156,20 +156,6 @@ Default is 1MB. Increase for better LSP performance."
   "Whether to backup files by copying instead of renaming.
 Safer but slower."
   :type 'boolean
-  :group 'ltl)
-
-;;; Completion Settings
-
-(defcustom ltl/completion-framework 'company
-  "Completion framework to use."
-  :type '(choice (const :tag "Company (recommended)" company)
-                 (const :tag "Corfu" corfu)
-                 (const :tag "None" nil))
-  :group 'ltl)
-
-(defcustom ltl/completion-delay 0.0
-  "Delay in seconds before showing completion candidates."
-  :type 'number
   :group 'ltl)
 
 ;;; Git Settings

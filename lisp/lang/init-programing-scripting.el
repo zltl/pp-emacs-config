@@ -13,17 +13,12 @@
 
 ;;; Python
 
-(use-package lsp-pyright
-  :defer t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp))))
-
 ;; Use built-in python.el (provides python-mode)
 (use-package python
   :ensure nil  ; built-in, no need to install
   :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode))
+  :interpreter ("python" . python-mode)
+  :hook (python-mode . eglot-ensure))
 
 (use-package python-docstring
   :defer t

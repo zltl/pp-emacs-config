@@ -174,6 +174,7 @@
 (ltl/safe-require 'init-copilot-cli)
 (ltl/safe-require 'init-applications)
 
+
 ;;; Report loading status
 (message "")
 (message "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -181,44 +182,6 @@
 (message "  Run M-x ltl/doctor to check your configuration health")
 (message "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 (message "")
-
-(provide 'init)
-;;; init.el ends here
-
-(provide 'init)
-;;; init.el ends here
-
-
-;;;
-;;; Applications
-;;;
-
-;; Dictionary
-;; The M-# keybinding is dubious because it’s not reserved, but it’s
-;; good enough for Mickey Petersen.
-(use-package dictionary
-  :bind
-  ("M-#" . dictionary-lookup-definition)
-  :if (memq window-system '(mac ns x))
-  :custom
-  ;; Until I find a working dictd for MacOS on Nix, we’ll sigh heavily
-  ;; and use dict.org.
-  (dictionary-server "dict.org"))
-
-;; UUID Generation
-(use-package uuidgen
-  :defer t)
-
-;; rime
-;; install librime/librime-dev
-(use-package rime
-  :custom
-  (default-input-method "rime")
-  (rime-show-candidate 'popup))
-
-
-
-
 
 (provide 'init)
 ;;; init.el ends here

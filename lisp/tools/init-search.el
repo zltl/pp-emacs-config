@@ -9,7 +9,9 @@
 ;;
 ;;; Code:
 
-(use-package ag)
+(use-package ag
+  :defer t
+  :commands ag)
 
 ;; better search in buffer
 (use-package swiper
