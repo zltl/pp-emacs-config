@@ -21,16 +21,16 @@ M-x elpaca-delete                删除包
 M-x elpaca-log                   查看日志
 ```
 
-### 🔍 代码导航（LSP）
+### 🔍 代码导航（Eglot）
 ```
 M-.         跳转到定义        xref-find-definitions
 M-,         返回              xref-pop-marker-stack
 M-?         查找引用          xref-find-references
-C-c l r r   重命名符号        lsp-rename
-C-c l g g   跳转定义          lsp-goto-type-definition
-C-c l g i   跳转实现          lsp-goto-implementation
-C-c l a a   代码操作          lsp-execute-code-action
-C-c l F     格式化文档        lsp-format-buffer
+C-c l r     重命名符号        eglot-rename
+C-c l f     格式化文档        eglot-format
+C-c l a     代码操作          eglot-code-actions
+C-c l d     查看文档          eldoc-doc-buffer
+C-c l s     搜索符号          consult-eglot-symbols
 ```
 
 ### 🌲 Tree-sitter
@@ -109,7 +109,7 @@ ltl/theme                     'spacemacs-dark
 ### 功能开关
 ```elisp
 ltl/enable-copilot            t
-ltl/enable-lsp                t
+ltl/enable-lsp                t      ; 控制 Eglot
 ltl/enable-tree-sitter        t
 ltl/enable-dashboard          t
 ```
@@ -122,14 +122,12 @@ ltl/use-tabs                  nil
 ltl/show-trailing-whitespace  t
 ```
 
-### LSP 设置
+### Eglot/LSP 设置
 ```elisp
 ltl/lsp-language-servers      '((go . "gopls")
                                 (c . "clangd")
                                 (python . "pyright")
                                 (rust . "rust-analyzer"))
-ltl/lsp-enable-snippets       t
-ltl/lsp-enable-on-type-formatting  nil
 ```
 
 ### 性能设置
@@ -195,11 +193,11 @@ M-x elpaca-rebuild <package>     ; 重建包
 # 检查服务器
 M-x ltl/doctor
 
-# 重启 LSP
-M-x lsp-workspace-restart
+# 重启 Eglot
+M-x eglot-reconnect
 
 # 查看日志
-M-x lsp-workspace-show-log
+M-x eglot-events-buffer
 ```
 
 ### 性能问题
@@ -281,7 +279,7 @@ M-x ltl/apply-custom-settings
 
 4. **Magit 是神器** - `C-x g` 打开后，按 `?` 查看所有命令
 
-5. **LSP 悬停文档** - 光标停在符号上，自动显示文档
+5. **Eglot 悬停文档** - 光标停在符号上，按 `C-c l d` 查看文档
 
 6. **Treemacs 项目浏览** - `M-x treemacs` 打开项目树
 

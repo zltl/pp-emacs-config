@@ -1,5 +1,10 @@
+;;; init-dashboard.el --- Dashboard configuration -*- lexical-binding: t -*-
 
-
+;;; Commentary:
+;;
+;; This module configures the startup dashboard.
+;;
+;;; Code:
 
 (use-package dashboard
   :config

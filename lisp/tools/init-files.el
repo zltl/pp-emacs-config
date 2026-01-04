@@ -61,28 +61,20 @@
   (:map ltl/files-map
         ("r" . recentf-open)))
 
-(use-package projectile
-  :diminish
-  :config
-  (projectile-mode t))
-
-;; ffap, short for “find file at point,” guesses a default file from
-;; the point. ffap-bindings rebinds several commands with ffap
-;; equivalents.
-(use-package ffap
-  :ensure nil
-  :hook (on-first-input . ffap-bindings))
-
-;; Counting words
-;; The default binding of M-= is count-words-region. The newer
-;; count-words counts the buffer when there’s no active region.
-(bind-key [remap count-words-region] 'count-words)
-
 ;; Dired
 ;; Dired should refresh the listing on each revisit.
 ;; C-\ to goggle input method
-(require 'dired)
-(setf dired-auto-revert-buffer t)
+(use-package dired
+  :ensure nil
+  :defer t
+  :custom
+  (dired-auto-revert-buffer t))
+
+(use-package projectile
+  :diminish
+  :hook (after-init . projectile-mode)
+  :custom
+  (projectile-completion-system 'default))
 
 (provide 'init-files)
 ;;; init-files.el ends here

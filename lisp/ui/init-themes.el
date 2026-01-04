@@ -118,15 +118,16 @@
 
 (use-package all-the-icons
   :if (display-graphic-p)
+  :defer t
   :config
   (unless (my/font-installed-p "all-the-icons")
     (all-the-icons-install-fonts t)))
-(use-package nerd-icons)
+(use-package nerd-icons
+  :defer t)
 (use-package all-the-icons-nerd-fonts
   :ensure
   (all-the-icons-nerd-fonts :host github :repo "mohkale/all-the-icons-nerd-fonts")
   :after all-the-icons
-  :demand t
   :config
   (all-the-icons-nerd-fonts-prefer))
 
@@ -150,15 +151,15 @@
   (doom-modeline-enable-word-count t)
   (doom-modeline-continuous-word-count-modes
    '(markdown-mode gfm-mode org-mode rst-mode latex-mode tex-mode text-mode))
+  :hook (after-init . doom-modeline-mode)
   :config
   ;; HACK: Add some padding to the right
   (doom-modeline-def-modeline 'main
-    '(eldoc bar workspace-name window-number modals matches follow buffer-info
+    '(bar workspace-name window-number modals matches follow buffer-info
             remote-host buffer-position word-count parrot selection-info)
     '(compilation objed-state misc-info persp-name battery grip irc mu4e gnus
                   github debug repl lsp minor-modes input-method indent-info buffer-encoding
-                  major-mode process vcs time "  "))
-  (doom-modeline-mode))
+                  major-mode process vcs time "  ")))
 
 (use-package solaire-mode
   :config

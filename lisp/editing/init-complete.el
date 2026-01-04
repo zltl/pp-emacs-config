@@ -13,12 +13,13 @@
 ;;; Code:
 
 ;;; ============================================================================
-;;; Company Mode - Modern In-buffer Completion
+;;; Completion Framework Selection
 ;;; ============================================================================
 
+;; Company Mode - In-buffer Completion
 (use-package company
   :diminish
-  :hook (after-init . global-company-mode)
+  :demand t
   :bind
   (:map company-mode-map
         ("C-M-i" . company-complete)
@@ -54,13 +55,12 @@
   (company-tooltip-margin 1)
   (company-format-margin-function #'company-text-icons-margin)
   
-  ;; Backends
-  (company-backends '((company-capf        ; completion-at-point-functions
-                       company-files       ; file paths
-                       company-keywords    ; programming keywords
-                       company-yasnippet)  ; snippets
-                      company-dabbrev-code ; code completions from buffer
-                      company-dabbrev))    ; text completions from buffer
+  ;; Backends - capf is the main backend that integrates with Eglot and elisp
+  (company-backends '(company-capf
+                      company-files
+                      company-keywords
+                      company-dabbrev-code
+                      company-dabbrev))
   
   ;; Dabbrev settings
   (company-dabbrev-other-buffers t)
@@ -74,19 +74,9 @@
   ;; Make company work better with LSP
   (setq company-transformers '(delete-consecutive-dups
                                company-sort-by-occurrence
-                               company-sort-prefer-same-case-prefix)))
-
-;; Prescient - Intelligent sorting and filtering
-(use-package prescient
-  :config
-  (setq prescient-filter-method '(literal regexp initialism fuzzy))
-  (setq prescient-sort-full-matches-first t)
-  (prescient-persist-mode 1))
-
-(use-package company-prescient
-  :after (company prescient)
-  :config
-  (company-prescient-mode 1))
+                               company-sort-prefer-same-case-prefix))
+  ;; Enable global company mode
+  (global-company-mode 1))
 
 ;; Company-box - Better UI for GUI Emacs
 (use-package company-box
@@ -106,6 +96,18 @@
   :hook (company-mode . company-quickhelp-mode)
   :custom
   (company-quickhelp-delay 0.3))
+
+;; Prescient - Intelligent sorting and filtering
+(use-package prescient
+  :config
+  (setq prescient-filter-method '(literal regexp initialism fuzzy))
+  (setq prescient-sort-full-matches-first t)
+  (prescient-persist-mode 1))
+
+(use-package company-prescient
+  :after (company prescient)
+  :config
+  (company-prescient-mode 1))
 
 ;;; ============================================================================
 ;;; Yasnippet - Snippet expansion
@@ -142,9 +144,6 @@
   :after vertico
   :config
   (vertico-prescient-mode 1))
-
-(use-package ivy-prescient
-  :hook (ivy-mode . ivy-prescient-mode))
 
 ;; Marginalia
 ;; Marginalia annotates minibuffer completions with some useful info.

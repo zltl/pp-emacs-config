@@ -62,7 +62,7 @@ Searches upward from current directory for .clang-format file."
 
 (use-package cc-mode
   :ensure nil
-  :hook ((c-mode c++-mode) . lsp)
+  :hook ((c-mode c++-mode) . eglot-ensure)
   :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/apply-clang-format-style)
   :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . (lambda () (electric-indent-local-mode 1))))
 
@@ -83,7 +83,7 @@ Searches upward from current directory for .clang-format file."
               ("C-c C-f" . 'rust-format-buffer)
               ("C-c C-t" . 'rust-test))
   :hook (rust-mode . prettify-symbols-mode)
-  :hook (rust-mode . lsp))
+  :hook (rust-mode . eglot-ensure))
 
 ;;; Go
 
@@ -132,7 +132,7 @@ Searches upward from current directory for .clang-format file."
   :defer t
   :mode "\\.go\\'"
   :interpreter "go"
-  :hook ((go-mode go-ts-mode) . lsp-deferred)
+  :hook ((go-mode go-ts-mode) . eglot-ensure)
   :hook ((go-mode go-ts-mode) . ltl/go-check-tools))
 
 (provide 'init-programing-systems)

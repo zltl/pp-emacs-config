@@ -46,13 +46,10 @@
 ;;   C-\ - Toggle input method
 ;;   M-x rime-select-schema - Switch input schema
 (use-package rime
+  :defer t
   :custom
   (default-input-method "rime")
-  (rime-show-candidate 'popup)
-  :config
-  (when (and (boundp 'rime-librime-root)
-             (not (file-exists-p rime-librime-root)))
-    (message "⚠ Rime: librime not found. Install librime-dev to use Chinese input.")))
+  (rime-show-candidate 'popup))
 
 ;;;
 ;;; Time Tracking (Optional)

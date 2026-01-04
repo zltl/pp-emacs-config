@@ -31,14 +31,8 @@
 
 (use-package haskell-mode
   :defer t
-  :mode "\\.l?hs\\'")
-
-(use-package lsp-haskell
-  :defer t
-  :after (lsp-mode haskell-mode))
-
-(add-hook 'haskell-mode-hook #'lsp)
-(add-hook 'haskell-literate-mode-hook #'lsp)
+  :mode "\\.l?hs\\'"
+  :hook ((haskell-mode haskell-literate-mode) . eglot-ensure))
 
 (use-package elixir-mode
   :defer t

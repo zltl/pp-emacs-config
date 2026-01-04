@@ -630,7 +630,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - **Avy** - Jump to visible text
 
 ### Programming Support
-- **LSP Mode** - Language Server Protocol for Go, C/C++, Python, TypeScript, etc.
+- **Eglot** - Language Server Protocol (built-in) for Go, C/C++, Python, TypeScript, etc.
 - **Tree-sitter** - Modern syntax highlighting
 - **Flycheck** - Real-time error checking
 - **Projectile** - Project management
@@ -667,7 +667,12 @@ The configuration is organized into **6 logical categories** with **22 modules**
   - `C-c j l` - Jump to line (avy)
 - `C-c p` - **Smartparens** operations
 - `C-c m` - **Multiple cursors**
-- `C-c l` - **LSP commands** (in programming modes)
+- `C-c l` - **Eglot/LSP commands** (in programming modes)
+  - `C-c l r` - Rename symbol
+  - `C-c l f` - Format buffer
+  - `C-c l a` - Code actions
+  - `C-c l d` - Show documentation
+  - `C-c l s` - Search symbols
 
 ### Essential Bindings
 - `C-x g` - Magit status
@@ -704,7 +709,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 ### External Documentation
 - [Emacs Manual](https://www.gnu.org/software/emacs/manual/html_node/emacs/)
 - [Magit Manual](https://magit.vc/manual/magit/)
-- [LSP Mode Documentation](https://emacs-lsp.github.io/lsp-mode/)
+- [Eglot Manual](https://www.gnu.org/software/emacs/manual/html_node/eglot/)
 - [Elpaca Package Manager](https://github.com/progfolio/elpaca)
 - [use-package Documentation](https://github.com/jwiegley/use-package)
 

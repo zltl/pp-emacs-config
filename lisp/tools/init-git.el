@@ -21,7 +21,8 @@
 ;; would like to get into vc-mode. But I'm an advanced enough Git user
 ;; that something tailor-made carries its weight here.
 
-(use-package transient)
+(use-package transient
+  :defer t)
 
 
 (use-package magit

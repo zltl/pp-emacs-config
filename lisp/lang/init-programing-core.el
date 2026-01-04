@@ -4,7 +4,7 @@
 ;;
 ;; This module provides core programming infrastructure:
 ;; - Tree-sitter: Modern syntax parsing
-;; - LSP Mode: Language Server Protocol support
+;; - Eglot: Language Server Protocol support (built-in)
 ;; - Combobulate: Structural editing
 ;; - Common development tools
 ;;
@@ -89,51 +89,33 @@
   (combobulate-key-prefix "C-c o")
   :hook ((prog-mode . combobulate-mode)))
 
-;;; LSP Mode Configuration
+;;; Eglot Configuration
 
-(setq lsp-use-plists t)
+(defun ltl/eglot-ensure ()
+  "Start Eglot in non-Emacs Lisp buffers."
+  (unless (derived-mode-p 'emacs-lisp-mode)
+    (eglot-ensure)))
 
-(use-package lsp-mode
-  :ensure (lsp-mode :host github :repo "emacs-lsp/lsp-mode")
-  :commands (lsp lsp-deferred)
-  :init
-  (setq lsp-keymap-prefix "C-c l")
+(use-package eglot
+  :ensure nil
+  :hook ((prog-mode . ltl/eglot-ensure))
+  :bind (:map ltl/lsp-map
+              ("r" . eglot-rename)
+              ("f" . eglot-format)
+              ("a" . eglot-code-actions)
+              ("d" . eldoc-doc-buffer))
   :custom
-  (lsp-completion-provider :none)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-signature-auto-activate nil)
-  (lsp-signature-render-documentation nil)
-  (lsp-eldoc-enable-hover nil)
-  (lsp-eldoc-render-all nil)
-  (lsp-modeline-code-actions-enable nil)
-  (lsp-modeline-diagnostics-enable nil)
-  (lsp-completion-show-detail nil)
-  (lsp-completion-show-kind nil))
+  (eglot-autoshutdown t)
+  (eglot-events-buffer-size 0) ;; Disable logging for performance
+  :config
+  (add-to-list 'eglot-server-programs
+               '(tsx-ts-mode . ("typescript-language-server" "--stdio"))))
 
-(with-eval-after-load 'lsp-mode
-  (progn
-    (add-to-list 'lsp--formatting-indent-alist '(tsx-ts-mode . typescript-indent-level))
-    (add-hook 'before-save-hook
-              (lambda () (when (eq 'tsx-ts-mode major-mode)
-                           (lsp-format-buffer))))))
-
-;; LSP UI
-(use-package lsp-ui
-  :defer t
-  :commands lsp-ui-mode)
-
-;; LSP integration with other tools
-(use-package helm-lsp
-  :defer t
-  :commands helm-lsp-workspace-symbol)
-
-(use-package lsp-ivy
-  :defer t
-  :commands lsp-ivy-workspace-symbol)
-
-(use-package lsp-treemacs
-  :defer t
-  :commands lsp-treemacs-errors-list)
+;; Consult integration for Eglot
+(use-package consult-eglot
+  :after (consult eglot)
+  :bind (:map ltl/lsp-map
+              ("s" . consult-eglot-symbols)))
 
 ;;; Development Tools
 
@@ -206,9 +188,8 @@
 ;;; Project Management
 
 (use-package perspective
-  :bind
   :custom
-  (persp-mode-prefix-key  (kbd "C-c M-p"))
+  (persp-mode-prefix-key (kbd "C-c M-p"))
   :init
   (persp-mode))
 
