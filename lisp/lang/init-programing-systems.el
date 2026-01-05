@@ -97,18 +97,27 @@ Searches upward from current directory for .clang-format file."
   "Timestamp of the last Go tools update check.")
 
 (defun ltl/go-install-tools (&optional packages)
-  "Install or update Go tools in the background."
+  "Install or update Go tools in the background.
+Installs each package separately since they may be from different modules."
   (interactive)
-  (let ((pkgs (or packages (mapcar #'cdr ltl/go-tools-map))))
-    (message "Installing Go tools in background...")
-    (make-process
-     :name "go-tools-install"
-     :buffer "*go-tools-install*"
-     :command (append '("go" "install") pkgs)
-     :sentinel (lambda (proc event)
-                 (when (string= event "finished\n")
-                   (message "Go tools installation complete.")
-                   (setq ltl/go-tools-last-check-time (current-time)))))))
+  (let* ((pkgs (or packages (mapcar #'cdr ltl/go-tools-map)))
+         (remaining (length pkgs))
+         (failed nil))
+    (message "Installing %d Go tool(s) in background..." remaining)
+    (dolist (pkg pkgs)
+      (make-process
+       :name (format "go-install-%s" (file-name-base pkg))
+       :buffer "*go-tools-install*"
+       :command (list "go" "install" pkg)
+       :sentinel (lambda (proc event)
+                   (unless (string= event "finished\n")
+                     (push (process-name proc) failed))
+                   (cl-decf remaining)
+                   (when (zerop remaining)
+                     (if failed
+                         (message "Go tools installation finished with errors: %s" failed)
+                       (message "Go tools installation complete."))
+                     (setq ltl/go-tools-last-check-time (current-time))))))))
 
 (defun ltl/go-check-tools ()
   "Check for missing or outdated Go tools."
