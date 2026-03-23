@@ -59,9 +59,7 @@
 (require 'init-const)
 (require 'init-custom-vars)
 
-;; compilations, enhence elisp.
-(require 'cl-lib)
-(require 'subr-x)
+;; compilations, enhance elisp.
 (require 'bytecomp)
 
 (require 'init-elpa)
@@ -119,11 +117,12 @@
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
 
-;; Increase the amount of data which Emacs reads from the process#
-;; Again the emacs default is too low 4k considering that the some of
-
-;; the language server responses are in 800k - 3M range.
-(setq read-process-output-max (* 1024 1024 4))
+;; Increase the amount of data which Emacs reads from the process.
+;; The emacs default is too low (4k) considering that some of the
+;; language server responses are in 800k - 3M range.
+;; Value is controlled by ltl/read-process-output-max in init-custom-vars.el
+(setq read-process-output-max (or (bound-and-true-p ltl/read-process-output-max)
+                                  (* 1024 1024 4)))
 
 
 
@@ -170,7 +169,7 @@
 ;; Application modules
 (ltl/safe-require 'init-org)
 (ltl/safe-require 'init-shell)
-;; (ltl/safe-require 'init-copilot)
+;; (ltl/safe-require 'init-copilot)  ; Editor Copilot — disabled in favor of init-copilot-cli
 (ltl/safe-require 'init-copilot-cli)
 (ltl/safe-require 'init-applications)
 

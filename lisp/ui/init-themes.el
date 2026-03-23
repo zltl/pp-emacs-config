@@ -19,7 +19,7 @@
 ;; Cursor
 ;; I like a non-blinking bar cursor.
 (setopt cursor-type 'bar)
-(setf blink-cursor-mode -1)
+(blink-cursor-mode -1)
 
 ;; Mode line
 ;; Column number
@@ -104,13 +104,16 @@
   :config
   (volatile-highlights-mode t))
 
-;; font
+;; font — uses defcustom variables from init-custom-vars.el
 (when (display-graphic-p)
-  (let ((font-size 110))
-    (set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal :height font-size)
-    (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback" :weight 'normal :height font-size))
-    ;; (set-fontset-font t 'kana (font-spec :family "Sarasa Gothic J" :weight 'normal :slant 'normal))
-    (set-fontset-font t 'ascii (font-spec :family "Source Code Pro" :weight: 'normal :slant 'normal :height font-size))))
+  (set-face-attribute 'default nil
+                      :font ltl/default-font
+                      :weight 'normal
+                      :height ltl/font-size)
+  (set-fontset-font t 'han
+                    (font-spec :family ltl/chinese-font
+                               :weight 'normal
+                               :height ltl/font-size)))
 
 (defun my/font-installed-p (font-name)
   "Check if font with FONT-NAME is available."

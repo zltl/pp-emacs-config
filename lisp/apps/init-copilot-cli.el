@@ -53,6 +53,44 @@
   :type '(repeat string)
   :group 'copilot-cli)
 
+;;; Prompt strings (customize for your preferred language)
+
+(defcustom copilot-cli-prompt-explain
+  "Please explain this code\n"
+  "Prompt sent when requesting code explanation."
+  :type 'string
+  :group 'copilot-cli)
+
+(defcustom copilot-cli-prompt-review
+  "Please review this code, find potential issues and suggest improvements\n"
+  "Prompt sent when requesting code review."
+  :type 'string
+  :group 'copilot-cli)
+
+(defcustom copilot-cli-prompt-fix
+  "Please fix the following errors:\n%s\n"
+  "Prompt sent when requesting error fixes.  Must contain %s for error text."
+  :type 'string
+  :group 'copilot-cli)
+
+(defcustom copilot-cli-prompt-fix-general
+  "Please check and fix errors in the code\n"
+  "Prompt sent when requesting a general error check (no specific errors found)."
+  :type 'string
+  :group 'copilot-cli)
+
+(defcustom copilot-cli-prompt-test
+  "Please generate unit tests for this file\n"
+  "Prompt sent when requesting test generation."
+  :type 'string
+  :group 'copilot-cli)
+
+(defcustom copilot-cli-prompt-refactor
+  "Please refactor: %s\n"
+  "Prompt sent when requesting refactoring.  Must contain %s for instruction."
+  :type 'string
+  :group 'copilot-cli)
+
 ;;; Variables
 (defvar copilot-cli--source-buffer nil
   "The source buffer that initiated the CLI session.")
@@ -201,7 +239,7 @@
     (copilot-cli-send-buffer))
   (run-at-time 1.0 nil
                (lambda ()
-                 (copilot-cli--send-to-terminal "请解释这段代码\n"))))
+                 (copilot-cli--send-to-terminal copilot-cli-prompt-explain))))
 
 ;;;###autoload
 (defun copilot-cli-review ()
@@ -211,7 +249,7 @@
   (run-at-time 1.0 nil
                (lambda ()
                  (copilot-cli--send-to-terminal
-                  "请审查这段代码，找出潜在问题和改进建议\n"))))
+                  copilot-cli-prompt-review))))
 
 ;;;###autoload
 (defun copilot-cli-fix-error ()
@@ -223,9 +261,9 @@
                  (lambda ()
                    (if errors
                        (copilot-cli--send-to-terminal
-                        (format "请修复以下错误:\n%s\n" errors))
+                        (format copilot-cli-prompt-fix errors))
                      (copilot-cli--send-to-terminal
-                      "请检查并修复代码中的错误\n"))))))
+                      copilot-cli-prompt-fix-general))))))
 
 (defun copilot-cli--collect-errors ()
   "Collect errors from flycheck or flymake."
@@ -257,7 +295,7 @@
   (run-at-time 1.0 nil
                (lambda ()
                  (copilot-cli--send-to-terminal
-                  "请为这个文件生成单元测试\n"))))
+                  copilot-cli-prompt-test))))
 
 ;;;###autoload
 (defun copilot-cli-refactor (instruction)
@@ -267,7 +305,7 @@
   (run-at-time 1.0 nil
                (lambda ()
                  (copilot-cli--send-to-terminal
-                  (format "请重构: %s\n" instruction)))))
+                  (format copilot-cli-prompt-refactor instruction)))))
 
 ;;; Process control
 ;;;###autoload
