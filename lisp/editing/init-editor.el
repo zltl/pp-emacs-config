@@ -17,10 +17,16 @@
 ;; Persist State flushes state that is normally flushed in
 ;; kill-emacs-hook, which I'm trying not to call until I die.
 (use-package persist-state
-  :ensure (persist-state :host github :repo "emacsmirror/persist-state" :inherit nil)
+  :ensure (persist-state :type git :protocol https
+                         :host github :repo "emacsmirror/persist-state"
+                         :inherit nil)
+  :defer t
   :diminish
-  :config
-  (persist-state-mode))
+  :init
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (when (require 'persist-state nil t)
+                (persist-state-mode 1)))))
 
 ;; Newline at end of file
 (setq require-final-newline t)
@@ -103,15 +109,24 @@
 
 ;; editorconfig for emacs
 (use-package editorconfig
+  :defer t
   :diminish
-  :config
-  (editorconfig-mode 1))
+  :init
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (when (require 'editorconfig nil t)
+                (editorconfig-mode 1)))))
 
 (use-package smart-hungry-delete
+  :defer t
   :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
-	       ([remap delete-backward-char] . smart-hungry-delete-backward-char)
-	       ([remap delete-char] . smart-hungry-delete-forward-char))
-  :init (smart-hungry-delete-add-default-hooks))
+ 	       ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+ 	       ([remap delete-char] . smart-hungry-delete-forward-char))
+  :init
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (when (require 'smart-hungry-delete nil t)
+                (smart-hungry-delete-add-default-hooks)))))
 
 ;; ;; space between chinese and english
 ;; (use-package pangu-spacing
@@ -193,6 +208,7 @@
 
 ;; multi cursor
 (use-package multiple-cursors
+  :defer t
   :bind
   (:map ltl/multicursor
         ("l" . #'mc/edit-lines)
@@ -204,17 +220,21 @@
         ("w" . #'mc/mark-all-word-like-this)))
 
 (use-package vundo
-  :config
+  :defer t
+  :bind (("C-x u" . vundo))
+  :custom
   ;; Take less on-screen space.
-  (setq vundo-compact-display t)
-  (global-set-key (kbd "C-x u") #'vundo))
+  (vundo-compact-display t))
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html
 (use-package breadcrumb
+  :defer t
   ;; disable breadcrumb whel using lsp-mode, because lsp have this feature already.
   ;; :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
-  :config
-  (breadcrumb-imenu-crumbs)
-  (breadcrumb-mode))
+  :init
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (when (require 'breadcrumb nil t)
+                (breadcrumb-mode 1)))))
 
 ;; treemacs
 (use-package treemacs
@@ -238,10 +258,16 @@
 (winner-mode +1)
 
 (use-package visual-fill-column
-  :ensure (visual-fill-column :host github :repo "joostkremers/visual-fill-column" :inherit nil))
+  :ensure (visual-fill-column :type git :protocol https
+                              :host github :repo "joostkremers/visual-fill-column"
+                              :inherit nil)
+  :defer t)
 
 (use-package writeroom-mode
-  :ensure (writeroom-mode :host github :repo "joostkremers/writeroom-mode" :inherit nil))
+  :ensure (writeroom-mode :type git :protocol https
+                          :host github :repo "joostkremers/writeroom-mode"
+                          :inherit nil)
+  :defer t)
 
 (use-package polymode
   :defer t)

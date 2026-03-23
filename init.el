@@ -126,7 +126,9 @@
 
 
 (use-package scratch
-  :ensure (scratch :host github :repo "ffevotte/scratch.el" :inherit nil))
+  :ensure (scratch :type git :protocol https
+                   :host github :repo "ffevotte/scratch.el"
+                   :inherit nil))
 ;; Show event history and command history of some or all buffers.
 ;; (use-package command-log-mode)
 ;; load PATH from shell

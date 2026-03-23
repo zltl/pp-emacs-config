@@ -19,6 +19,7 @@
 
 ;; Corfu - Lightweight in-buffer completion popup
 (use-package corfu
+  :defer t
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.1)
@@ -44,20 +45,31 @@
         ("M-p" . corfu-popupinfo-scroll-down)
         ("M-n" . corfu-popupinfo-scroll-up))
   :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode)
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (when (require 'corfu nil t)
+                (global-corfu-mode 1))))
   :config
-  (setq corfu-popupinfo-delay '(0.4 . 0.2)))
+  (require 'corfu-popupinfo nil t)
+  (setq corfu-popupinfo-delay '(0.4 . 0.2))
+  (when (fboundp 'corfu-popupinfo-mode)
+    (corfu-popupinfo-mode 1)))
 
 ;; Nerd-icons integration for Corfu
 (use-package nerd-icons-corfu
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+  :defer t
+  :init
+  (with-eval-after-load 'corfu
+    (when (require 'nerd-icons-corfu nil t)
+      (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))))
 
 ;; Cape - Completion At Point Extensions
 (use-package cape
+  :defer t
   :init
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (require 'cape nil t)))
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-keyword)
@@ -65,6 +77,7 @@
 
 ;; Prescient - Intelligent sorting and filtering
 (use-package prescient
+  :defer t
   :config
   (setq prescient-filter-method '(literal regexp initialism fuzzy))
   (setq prescient-sort-full-matches-first t)
@@ -102,19 +115,28 @@
 ;;; ============================================================================
 
 (use-package vertico-prescient
-  :after vertico
-  :config
-  (vertico-prescient-mode 1))
+  :defer t
+  :init
+  (with-eval-after-load 'vertico
+    (when (require 'vertico-prescient nil t)
+      (vertico-prescient-mode 1))))
 
 ;; Marginalia
 ;; Marginalia annotates minibuffer completions with some useful info.
 (use-package marginalia
-  :after vertico
+  :defer t
   :init
-  (marginalia-mode))
+  (with-eval-after-load 'vertico
+    (when (require 'marginalia nil t)
+      (marginalia-mode 1))))
 
 
 (use-package orderless
+  :defer t
+  :init
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (require 'orderless nil t)))
   :custom
   (completion-styles '(orderless partial-completion basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
@@ -168,7 +190,8 @@
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
 
-(use-package embark)
+(use-package embark
+  :defer t)
 
 (use-package embark-consult
   :after embark consult
@@ -177,29 +200,38 @@
 ;; Vertico is a little bit nicer version of the builtin
 ;; icomplete-vertical.
 (use-package vertico
+  :ensure (:files (:defaults "extensions/*"))
+  :defer t
   :custom
   (vertico-cycle t)
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-styles '(basic substring partial-completion flex))
   :init
-  (require 'vertico-indexed)
-  (vertico-indexed-mode)  (vertico-mode)
-  (require 'vertico-repeat)
-  (require 'vertico-directory)
-  (require 'vertico-multiform)
-  :hook
-  (minibuffer-setup . vertico-repeat-save)
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (when (require 'vertico nil t)
+                (vertico-mode 1))))
   :bind ("M-R" . vertico-repeat)
   :bind
   (:map vertico-map
         ("RET" . vertico-directory-enter)
         ("M-DEL" . vertico-directory-delete-word))
-  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :custom
   (vertico-multiform-commands '((git-related-find-file (vertico-sort-function . nil))))
   :config
-  (vertico-multiform-mode))
+  (require 'vertico-indexed nil t)
+  (require 'vertico-repeat nil t)
+  (require 'vertico-directory nil t)
+  (require 'vertico-multiform nil t)
+  (when (fboundp 'vertico-repeat-save)
+    (add-hook 'minibuffer-setup-hook #'vertico-repeat-save))
+  (when (fboundp 'vertico-directory-tidy)
+    (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy))
+  (when (fboundp 'vertico-indexed-mode)
+    (vertico-indexed-mode 1))
+  (when (fboundp 'vertico-multiform-mode)
+    (vertico-multiform-mode 1)))
 
 ;; auto-currects the workd you mistype on pressing space.
 (setq save-abbrevs 'silently)

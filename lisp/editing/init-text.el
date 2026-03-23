@@ -27,7 +27,9 @@
 ;; Title case
 ;; Gosh, I wish I’d had this when I was so active on MusicBrainz.
 (use-package titlecase
-  :ensure (titlecase :host github :repo "ShuguangSun/titlecase.el" :inherit nil)
+  :ensure (titlecase :type git :protocol https
+                     :host github :repo "ShuguangSun/titlecase.el"
+                     :inherit nil)
   :defer t)
 
 ;; Jinx is a just-in-time spell checker.
@@ -44,4 +46,3 @@
 
 (provide 'init-text)
 ;; init-text.el ends here
-
