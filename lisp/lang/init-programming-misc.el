@@ -1,4 +1,4 @@
-;;; init-programing-misc.el --- Miscellaneous languages and configs -*- lexical-binding: t; -*-
+;;; init-programming-misc.el --- Miscellaneous languages and configs -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
@@ -153,5 +153,5 @@
   :defer t
   :mode "\\.fidl\\'")
 
-(provide 'init-programing-misc)
-;;; init-programing-misc.el ends here
+(provide 'init-programming-misc)
+;;; init-programming-misc.el ends here

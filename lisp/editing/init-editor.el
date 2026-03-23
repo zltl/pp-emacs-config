@@ -138,8 +138,7 @@
 (electric-indent-mode t)
 ;; Visualize matching parens
 (show-paren-mode 1)
-;; Prefer spaces to tabs
-(setq-default indent-tabs-mode nil)
+;; Prefer spaces to tabs (also set via ltl/use-tabs in init-custom-vars.el)
 ;; Note: save-place-mode is configured above with use-package
 ;; Save history in minibuffer to keep recent commands easily accessible
 (setq savehist-additional-variables
@@ -246,6 +245,17 @@
 
 (use-package polymode
   :defer t)
+
+;; repeat-mode - Repeat last command with single key (Emacs 28+)
+(use-package repeat
+  :ensure nil
+  :hook (after-init . repeat-mode))
+
+;; indent-bars - Visual indentation guides
+(use-package indent-bars
+  :hook (prog-mode . indent-bars-mode)
+  :custom
+  (indent-bars-prefer-character t))
 
 (use-package envrc
   :hook (after-init . envrc-global-mode))

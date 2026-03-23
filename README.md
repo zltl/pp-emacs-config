@@ -26,17 +26,18 @@ This is a well-organized Emacs configuration designed for developers, especially
 
 ## ✨ Highlights
 
-> 📢 **Latest Update (2024-12-24):** Added GitHub Copilot CLI deep integration with `eat` terminal
+> 📢 **Latest Update (2025-01):** Major modernization — Corfu completion, project.el, diff-hl, gptel AI, elfeed RSS
 
 - 🚀 **Fast Startup** - Optimized with lazy loading (30+ packages deferred) and native compilation
-- 📁 **Modular Structure** - 22 modules organized in 6 categories (v3.0) ⭐
-- 🎨 **Modern UI** - Beautiful themes, icons, and mode line
+- 📁 **Modular Structure** - 24 modules organized in 6 categories (v3.1) ⭐
+- 🎨 **Modern UI** - Beautiful themes, icons, tab-bar, and mode line
 - ⚙️ **Easy Customization** - 40+ customizable variables via `M-x customize-group RET ltl`
-- 🤖 **AI-Powered** - GitHub Copilot and ChatGPT integration
+- 🤖 **AI-Powered** - GitHub Copilot, Copilot CLI, and gptel (OpenAI/Claude/Ollama)
 - 🔍 **Smart Completion** - Corfu + Vertico + LSP
 - 🌳 **Tree-sitter** - Modern syntax highlighting for 30+ languages
 - 📦 **Elpaca 0.11** - Modern async package manager
-- 🎯 **Project-Aware** - Projectile integration
+- 🎯 **Project-Aware** - Built-in project.el integration
+- 📰 **App Ecosystem** - Elfeed RSS, Forge GitHub, auth-source-pass
 - 🏥 **Health Check** - Built-in diagnostic tool (`M-x ltl/doctor`)
 
 ---
@@ -540,16 +541,16 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │   │
 │   ├── tools/             # Development tools
 │   │   ├── init-bindings.el   # Global keybindings
-│   │   ├── init-files.el      # File management, Projectile
+│   │   ├── init-files.el      # File management, project.el
 │   │   ├── init-git.el        # Git integration (Magit)
 │   │   └── init-search.el     # Search tools (ag/swiper)
 │   │
 │   ├── lang/              # Programming language support ⭐
-│   │   ├── init-programing-core.el      # LSP, Tree-sitter, tools
-│   │   ├── init-programing-systems.el   # C/C++, Rust, Go
-│   │   ├── init-programing-web.el       # JS/TS, Tailwind
-│   │   ├── init-programing-scripting.el # Python, Lua
-│   │   └── init-programing-misc.el      # Other languages
+│   │   ├── init-programming-core.el      # LSP, Tree-sitter, tools
+│   │   ├── init-programming-systems.el   # C/C++, Rust, Go
+│   │   ├── init-programming-web.el       # JS/TS, Tailwind
+│   │   ├── init-programming-scripting.el # Python, Lua
+│   │   └── init-programming-misc.el      # Other languages
 │   │
 │   └── apps/              # Applications
 │       ├── init-applications.el # Dictionary, UUID, Rime, etc.
@@ -566,7 +567,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │   ├── history           # Command history
 │   ├── lsp/              # LSP server data
 │   ├── org/              # Org-mode caches
-│   └── projectile/       # Projectile caches
+│   └── projectile/       # Project caches
 │
 ├── elpaca/               # Package manager data
 │   ├── builds/           # Built packages
@@ -595,16 +596,16 @@ The configuration is organized into **6 logical categories** with **22 modules**
 
 ### Tools (`lisp/tools/`)
 - **init-bindings.el** - Keybindings and which-key
-- **init-files.el** - File handling (recentf, projectile, dired)
+- **init-files.el** - File handling (recentf, project.el, dired)
 - **init-search.el** - Search tools (swiper, counsel, ag)
 - **init-git.el** - Git integration (Magit, git-link, git-timemachine)
 
 ### Language Support (`lisp/lang/`) ⭐
-- **init-programing-core.el** - Core infrastructure (Tree-sitter, LSP, Combobulate, dev tools)
-- **init-programing-systems.el** - Systems languages (C/C++, Rust, Go, Protobuf)
-- **init-programing-web.el** - Web development (TypeScript/JavaScript, Tailwind CSS)
-- **init-programing-scripting.el** - Scripting (Python, Lua, Shell)
-- **init-programing-misc.el** - Other languages (Scala, Haskell, Julia, etc.) and config files
+- **init-programming-core.el** - Core infrastructure (Tree-sitter, LSP, Combobulate, dev tools)
+- **init-programming-systems.el** - Systems languages (C/C++, Rust, Go, Protobuf)
+- **init-programming-web.el** - Web development (TypeScript/JavaScript, Tailwind CSS)
+- **init-programming-scripting.el** - Scripting (Python, Lua, Shell)
+- **init-programming-misc.el** - Other languages (Scala, Haskell, Julia, etc.) and config files
 
 ### Applications (`lisp/apps/`)
 - **init-applications.el** - Utilities (Dictionary, UUID, Rime input, etc.)
@@ -633,7 +634,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - **Eglot** - Language Server Protocol (built-in) for Go, C/C++, Python, TypeScript, etc.
 - **Tree-sitter** - Modern syntax highlighting
 - **Flycheck** - Real-time error checking
-- **Projectile** - Project management
+- **project.el** - Built-in project management
 
 ### Git Integration
 - **Magit** - Full-featured Git interface

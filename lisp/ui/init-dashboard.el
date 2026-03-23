@@ -10,6 +10,7 @@
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title (concat  "Yo! master " sys/user))
+  (setq dashboard-projects-backend 'project-el)
   (setq dashboard-items '((recents   . 50)
                         (bookmarks . 5)
                         (projects  . 5)

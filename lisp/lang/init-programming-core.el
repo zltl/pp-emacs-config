@@ -1,4 +1,4 @@
-;;; init-programing-core.el --- Core programming tools -*- lexical-binding: t; -*-
+;;; init-programming-core.el --- Core programming tools -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
@@ -10,6 +10,17 @@
 ;;
 ;;; Code:
 
+;; Hideshow - Built-in code folding
+(use-package hideshow
+  :ensure nil
+  :diminish hs-minor-mode
+  :hook (prog-mode . hs-minor-mode)
+  :bind (:map hs-minor-mode-map
+              ("C-c @ C-c" . hs-toggle-hiding)
+              ("C-c @ C-a" . hs-hide-all)
+              ("C-c @ C-s" . hs-show-all)
+              ("C-c @ C-l" . hs-hide-level)))
+
 ;;; Tree-sitter Configuration
 ;;
 ;; Emacs 29+ has built-in tree-sitter support via `treesit`.
@@ -20,7 +31,7 @@
   :ensure nil
   :mode (("\\.tsx\\'" . tsx-ts-mode))
   :preface
-  (defun mp-setup-install-grammars ()
+  (defun ltl/setup-install-grammars ()
     "Install Tree-sitter grammars if they are absent."
     (interactive)
     (dolist (grammar
@@ -75,10 +86,8 @@
              (js-json-mode . json-ts-mode)))
     (add-to-list 'major-mode-remap-alist mapping))
   :config
-  (mp-setup-install-grammars)
-  (or (file-directory-p (expand-file-name "tree-sitter" user-emacs-directory))
-      (progn
-        (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist)))))
+  ;; Register grammar sources but only install on demand
+  (ltl/setup-install-grammars))
 
 ;;; Combobulate - Structural Editing
 
@@ -120,8 +129,8 @@
 ;;; Development Tools
 
 (use-package eldoc-box
-  :defer t
-  :diminish)
+  :diminish
+  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 
 (use-package compile-multi
   :defer t
@@ -193,5 +202,5 @@
   :init
   (persp-mode))
 
-(provide 'init-programing-core)
-;;; init-programing-core.el ends here
+(provide 'init-programming-core)
+;;; init-programming-core.el ends here

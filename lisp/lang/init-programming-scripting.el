@@ -1,4 +1,4 @@
-;;; init-programing-scripting.el --- Scripting languages -*- lexical-binding: t; -*-
+;;; init-programming-scripting.el --- Scripting languages -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
@@ -23,10 +23,6 @@
 (use-package python-docstring
   :defer t
   :hook ((python-mode python-ts-mode) . python-docstring-mode))
-
-(use-package anaconda-mode
-  :defer t
-  :hook (python-mode . anaconda-mode))
 
 (use-package pet
   :defer t
@@ -55,5 +51,5 @@
 
 ;; Ruby support via tree-sitter
 
-(provide 'init-programing-scripting)
-;;; init-programing-scripting.el ends here
+(provide 'init-programming-scripting)
+;;; init-programming-scripting.el ends here

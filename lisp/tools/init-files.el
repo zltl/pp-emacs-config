@@ -7,7 +7,7 @@
 ;; - Recent files tracking (recentf)
 ;; - Auto-save and backup strategies
 ;; - No-littering for clean directory structure
-;; - Projectile for project management
+;; - project.el for project management (built-in)
 ;;
 ;;; Code:
 
@@ -70,11 +70,30 @@
   :custom
   (dired-auto-revert-buffer t))
 
-(use-package projectile
-  :diminish
-  :hook (after-init . projectile-mode)
+;; project.el - Built-in project management (replaces projectile)
+(use-package project
+  :ensure nil
+  :bind-keymap ("C-x p" . project-prefix-map)
   :custom
-  (projectile-completion-system 'default))
+  (project-switch-commands
+   '((project-find-file "Find file")
+     (project-find-regexp "Find regexp")
+     (project-find-dir "Find dir")
+     (project-eshell "Eshell" ?e)
+     (magit-project-status "Magit" ?m))))
+
+;; TRAMP - Remote file editing
+(use-package tramp
+  :ensure nil
+  :defer t
+  :custom
+  (tramp-default-method "ssh")
+  (tramp-verbose 1)
+  (remote-file-name-inhibit-cache 60)
+  :config
+  ;; Disable vc on remote files for performance
+  (setq vc-ignore-dir-regexp
+        (format "%s\\|%s" vc-ignore-dir-regexp tramp-file-name-regexp)))
 
 (provide 'init-files)
 ;;; init-files.el ends here

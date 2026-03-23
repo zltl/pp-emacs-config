@@ -1,4 +1,4 @@
-;;; init-programing-web.el --- Web development languages -*- lexical-binding: t; -*-
+;;; init-programming-web.el --- Web development languages -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
@@ -29,5 +29,5 @@
   (define-key typescript-ts-mode-map (kbd "C-c C-f") #'eglot-format)
   (define-key typescript-ts-mode-map (kbd "C-c C-d") #'eldoc-doc-buffer))
 
-(provide 'init-programing-web)
-;;; init-programing-web.el ends here
+(provide 'init-programming-web)
+;;; init-programming-web.el ends here

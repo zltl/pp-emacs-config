@@ -63,7 +63,6 @@
 (require 'bytecomp)
 
 (require 'init-elpa)
-(setq create-lockfiles nil)
 (setq warning-minimum-level :error)
 
 (defun ltl/ensure-dir (pathname)
@@ -160,17 +159,19 @@
 (ltl/safe-require 'init-search)
 
 ;; Programming modules
-(ltl/safe-require 'init-programing-core)
-(ltl/safe-require 'init-programing-systems)
-(ltl/safe-require 'init-programing-web)
-(ltl/safe-require 'init-programing-scripting)
-(ltl/safe-require 'init-programing-misc)
+(ltl/safe-require 'init-programming-core)
+(ltl/safe-require 'init-programming-systems)
+(ltl/safe-require 'init-programming-web)
+(ltl/safe-require 'init-programming-scripting)
+(ltl/safe-require 'init-programming-misc)
 
 ;; Application modules
 (ltl/safe-require 'init-org)
 (ltl/safe-require 'init-shell)
 ;; (ltl/safe-require 'init-copilot)  ; Editor Copilot — disabled in favor of init-copilot-cli
 (ltl/safe-require 'init-copilot-cli)
+(ltl/safe-require 'init-ai)
+(ltl/safe-require 'init-elfeed)
 (ltl/safe-require 'init-applications)
 
 

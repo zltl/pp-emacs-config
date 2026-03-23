@@ -171,7 +171,7 @@
           t)
       (progn
         (message "⚠ Tree-sitter not available")
-        (message "  Run: M-x mp-setup-install-grammars")
+        (message "  Run: M-x ltl/setup-install-grammars")
         nil))))
 
 ;;;
