@@ -197,10 +197,14 @@
 ;;; Project Management
 
 (use-package perspective
+  :defer t
   :custom
   (persp-mode-prefix-key (kbd "C-c M-p"))
   :init
-  (persp-mode))
+  (add-hook 'elpaca-after-init-hook
+            (lambda ()
+              (when (require 'perspective nil t)
+                (persp-mode 1)))))
 
 (provide 'init-programming-core)
 ;;; init-programming-core.el ends here

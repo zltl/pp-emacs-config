@@ -5,18 +5,19 @@
 
 ;; Org
 (use-package org
+  :hook (org-mode . org-indent-mode)
   :custom
   (org-format-latex-options
    '(:foreground default
-                 :background default
-                 :scale 2.0
-                 :html-foreground "Black"
-                 :html-background "Transparent"
-                 :html-scale 2.0
-                 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))))
+                  :background default
+                  :scale 2.0
+                  :html-foreground "Black"
+                  :html-background "Transparent"
+                  :html-scale 2.0
+                  :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
+  (org-src-preserve-indentation t)
+  (org-startup-folded 'show2levels))
 
-;; get rid of the extra white space that’s added inside code blocks.
-(setq org-src-preserve-indentation t)
 ;; (setq org-preview-latex-default-process 'dvisvgm) ;No blur when scaling
 (defun ltl/text-scale-adjust-latex-previews ()
   "Adjust the size of latex preview fragments when changing the
@@ -46,15 +47,16 @@ buffer's text scale."
 
 (use-package org-contrib
   :after org
-  :demand t)
+  :defer t)
 
 (use-package engrave-faces
-  :after org)
+  :after org
+  :defer t)
 
 ;; Org export
 (use-package ox-hugo
-  :after ox
-  :demand t)
+  :after org
+  :defer t)
 
 
 ;; (use-package ox-extra
@@ -109,18 +111,20 @@ buffer's text scale."
 
 (when ltl/enable-reveal
   (use-package org-re-reveal
-    :ensure t)
+    :ensure t
+    :defer t)
 
   (use-package oer-reveal
-    :config (oer-reveal-setup-submodules)))
+    :defer t
+    :init
+    (add-hook 'elpaca-after-init-hook
+              (lambda ()
+                (when (require 'oer-reveal nil t)
+                  (oer-reveal-setup-submodules))))))
 
-(require 'org)
-(require 'ox-publish)
-(use-package toc-org)
-(require 'org-id)
-
-(setq org-startup-folded 'show2levels)
-(add-hook 'org-mode-hook #'org-indent-mode)
+(use-package toc-org
+  :defer t
+  :hook (org-mode . toc-org-mode))
 
 
 ;; `org-mode' is great but Denote makes it even better by adding
@@ -141,4 +145,3 @@ buffer's text scale."
 
 (provide 'init-org)
 ;;; init-org.el ends here
-
