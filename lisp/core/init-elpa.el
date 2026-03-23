@@ -17,14 +17,10 @@
 ;;; Packages, .emacs.d folders
 ;;;
 
-;; Work-around for https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34341
-(when (and (version< emacs-version "26.3") (boundp 'libgnutls-version) (>= libgnutls-version 30604))
-  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
-
 
 ;;; elpaca
 
-(defvar elpaca-installer-version 0.11)
+(defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -91,11 +87,12 @@
 ;; benchmark-init is a simple package that may or may not carry its
 ;; weight versus usepackage-compute-statistics. Run
 ;; benchmark-init/show-durations-tabulated to check this one out.
+;; Deferred — activate manually with M-x benchmark-init/activate when profiling.
 (use-package benchmark-init
-  :demand t
-  :hook (after-init . benchmark-init/deactivate)
-  :config
-  (benchmark-init/activate))
+  :defer t
+  :commands (benchmark-init/activate
+             benchmark-init/show-durations-tabulated
+             benchmark-init/show-durations-tree))
 
 
 ;; This Emacs library provides a global mode which displays ugly form

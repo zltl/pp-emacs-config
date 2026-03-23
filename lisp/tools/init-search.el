@@ -4,8 +4,7 @@
 ;;
 ;; This module configures search and navigation tools:
 ;; - ag: The Silver Searcher for fast code search
-;; - swiper: Better in-buffer search with preview
-;; - counsel: Enhanced Emacs commands with completion
+;; - consult-line: In-buffer search (replaces swiper, part of Vertico ecosystem)
 ;;
 ;;; Code:
 
@@ -13,13 +12,10 @@
   :defer t
   :commands ag)
 
-;; better search in buffer
-(use-package swiper
-  :config
-  (global-set-key "\C-s" 'swiper))
-(use-package counsel
-  :config
-  (global-set-key (kbd "M-x") 'counsel-M-x))
+;; Use consult-line for in-buffer search (consistent with Vertico + Consult ecosystem)
+;; Note: consult is loaded in init-complete.el
+(with-eval-after-load 'consult
+  (global-set-key (kbd "C-s") #'consult-line))
 
 
 (provide 'init-search)

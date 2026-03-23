@@ -219,6 +219,8 @@
 
 ;; treemacs
 (use-package treemacs
+  :custom
+  (treemacs-width-is-initially-locked nil)
   :config
   (treemacs-git-mode 'deferred)
   :bind
