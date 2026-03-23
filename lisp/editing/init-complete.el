@@ -3,7 +3,8 @@
 ;;; Commentary:
 ;;
 ;; This module configures a modern completion framework using:
-;; - Company: In-buffer completion popup (works well in terminal & GUI)
+;; - Corfu: In-buffer completion popup (lightweight, by minad)
+;; - Cape: Completion-at-point extensions
 ;; - Vertico: Vertical completion UI for minibuffer
 ;; - Orderless: Flexible matching style
 ;; - Marginalia: Rich annotations in minibuffer
@@ -13,89 +14,54 @@
 ;;; Code:
 
 ;;; ============================================================================
-;;; Completion Framework Selection
+;;; In-buffer Completion (Corfu + Cape)
 ;;; ============================================================================
 
-;; Company Mode - In-buffer Completion
-(use-package company
-  :diminish
-  :demand t
+;; Corfu - Lightweight in-buffer completion popup
+(use-package corfu
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.1)
+  (corfu-auto-prefix 1)
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
+  (corfu-count 14)
+  (corfu-max-width 80)
+  (corfu-on-exact-match nil)
+  (corfu-quit-at-boundary 'separator)
+  (corfu-quit-no-match 'separator)
   :bind
-  (:map company-mode-map
-        ("C-M-i" . company-complete)
-        ("M-/" . company-complete))
-  (:map company-active-map
-        ("C-n" . company-select-next)
-        ("C-p" . company-select-previous)
-        ("C-s" . company-filter-candidates)
-        ("C-M-s" . company-search-candidates)
-        ("<tab>" . company-complete-common-or-cycle)
-        ("TAB" . company-complete-common-or-cycle)
-        ("<backtab>" . company-select-previous)
-        ("RET" . company-complete-selection)
-        ("<return>" . company-complete-selection)
-        ("C-w" . nil)  ; Don't interfere with kill-region
-        ("C-h" . company-show-doc-buffer))
-  :custom
-  ;; Performance
-  (company-idle-delay 0.1)
-  (company-minimum-prefix-length 1)
-  (company-tooltip-limit 14)
-  
-  ;; Behavior
-  (company-selection-wrap-around t)
-  (company-require-match nil)
-  (company-show-quick-access t)
-  (company-quick-access-keys '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
-  (company-quick-access-modifier 'meta)  ; Use M-1, M-2 etc to select
-  
-  ;; Appearance
-  (company-tooltip-align-annotations t)
-  (company-tooltip-annotation-padding 1)
-  (company-tooltip-margin 1)
-  (company-format-margin-function #'company-text-icons-margin)
-  
-  ;; Backends - capf is the main backend that integrates with Eglot and elisp
-  (company-backends '(company-capf
-                      company-files
-                      company-keywords
-                      company-dabbrev-code
-                      company-dabbrev))
-  
-  ;; Dabbrev settings
-  (company-dabbrev-other-buffers t)
-  (company-dabbrev-ignore-case t)
-  (company-dabbrev-downcase nil)
-  
+  (:map corfu-map
+        ("C-n" . corfu-next)
+        ("C-p" . corfu-previous)
+        ("<tab>" . corfu-next)
+        ("TAB" . corfu-next)
+        ("<backtab>" . corfu-previous)
+        ("RET" . corfu-insert)
+        ("<return>" . corfu-insert)
+        ("C-g" . corfu-quit)
+        ("M-d" . corfu-popupinfo-toggle)
+        ("M-p" . corfu-popupinfo-scroll-down)
+        ("M-n" . corfu-popupinfo-scroll-up))
+  :init
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)
   :config
-  ;; Better completion in comments and strings
-  (setq company-dabbrev-char-regexp "\\sw\\|\\s_")
-  
-  ;; Make company work better with LSP
-  (setq company-transformers '(delete-consecutive-dups
-                               company-sort-by-occurrence
-                               company-sort-prefer-same-case-prefix))
-  ;; Enable global company mode
-  (global-company-mode 1))
+  (setq corfu-popupinfo-delay '(0.4 . 0.2)))
 
-;; Company-box - Better UI for GUI Emacs
-(use-package company-box
-  :if (display-graphic-p)
-  :diminish
-  :hook (company-mode . company-box-mode)
-  :custom
-  (company-box-show-single-candidate t)
-  (company-box-backends-colors nil)
-  (company-box-doc-enable t)
-  (company-box-doc-delay 0.3)
-  (company-box-scrollbar nil))
+;; Nerd-icons integration for Corfu
+(use-package nerd-icons-corfu
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-;; Company-quickhelp - Documentation popup for terminal
-(use-package company-quickhelp
-  :unless (display-graphic-p)
-  :hook (company-mode . company-quickhelp-mode)
-  :custom
-  (company-quickhelp-delay 0.3))
+;; Cape - Completion At Point Extensions
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
 ;; Prescient - Intelligent sorting and filtering
 (use-package prescient
@@ -103,11 +69,6 @@
   (setq prescient-filter-method '(literal regexp initialism fuzzy))
   (setq prescient-sort-full-matches-first t)
   (prescient-persist-mode 1))
-
-(use-package company-prescient
-  :after (company prescient)
-  :config
-  (company-prescient-mode 1))
 
 ;;; ============================================================================
 ;;; Yasnippet - Snippet expansion

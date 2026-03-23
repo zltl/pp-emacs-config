@@ -47,6 +47,11 @@ existing directory under `magit-clone-default-directory'."
   :after magit
   :config (magit-todos-mode 1))
 
+;; Forge - GitHub/GitLab integration for Magit
+(use-package forge
+  :after magit
+  :defer t)
+
 ;; Git-Link
 ;; git-link grabs links to lines, regions, commits, or home pages.
 (use-package git-link
@@ -54,5 +59,24 @@ existing directory under `magit-clone-default-directory'."
   (git-link-use-commit t)
   (git-link-use-single-line-number t)
   :commands (git-link git-link-commit git-link-homepage))
+
+;; Ediff - Side-by-side diff (built-in, improved defaults)
+(use-package ediff
+  :ensure nil
+  :custom
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  (ediff-split-window-function 'split-window-horizontally)
+  (ediff-merge-split-window-function 'split-window-horizontally))
+
+;; diff-hl - Highlight uncommitted changes in the fringe
+(use-package diff-hl
+  :hook ((prog-mode . diff-hl-mode)
+         (text-mode . diff-hl-mode)
+         (dired-mode . diff-hl-dired-mode))
+  :config
+  (diff-hl-flydiff-mode)
+  (with-eval-after-load 'magit
+    (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
+    (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)))
 
 (provide 'init-git)

@@ -1,4 +1,4 @@
-;;; init-programing-systems.el --- Systems programming languages -*- lexical-binding: t; -*-
+;;; init-programming-systems.el --- Systems programming languages -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
@@ -144,5 +144,5 @@ Installs each package separately since they may be from different modules."
   :hook ((go-mode go-ts-mode) . eglot-ensure)
   :hook ((go-mode go-ts-mode) . ltl/go-check-tools))
 
-(provide 'init-programing-systems)
-;;; init-programing-systems.el ends here
+(provide 'init-programming-systems)
+;;; init-programming-systems.el ends here

@@ -115,7 +115,7 @@
                                :weight 'normal
                                :height ltl/font-size)))
 
-(defun my/font-installed-p (font-name)
+(defun ltl/font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (if (find-font (font-spec :name font-name)) t nil))
 
@@ -123,7 +123,7 @@
   :if (display-graphic-p)
   :defer t
   :config
-  (unless (my/font-installed-p "all-the-icons")
+  (unless (ltl/font-installed-p "all-the-icons")
     (all-the-icons-install-fonts t)))
 (use-package nerd-icons
   :defer t)
@@ -170,6 +170,21 @@
   (dolist (face '(mode-line mode-line-active mode-line-inactive mode-line-emphasis))
     (setf (alist-get face solaire-mode-remap-alist) nil)))
 
+;; Tab-bar - Built-in tab management for multi-project workflows
+(use-package tab-bar
+  :ensure nil
+  :custom
+  (tab-bar-show 1)
+  (tab-bar-close-button-show nil)
+  (tab-bar-new-tab-choice "*scratch*")
+  (tab-bar-tab-hints t)
+  (tab-bar-select-tab-modifiers '(meta))
+  :bind
+  (("C-x t n" . tab-bar-new-tab)
+   ("C-x t k" . tab-bar-close-tab)
+   ("C-x t o" . tab-bar-switch-to-tab)
+   ("C-<tab>" . tab-bar-switch-to-next-tab)
+   ("C-S-<tab>" . tab-bar-switch-to-prev-tab)))
 
 (provide 'init-themes)
 ;;; init-themes.el ends here

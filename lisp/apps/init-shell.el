@@ -1,24 +1,42 @@
-;;; init-shell.el --- Terminal emulator and shell configuration -*- lexical-binding: t -*-
+;;; init-shell.el --- Terminal and shell configuration -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;;
-;; This module configures terminal emulators and shells:
-;; - Eat: Modern terminal emulator for Emacs
-;; - Eshell: Emacs built-in shell
-;; - Vterm: Fast terminal emulator (if available)
+;; This module configures terminal emulators and shell integration:
+;; - eat: Modern terminal emulator
+;; - eshell: Built-in Emacs shell with custom prompt
 ;;
 ;;; Code:
 
+;; eat - Emulate A Terminal
 (use-package eat
-  :ensure (eat :host github :repo "jamescherti/emacs-eat"
-               :inherit nil
+  :ensure (eat :host codeberg
+               :repo "akib/emacs-eat"
                :files ("*.el" ("term" "term/*.el") "*.texi"
                        "*.ti" ("terminfo/e" "terminfo/e/*")
                        ("terminfo/65" "terminfo/65/*")
                        ("integration" "integration/*")
-                       (:exclude ".dir-locals.el" "*-tests.el")))
-  :hook (eshell-load-hook . eat-eshell-mode))
+                       ("e" "e/*")))
+  :hook (eshell-load . eat-eshell-mode))
 
+;; Eshell configuration
+(use-package eshell
+  :ensure nil
+  :defer t
+  :custom
+  (eshell-scroll-to-bottom-on-input 'all)
+  (eshell-destroy-buffer-when-process-dies t)
+  (eshell-hist-ignoredups t)
+  (eshell-save-history-on-exit t)
+  :config
+  (setq eshell-prompt-function
+        (lambda ()
+          (concat
+           (propertize (abbreviate-file-name (eshell/pwd)) 'face 'font-lock-keyword-face)
+           (when (and (fboundp 'magit-get-current-branch) (magit-get-current-branch))
+             (propertize (concat " " (magit-get-current-branch)) 'face 'font-lock-string-face))
+           (propertize " λ " 'face 'font-lock-constant-face))))
+  (setq eshell-prompt-regexp "^.* λ "))
 
 (provide 'init-shell)
 ;;; init-shell.el ends here

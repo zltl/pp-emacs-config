@@ -97,5 +97,13 @@
   (calendar-week-start-day 1) ; Week starts on Monday
   (calendar-date-style 'iso)) ; ISO 8601 date format
 
+;; auth-source-pass - Password store integration
+;; Provides secrets to forge, gptel, and other packages via ~/.password-store
+(use-package auth-source-pass
+  :ensure nil
+  :defer t
+  :config
+  (auth-source-pass-enable))
+
 (provide 'init-applications)
 ;;; init-applications.el ends here

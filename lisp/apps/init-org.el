@@ -18,7 +18,7 @@
 ;; get rid of the extra white space that’s added inside code blocks.
 (setq org-src-preserve-indentation t)
 ;; (setq org-preview-latex-default-process 'dvisvgm) ;No blur when scaling
-(defun my/text-scale-adjust-latex-previews ()
+(defun ltl/text-scale-adjust-latex-previews ()
   "Adjust the size of latex preview fragments when changing the
 buffer's text scale."
   (pcase major-mode
@@ -26,14 +26,14 @@ buffer's text scale."
      (dolist (ov (overlays-in (point-min) (point-max)))
        (if (eq (overlay-get ov 'category)
                'preview-overlay)
-           (my/text-scale--resize-fragment ov))))
+           (ltl/text-scale--resize-fragment ov))))
     ('org-mode
      (dolist (ov (overlays-in (point-min) (point-max)))
        (if (eq (overlay-get ov 'org-overlay-type)
                'org-latex-overlay)
-           (my/text-scale--resize-fragment ov))))))
+           (ltl/text-scale--resize-fragment ov))))))
 
-(defun my/text-scale--resize-fragment (ov)
+(defun ltl/text-scale--resize-fragment (ov)
   (overlay-put
    ov 'display
    (cons 'image
@@ -41,7 +41,7 @@ buffer's text scale."
           (cdr (overlay-get ov 'display))
           :scale (+ 1.0 (* 1.25 text-scale-mode-amount))))))
 
-(add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews)
+(add-hook 'text-scale-mode-hook #'ltl/text-scale-adjust-latex-previews)
 
 
 (use-package org-contrib
