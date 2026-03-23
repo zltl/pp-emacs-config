@@ -131,6 +131,15 @@
 (use-package nginx-mode
   :defer t)
 
+;;; Data Formats
+
+(use-package csv-mode
+  :defer t
+  :mode ("\\.[Cc][Ss][Vv]\\'" . csv-mode)
+  :hook (csv-mode . csv-align-mode)
+  :custom
+  (csv-align-padding 2))
+
 ;;; Specialized Modes
 
 (use-package fb-mode
