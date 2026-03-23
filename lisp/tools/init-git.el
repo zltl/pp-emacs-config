@@ -26,6 +26,7 @@
 
 
 (use-package magit
+  :ensure (:host github :repo "magit/magit")
   :functions ltl/magit-clone-read-args-a
   :after org
   :bind
@@ -48,8 +49,10 @@ existing directory under `magit-clone-default-directory'."
   :config (magit-todos-mode 1))
 
 ;; Forge - GitHub/GitLab integration for Magit
+;; Requires magit >= 4.5; ensure latest magit is installed
 (use-package forge
   :after magit
+  :ensure (:host github :repo "magit/forge")
   :defer t)
 
 ;; Git-Link
