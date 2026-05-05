@@ -2,7 +2,7 @@
 
 Elpaca 是现代的异步 Emacs 包管理器，本配置使用 Elpaca 0.11。
 
-## 📦 包管理命令
+## 包管理命令
 
 ### 浏览和搜索包
 
@@ -19,7 +19,7 @@ Elpaca 是现代的异步 Emacs 包管理器，本配置使用 Elpaca 0.11。
 | `elpaca-fetch` | 在管理器中按 `f x` | 获取单个包的更新 |
 | `elpaca-fetch-all` | `M-x elpaca-fetch-all` | 获取所有包的更新 |
 | `elpaca-merge` | 在管理器中按 `m x` | 合并/应用单个包的更新 |
-| `elpaca-merge-all` | `M-x elpaca-merge-all` | 合并/应用所有包的更新 |
+## 包配方（Recipes）
 | `elpaca-update` | 在管理器中按 `p x` | 更新单个包（fetch + merge） |
 | `elpaca-update-all` | `M-x elpaca-update-all` | 更新所有包 |
 
@@ -40,7 +40,7 @@ Elpaca 是现代的异步 Emacs 包管理器，本配置使用 Elpaca 0.11。
 | `elpaca-log` | 在管理器中按 `g l` | 查看包的构建日志 |
 | `elpaca-status` | `M-x elpaca-status` | 查看 Elpaca 状态 |
 
-## 🔧 配置中的用法
+## 配置中的用法
 
 ### 基本用法
 
@@ -85,7 +85,7 @@ Elpaca 是现代的异步 Emacs 包管理器，本配置使用 Elpaca 0.11。
   :demand t)
 ```
 
-## 📚 包配方（Recipes）
+## 包配方（Recipes）
 
 ### 指定源
 
@@ -114,7 +114,7 @@ Elpaca 是现代的异步 Emacs 包管理器，本配置使用 Elpaca 0.11。
 (elpaca (package-name :local-repo "~/projects/package-name"))
 ```
 
-## 🎯 推荐工作流程
+## 推荐工作流程
 
 ### 更新包的最佳实践
 
@@ -173,7 +173,7 @@ rm -rf ~/.emacs.d/elpaca/
 emacs
 ```
 
-## 🔍 管理器界面快捷键
+## 管理器界面快捷键
 
 在 `elpaca-manager` 缓冲区中：
 
@@ -195,13 +195,13 @@ emacs
 | `p` | 上一个 |
 | `q` | 退出 |
 
-## 📖 更多信息
+## 更多信息
 
 - [Elpaca 官方文档](https://github.com/progfolio/elpaca)
 - [Elpaca Wiki](https://github.com/progfolio/elpaca/wiki)
 - [Elpaca 手册](https://github.com/progfolio/elpaca/blob/master/doc/manual.md)
 
-## 💡 提示
+## 提示
 
 1. **推荐先 fetch 后 merge** 而不是直接 update，这样可以先查看变更
 2. **使用 `:wait t`** 对于在 init 文件中需要立即使用的包
@@ -209,7 +209,7 @@ emacs
 4. **使用 `elpaca-after-init-hook`** 而不是 `after-init-hook` 来确保所有包已加载
 5. **Windows 用户** 如果不能创建符号链接，需要启用 `elpaca-no-symlink-mode`
 
-## 🆚 与 package.el 的区别
+## 与 package.el 的区别
 
 | 特性 | Elpaca | package.el |
 |------|--------|------------|

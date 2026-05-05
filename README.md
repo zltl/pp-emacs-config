@@ -5,44 +5,44 @@
 
 > A modern, modular Emacs configuration optimized for professional development.
 
-**⚠️ IMPORTANT:** This configuration requires **Emacs 30 or higher**.
+**IMPORTANT:** This configuration requires **Emacs 30 or higher**.
 
-## 🎯 Overview
+## Overview
 
 This is a well-organized Emacs configuration designed for developers, especially those working with:
 
 **Primary Languages:**
-- 🐹 Go
-- ⚙️ C/C++
-- 🦀 Rust
+- Go
+- C/C++
+- Rust
 
 **Also Supported:**
-- 🐍 Python
-- 📜 JavaScript/TypeScript
-- 🌐 HTML/CSS/LESS/SASS/SCSS
-- 📝 Markdown/LaTeX
-- 💾 SQL
+- Python
+- JavaScript/TypeScript
+- HTML/CSS/LESS/SASS/SCSS
+- Markdown/LaTeX
+- SQL
 - And many more...
 
-## ✨ Highlights
+## Highlights
 
-> 📢 **Latest Update (2025-01):** Major modernization — Corfu completion, project.el, diff-hl, gptel AI, elfeed RSS
+> **Latest Update (2025-01):** Major modernization — Corfu completion, project.el, diff-hl, gptel AI, elfeed RSS
 
-- 🚀 **Fast Startup** - Optimized with lazy loading (30+ packages deferred) and native compilation
-- 📁 **Modular Structure** - 24 modules organized in 6 categories (v3.1) ⭐
-- 🎨 **Modern UI** - Beautiful themes, icons, tab-bar, and mode line
-- ⚙️ **Easy Customization** - 40+ customizable variables via `M-x customize-group RET ltl`
-- 🤖 **AI-Powered** - GitHub Copilot, Copilot CLI, and gptel (OpenAI/Claude/Ollama)
-- 🔍 **Smart Completion** - Corfu + Vertico + LSP
-- 🌳 **Tree-sitter** - Modern syntax highlighting for 30+ languages
-- 📦 **Elpaca 0.11** - Modern async package manager
-- 🎯 **Project-Aware** - Built-in project.el integration
-- 📰 **App Ecosystem** - Elfeed RSS, Forge GitHub, auth-source-pass
-- 🏥 **Health Check** - Built-in diagnostic tool (`M-x ltl/doctor`)
+- **Fast Startup** - Optimized with lazy loading (30+ packages deferred) and native compilation
+- **Modular Structure** - 24 modules organized in 6 categories (v3.1)
+- **Modern UI** - Beautiful themes, icons, tab-bar, and mode line
+- **Easy Customization** - 40+ customizable variables via `M-x customize-group RET ltl`
+- **AI-Powered** - GitHub Copilot, Copilot CLI, and gptel (OpenAI/Claude/Ollama)
+- **Smart Completion** - Corfu + Vertico + LSP
+- **Tree-sitter** - Modern syntax highlighting for 30+ languages
+- **Elpaca 0.11** - Modern async package manager
+- **Project-Aware** - Built-in project.el integration
+- **App Ecosystem** - Elfeed RSS, Forge GitHub, auth-source-pass
+- **Health Check** - Built-in diagnostic tool (`M-x ltl/doctor`)
 
 ---
 
-# 📦 Requirements
+# Requirements
 
 ## System Requirements
 
@@ -50,7 +50,7 @@ This is a well-organized Emacs configuration designed for developers, especially
 - **Node.js** (for Copilot and some language servers)
 - **Git** (required)
 
-## 🔤 Fonts
+## Fonts
 
 This configuration uses specific fonts for the best visual experience.
 
@@ -62,7 +62,7 @@ This configuration uses specific fonts for the best visual experience.
 4. **[Source Han Sans CN](https://github.com/adobe-fonts/source-han-sans)** - Chinese font (思源黑体)
 5. **[all-the-icons](https://github.com/domtronn/all-the-icons.el)** - Icon fonts (installed automatically)
 
-### Automatic Installation (Recommended) ⭐
+### Automatic Installation (Recommended)
 
 **Method 1: Using Elisp script**
 
@@ -98,7 +98,7 @@ See [FONT_INSTALLATION.md](FONT_INSTALLATION.md) for detailed platform-specific 
 
 ---
 
-# 🚀 Installation
+# Installation
 
 ## Quick Start
 
@@ -122,9 +122,9 @@ emacs
 
 ---
 
-# ⚙️ Language-Specific Setup
+# Language-Specific Setup
 
-## 🤖 GitHub Copilot
+## GitHub Copilot
 
 ### Copilot Inline Completion
 **Requirements:** Node.js must be installed.
@@ -140,7 +140,7 @@ emacs
 - `M-n`/`M-p` - Next/previous suggestion
 - `C-c t `` - Toggle Copilot mode
 
-### Copilot CLI (Terminal Agent) ⭐ NEW
+### Copilot CLI (Terminal Agent) NEW
 **Requirements:** GitHub Copilot CLI installed (`copilot` command).
 
 **Install Copilot CLI:**
@@ -176,7 +176,7 @@ gh extension install github/gh-copilot
 - Auto project directory detection
 - Integrates with flycheck/flymake for error context
 
-## 🐹 Go
+## Go
 **Install Go:**
 ```bash
 # Visit https://go.dev/doc/install for official instructions
@@ -207,7 +207,7 @@ export GOPROXY=https://proxy.golang.com.cn,direct
 - Auto-import organization
 - LSP features (goto definition, find references, etc.)
 
-## ⚙️ C/C++
+## C/C++
 
 **Install Language Server (choose one):**
 
@@ -265,7 +265,7 @@ bear -- make
 - `M-/` - Switch between header and implementation (`ff-find-related-file`)
 - If `M-.` jumps to header, open the `.cpp` file first, then try again
 
-## 🐍 Python
+## Python
 
 **Install Language Server:**
 ```bash
@@ -284,7 +284,7 @@ pip install pylint flake8 black
 - Import sorting
 - Virtual environment detection (via `pet` package)
 
-## 🦀 Rust
+## Rust
 
 [Install Rust](https://www.rust-lang.org/tools/install) first.
 
@@ -336,7 +336,7 @@ sudo apt install ripgrep  # Ubuntu/Debian
 brew install ripgrep  # macOS
 ```
 
-## ⌨️ Input Method (Chinese)
+## Input Method (Chinese)
 This configuration uses [emacs-rime](https://github.com/DogLooksGood/emacs-rime) for Chinese input.
 
 **Install librime:**
@@ -357,7 +357,7 @@ brew install librime
 
 ---
 
-# 🔧 Updates & Maintenance
+# Updates & Maintenance
 
 ## Update Packages
 
@@ -417,16 +417,16 @@ rm -rf ~/.emacs.d/var/
 - Restart Emacs after installing fonts
 - Run `M-x all-the-icons-install-fonts` if icons are missing
 
-## 📚 Documentation Guides
+## Documentation Guides
 
 This configuration comes with comprehensive documentation:
 
-### 🎯 Getting Started
+### Getting Started
 - **[README.md](README.md)** - You are here! Main overview
 - **[CHECKLIST.md](CHECKLIST.md)** - Step-by-step setup checklist
 
-### 📖 Reference
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** ⭐ - Command cheat sheet
+### Reference
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command cheat sheet
   - Common commands for all features
   - Important variables
   - Emergency fixes
@@ -443,7 +443,7 @@ This configuration comes with comprehensive documentation:
   - Platform-specific guides
   - Troubleshooting
 
-### 🧪 Testing & Validation
+### Testing & Validation
 - **[TESTING.md](TESTING.md)** - Testing procedures
   - Startup tests, health checks
   - Module loading verification
@@ -509,7 +509,7 @@ Time elapsed: 0.15 seconds
 
 ---
 
-# 📁 Configuration Structure (v3.0)
+# Configuration Structure (v3.0)
 
 ## Modular Organization
 
@@ -545,7 +545,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │   │   ├── init-git.el        # Git integration (Magit)
 │   │   └── init-search.el     # Search tools (ag/swiper)
 │   │
-│   ├── lang/              # Programming language support ⭐
+│   ├── lang/              # Programming language support
 │   │   ├── init-programming-core.el      # LSP, Tree-sitter, tools
 │   │   ├── init-programming-systems.el   # C/C++, Rust, Go
 │   │   ├── init-programming-web.el       # JS/TS, Tailwind
@@ -555,7 +555,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │   └── apps/              # Applications
 │       ├── init-applications.el # Dictionary, UUID, Rime, etc.
 │       ├── init-copilot.el      # AI inline completion
-│       ├── init-copilot-cli.el  # GitHub Copilot CLI integration ⭐ NEW
+│       ├── init-copilot-cli.el  # GitHub Copilot CLI integration NEW
 │       ├── init-org.el          # Org-mode
 │       └── init-shell.el        # Terminal (Eat/Eshell/Vterm)
 │
@@ -577,7 +577,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 └── tree-sitter/          # Tree-sitter grammars
 ```
 
-## 🔧 Configuration Modules (v3.0)
+## Configuration Modules (v3.0)
 
 ### Core (`lisp/core/`)
 - **init-const.el** - System constants (OS detection, Emacs version checks)
@@ -600,7 +600,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - **init-search.el** - Search tools (swiper, counsel, ag)
 - **init-git.el** - Git integration (Magit, git-link, git-timemachine)
 
-### Language Support (`lisp/lang/`) ⭐
+### Language Support (`lisp/lang/`)
 - **init-programming-core.el** - Core infrastructure (Tree-sitter, LSP, Combobulate, dev tools)
 - **init-programming-systems.el** - Systems languages (C/C++, Rust, Go, Protobuf)
 - **init-programming-web.el** - Web development (TypeScript/JavaScript, Tailwind CSS)
@@ -610,11 +610,11 @@ The configuration is organized into **6 logical categories** with **22 modules**
 ### Applications (`lisp/apps/`)
 - **init-applications.el** - Utilities (Dictionary, UUID, Rime input, etc.)
 - **init-copilot.el** - GitHub Copilot inline completion
-- **init-copilot-cli.el** - GitHub Copilot CLI integration (terminal agent) ⭐ NEW
+- **init-copilot-cli.el** - GitHub Copilot CLI integration (terminal agent) NEW
 - **init-org.el** - Org-mode with modern styling and export features
 - **init-shell.el** - Terminal emulation (Eat, Eshell, Vterm)
 
-## 🎯 Key Features
+## Key Features
 
 ### Package Management
 - **Elpaca 0.11** - Modern async package manager
@@ -642,10 +642,10 @@ The configuration is organized into **6 logical categories** with **22 modules**
 
 ### AI Assistance
 - **GitHub Copilot** - AI pair programming (inline completion)
-- **GitHub Copilot CLI** - Terminal-based AI agent for code tasks ⭐ NEW
+- **GitHub Copilot CLI** - Terminal-based AI agent for code tasks NEW
 - **ChatGPT Shell** - Interactive AI assistant
 
-## 🔑 Important Keybindings
+## Important Keybindings
 
 ### Custom Prefix Keys
 - `C-c f` - **File operations**
@@ -656,7 +656,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
   - `C-c t C` - Copilot CLI
   - `C-c t e` - Evil mode
   - `C-c t c` - Copilot chat
-- `C-c c` - **Copilot CLI commands** ⭐ NEW
+- `C-c c` - **Copilot CLI commands** NEW
   - `C-c c c` - Start CLI session
   - `C-c c s` - Send buffer
   - `C-c c e` - Explain code
@@ -684,7 +684,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - `C-x u` - Visual undo (vundo)
 - `M-`` - Copilot complete
 
-## 🛠️ Maintenance & Debugging
+## Maintenance & Debugging
 
 ### Update Packages
 1. Delete `~/.emacs.d/elpaca/`
@@ -701,11 +701,11 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - Tree-sitter grammars install automatically
 - Restart if you encounter errors
 
-## 📚 Further Reading
+## Further Reading
 
 ### Configuration Guides
-- [📦 Elpaca Quick Reference](ELPACA_GUIDE.md) - Package manager commands and usage
-- [🎨 Font Installation Guide](FONT_INSTALLATION.md) - Automatic and manual font installation
+- [Elpaca Quick Reference](ELPACA_GUIDE.md) - Package manager commands and usage
+- [Font Installation Guide](FONT_INSTALLATION.md) - Automatic and manual font installation
 
 ### External Documentation
 - [Emacs Manual](https://www.gnu.org/software/emacs/manual/html_node/emacs/)
@@ -716,7 +716,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 
 ---
 
-# 🤝 Contributing
+# Contributing
 
 This is a personal configuration, but contributions are welcome!
 
@@ -744,7 +744,7 @@ Open an issue with:
 
 ---
 
-# 📄 License
+# License
 
 MIT License - Copyright (c) 2021 Liao Tonglang
 
@@ -752,7 +752,7 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-# 🙏 Acknowledgments
+# Acknowledgments
 
 This configuration is built upon the amazing Emacs community's work:
 
@@ -763,15 +763,15 @@ This configuration is built upon the amazing Emacs community's work:
 
 ---
 
-# ☕ Support
+# Support
 
 If you find this configuration helpful, consider:
-- ⭐ Starring the repository
-- 🐛 Reporting bugs or suggesting improvements
-- 📢 Sharing with others
+- Starring the repository
+- Reporting bugs or suggesting improvements
+- Sharing with others
 
 ---
 
-**Happy Emacs Hacking! 🚀**
+**Happy Emacs Hacking!**
 
 
