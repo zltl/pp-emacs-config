@@ -2,14 +2,14 @@
 
 本配置需要以下字体才能获得最佳视觉效果：
 
-## 📦 必需字体
+## 必需字体
 
 1. **Source Code Pro** - 主要编程字体
 2. **Source Code Pro Nerd Font** - 带图标的编程字体
 3. **Droid Sans Fallback** - CJK 字符后备字体
 4. **Source Han Sans CN** - 中文字体（思源黑体）
 
-## 🚀 自动安装
+## 自动安装
 
 ### 方法 1: 使用 Elisp 脚本（推荐）
 
@@ -33,7 +33,7 @@ cd ~/.emacs.d
 ./install-fonts.sh
 ```
 
-## 🔍 检查字体安装状态
+## 检查字体安装状态
 
 ### 在 Emacs 中检查
 
@@ -58,7 +58,7 @@ system_profiler SPFontsDataType | grep -i "source code pro"
 (New-Object System.Drawing.Text.InstalledFontCollection).Families | Where-Object {$_.Name -like "*Source*"}
 ```
 
-## 📋 手动安装
+## 手动安装
 
 如果自动安装失败，可以手动下载并安装：
 
@@ -101,7 +101,7 @@ sudo pacman -S ttf-droid
 2. 下载 `SourceHanSansCN.zip`
 3. 解压并安装所有 `.otf` 文件
 
-## 🖥️ 平台特定说明
+## 平台特定说明
 
 ### Linux
 
@@ -150,7 +150,7 @@ system_profiler SPFontsDataType | grep -i "source code pro"
 (New-Object System.Drawing.Text.InstalledFontCollection).Families | Where-Object {$_.Name -like "*Source Code Pro*"}
 ```
 
-## ⚙️ 配置说明
+## 配置说明
 
 字体配置位于 `lisp/ui/init-themes.el`：
 
@@ -192,7 +192,7 @@ system_profiler SPFontsDataType | grep -i "source code pro"
 - `C-x C--` - 缩小
 - `C-x C-0` - 重置
 
-## 🔧 图标字体
+## 图标字体
 
 配置还使用了以下图标字体（自动安装）：
 
@@ -206,7 +206,7 @@ M-x all-the-icons-install-fonts
 M-x nerd-icons-install-fonts
 ```
 
-## ❓ 常见问题
+## 常见问题
 
 ### Q: 字体安装后 Emacs 中看不到？
 
@@ -252,7 +252,7 @@ M-: (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback"))
 - 不需要 sudo 权限
 - 如果需要系统级安装，使用 `sudo`
 
-## 📚 脚本功能
+## 脚本功能
 
 ### install-fonts.el
 
@@ -262,22 +262,22 @@ M-: (set-fontset-font t 'han (font-spec :family "Droid Sans Fallback"))
 - `font-install--font-installed-p` - 检查单个字体
 
 **特点：**
-- ✅ 跨平台支持（Linux, macOS, Windows）
-- ✅ 自动检测字体目录
-- ✅ 下载进度显示
-- ✅ 错误处理
-- ✅ 批处理模式支持
+- 支持 Linux、macOS 和 Windows
+- 自动检测字体目录
+- 下载进度显示
+- 错误处理
+- 批处理模式支持
 
 ### install-fonts.sh
 
 **特点：**
-- ✅ 彩色输出
-- ✅ 进度显示
-- ✅ 支持 curl 和 wget
-- ✅ 支持 unzip 和 7z
-- ✅ 自动清理临时文件
+- 彩色输出
+- 进度显示
+- 支持 curl 和 wget
+- 支持 unzip 和 7z
+- 自动清理临时文件
 
-## 🔄 更新字体
+## 更新字体
 
 重新运行安装脚本即可更新到最新版本：
 
