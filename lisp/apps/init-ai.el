@@ -8,10 +8,13 @@
 ;;
 ;;; Code:
 
+;; `gptel' is a general-purpose LLM client for Emacs, useful when you want
+;; chat, drafting, or prompt workflows directly in buffers.
 (use-package gptel
   :defer t
   :commands (gptel gptel-send gptel-menu)
   :custom
+  ;; Default to Org so AI sessions support headings, lists, and code blocks.
   (gptel-default-mode 'org-mode)
   :config
   ;; Key bindings for gptel

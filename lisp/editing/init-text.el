@@ -17,6 +17,8 @@
 ;; DWIM case
 ;; These do-what-I-mean bindings are newer than the classic
 ;; keybindings, but a better default.
+;; Declaring built-in `emacs' via `use-package' documents these remaps in
+;; the same style as external packages and keeps keybinding changes local.
 (use-package emacs
   :ensure nil
   :bind
@@ -26,6 +28,8 @@
 
 ;; Title case
 ;; Gosh, I wish I’d had this when I was so active on MusicBrainz.
+;; `titlecase' is niche, so keep it lazy-loaded until a title-formatting
+;; command is actually needed.
 (use-package titlecase
   :ensure (titlecase :type git :protocol https
                      :host github :repo "ShuguangSun/titlecase.el"
@@ -33,6 +37,8 @@
   :defer t)
 
 ;; Jinx is a just-in-time spell checker.
+;; Jinx uses modern Enchant-based checking and feels much lighter than
+;; classic ispell workflows for on-demand spelling corrections.
 (use-package jinx
   :ensure t
   :diminish

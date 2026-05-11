@@ -4,9 +4,12 @@
 ;;; Code:
 
 ;; Org
+;; `org' is the base for notes, outlines, export, and literate workflows;
+;; these settings bias it toward readable structure and better LaTeX previews.
 (use-package org
   :hook (org-mode . org-indent-mode)
   :custom
+  ;; Larger preview scale keeps inline LaTeX readable at typical UI font sizes.
   (org-format-latex-options
    '(:foreground default
                   :background default
@@ -15,13 +18,18 @@
                   :html-background "Transparent"
                   :html-scale 2.0
                   :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
+  ;; Preserve indentation inside source blocks so pasted code is not
+  ;; reformatted unexpectedly by Org editing commands.
   (org-src-preserve-indentation t)
+  ;; Start folded to a shallow level so large notes remain overviewable on open.
   (org-startup-folded 'show2levels))
 
 ;; (setq org-preview-latex-default-process 'dvisvgm) ;No blur when scaling
 (defun ltl/text-scale-adjust-latex-previews ()
   "Adjust the size of latex preview fragments when changing the
 buffer's text scale."
+  ;; Without this, text scaling would resize plain text but leave preview
+  ;; images behind, making math fragments look oddly out of proportion.
   (pcase major-mode
     ('latex-mode
      (dolist (ov (overlays-in (point-min) (point-max)))
@@ -42,18 +50,25 @@ buffer's text scale."
           (cdr (overlay-get ov 'display))
           :scale (+ 1.0 (* 1.25 text-scale-mode-amount))))))
 
+;; Recompute preview image scale whenever text-scale changes so zooming a
+;; note or LaTeX document feels visually consistent.
 (add-hook 'text-scale-mode-hook #'ltl/text-scale-adjust-latex-previews)
 
 
+;; `org-contrib' keeps access to extra historical Org extensions without
+;; forcing them into startup unless specifically used.
 (use-package org-contrib
   :after org
   :defer t)
 
+;; `engrave-faces' improves syntax-highlighted code export from Org.
 (use-package engrave-faces
   :after org
   :defer t)
 
 ;; Org export
+;; `ox-hugo' publishes Org content to Hugo, making Org a practical source
+;; format for blog/site generation.
 (use-package ox-hugo
   :after org
   :defer t)
@@ -66,6 +81,8 @@ buffer's text scale."
 ;;   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
 ;; Other Org features
+;; `org-appear' reveals hidden emphasis markers only when relevant, which
+;; keeps Org files clean while still making editing markup comfortable.
 (use-package org-appear
   :hook (org-mode . org-appear-mode)
   :custom
@@ -77,14 +94,20 @@ buffer's text scale."
   (org-appear-autolinks 'just-brackets)
   :config
   ;; For proper first-time setup, `org-appear--set-elements' needs to be run after other hooks have acted.
+  ;; Delay the initial setup slightly so other Org hooks have already
+  ;; materialized the buffer structure `org-appear' needs to inspect.
   (run-at-time nil nil #'org-appear--set-elements))
 
+;; `org-modern' refreshes Org's visual styling without changing the
+;; underlying markup, making outlines and agendas easier to scan.
 (use-package org-modern
   :hook (org-mode . org-modern-mode)
   :hook (org-agenda-finalize . org-modern-agenda)
   :custom-face
   ;; Force monospaced font for tags
   (org-modern-tag ((t (:inherit org-verbatim :weight regular :foreground "black" :background "LightGray" :box "black"))))
+  ;; Use explicit glyph/spacing choices so tables, lists, and TODO states
+  ;; look polished but remain readable with the configured fonts.
   :custom
   ;; (org-modern-star '("◉" "○" "◈" "◇" "✳" "◆" "✸" "▶"))
   (org-modern-table-vertical 5)
@@ -104,24 +127,34 @@ buffer's text scale."
      ("DONE" . (:inherit org-verbatim :weight semi-bold :foreground "black" :background "LightGray")))))
 
 ;; For latex fragments
+;; `org-fragtog' toggles LaTeX preview automatically around point, giving
+;; a nice balance between editable source and rendered math.
 (use-package org-fragtog
   :hook (org-mode . org-fragtog-mode)
   :custom
   (org-fragtog-preview-delay 0.2))
 
 (when ltl/enable-reveal
+  ;; `org-re-reveal' exports Org presentations to reveal.js when that
+  ;; workflow is enabled by user preference.
   (use-package org-re-reveal
     :ensure t
     :defer t)
 
+  ;; `oer-reveal' manages reveal.js submodules/assets so exports have the
+  ;; expected presentation resources available locally.
   (use-package oer-reveal
     :defer t
     :init
-    (add-hook 'elpaca-after-init-hook
-              (lambda ()
-                (when (require 'oer-reveal nil t)
-                  (oer-reveal-setup-submodules))))))
+      (add-hook 'elpaca-after-init-hook
+                (lambda ()
+                  ;; Optional require keeps startup resilient on machines
+                  ;; that do not use reveal exports.
+                  (when (require 'oer-reveal nil t)
+                    (oer-reveal-setup-submodules))))))
 
+;; `toc-org' keeps table-of-contents sections updated automatically, which
+;; is handy for long technical Org documents.
 (use-package toc-org
   :defer t
   :hook (org-mode . toc-org-mode))
@@ -135,6 +168,7 @@ buffer's text scale."
 ;; https://protesilaos.com/emacs/denote
 (use-package denote
   :custom
+  ;; Seed keyword vocabulary so common note categories can be reused consistently.
   (denote-known-keywords '("emacs" "journal"))
   ;; This is the directory where your notes live.
   (denote-directory (expand-file-name "~/denote/"))

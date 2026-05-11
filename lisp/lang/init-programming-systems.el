@@ -10,6 +10,8 @@
 ;;
 ;;; Code:
 
+;; `seq' provides sequence helpers used below for filtering missing Go
+;; tools; requiring it explicitly keeps the dependency obvious.
 (require 'seq)
 
 ;;; C/C++
@@ -32,13 +34,15 @@ Searches upward from current directory for .clang-format file."
     (with-temp-buffer
       (insert-file-contents clang-format-file)
       (let (result base-style)
-        ;; Parse BasedOnStyle first
+        ;; Parse BasedOnStyle first so project-specific overrides inherit
+        ;; sane defaults from the upstream style they extend.
         (goto-char (point-min))
         (when (re-search-forward "^BasedOnStyle:\\s-*\\(.+\\)" nil t)
           (setq base-style (string-trim (match-string 1)))
           (when-let ((defaults (cdr (assoc base-style ltl/clang-format-base-styles))))
             (setq result (copy-sequence defaults))))
-        ;; Override with explicit values
+        ;; Override with explicit values so the local file wins over the
+        ;; base style, matching clang-format's own precedence rules.
         (goto-char (point-min))
         (when (re-search-forward "^IndentWidth:\\s-*\\([0-9]+\\)" nil t)
           (setq result (plist-put result :indent-width (string-to-number (match-string 1)))))
@@ -52,6 +56,8 @@ Searches upward from current directory for .clang-format file."
 
 (defun ltl/apply-clang-format-style ()
   "Apply .clang-format settings to cc-mode indentation."
+  ;; Mirroring .clang-format inside Emacs means TAB/RET indentation matches
+  ;; formatter output, reducing surprise diffs after save/format.
   (when-let ((settings (ltl/clang-format-parse-file)))
     (when-let ((indent-width (plist-get settings :indent-width)))
       (setq-local c-basic-offset indent-width))
@@ -60,20 +66,29 @@ Searches upward from current directory for .clang-format file."
     (when-let ((tab-width (plist-get settings :tab-width)))
       (setq-local tab-width tab-width))))
 
+;; Built-in `cc-mode' remains the base for C/C++; the hooks here align
+;; indentation and language-server startup with project conventions.
 (use-package cc-mode
   :ensure nil
   :hook ((c-mode c++-mode) . eglot-ensure)
   :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/apply-clang-format-style)
+  ;; Ensure electric indentation is active in both classic and tree-sitter
+  ;; C/C++ modes for immediate block-aware indentation on RET.
   :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . (lambda () (electric-indent-local-mode 1))))
 
+;; Treat .h as C++ headers by default; in mixed C/C++ codebases this tends
+;; to produce better highlighting and language-server behavior.
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
 
+;; `protobuf-mode' gives syntax highlighting/editing support for .proto files.
 (use-package protobuf-mode
   :defer t
   :mode "\\.proto\\'")
 
 ;;; Rust
 
+;; `rust-mode' is kept for classic Rust buffers and command bindings even
+;; though tree-sitter and Eglot provide most of the heavy lifting.
 (use-package rust-mode
   :defer t
   :mode "\\.rs\\'"
@@ -82,6 +97,7 @@ Searches upward from current directory for .clang-format file."
               ("C-c C-c" . 'rust-compile)
               ("C-c C-f" . 'rust-format-buffer)
               ("C-c C-t" . 'rust-test))
+  ;; Rust benefits from typographic symbol prettification and automatic LSP startup.
   :hook (rust-mode . prettify-symbols-mode)
   :hook (rust-mode . eglot-ensure))
 
@@ -99,6 +115,8 @@ Searches upward from current directory for .clang-format file."
 (defun ltl/go-install-tools (&optional packages)
   "Install or update Go tools in the background.
 Installs each package separately since they may be from different modules."
+  ;; Running installs asynchronously keeps Emacs usable while toolchains
+  ;; update, which matters because `go install' can take a while.
   (interactive)
   (let* ((pkgs (or packages (mapcar #'cdr ltl/go-tools-map)))
          (remaining (length pkgs))
@@ -121,6 +139,8 @@ Installs each package separately since they may be from different modules."
 
 (defun ltl/go-check-tools ()
   "Check for missing or outdated Go tools."
+  ;; Only prompt in Go buffers and at most daily so the assistant is
+  ;; helpful without becoming naggy.
   (when (and (or (eq major-mode 'go-mode)
                  (eq major-mode 'go-ts-mode))
              (executable-find "go"))
@@ -137,10 +157,14 @@ Installs each package separately since they may be from different modules."
         (when (y-or-n-p "Check for Go tool updates? ")
           (ltl/go-install-tools)))))))
 
+;; `go-mode' handles classic Go buffers while tree-sitter remaps may
+;; promote some files to go-ts-mode automatically.
 (use-package go-mode
   :defer t
   :mode "\\.go\\'"
   :interpreter "go"
+  ;; Start LSP and tool checks whenever entering Go buffers so navigation,
+  ;; formatting, and debugger tooling are ready quickly.
   :hook ((go-mode go-ts-mode) . eglot-ensure)
   :hook ((go-mode go-ts-mode) . ltl/go-check-tools))
 

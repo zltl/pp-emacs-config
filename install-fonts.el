@@ -15,7 +15,11 @@
 ;;
 ;;; Code:
 
+;; `url' provides the built-in download primitives used to fetch font
+;; archives directly from release URLs.
 (require 'url)
+;; `url-http' ensures HTTP transport support is loaded so HTTPS downloads
+;; work reliably in batch mode as well as interactive mode.
 (require 'url-http)
 
 ;;; Configuration
@@ -81,6 +85,8 @@
 
 (defun font-install--download-file (url dest)
   "Download file from URL to DEST."
+  ;; The extra progress messages matter because large font archives can
+  ;; take a while to fetch, especially on first setup.
   (font-install--message "  Downloading: %s" (file-name-nondirectory dest))
   (url-copy-file url dest t)
   (font-install--message "  ✓ Downloaded to: %s" dest))
@@ -91,6 +97,8 @@
   ;; Ensure destination directory exists before extracting
   (font-install--ensure-directory dest-dir)
   (cond
+   ;; Prefer native unzip tools because they are fast, preserve filenames
+   ;; correctly, and avoid bundling extra Elisp archive logic here.
    ;; Use unzip command if available
    ((executable-find "unzip")
     (shell-command (format "unzip -o -q '%s' -d '%s'" zip-file dest-dir)))
@@ -110,8 +118,10 @@ If PATTERNS is nil or empty, copy all font files (*.ttf, *.otf, *.woff, *.woff2)
   (let ((copied 0)
         (actual-patterns (if (and patterns (listp patterns) (> (length patterns) 0))
                             patterns
-                          ;; Default: all common font formats
-                          '("\\.ttf\\'" "\\.otf\\'" "\\.woff\\'" "\\.woff2\\'"))))
+                           ;; Default to all common font formats so new
+                           ;; upstream archives continue to work even if
+                           ;; they change from OTF to TTF, etc.
+                           '("\\.ttf\\'" "\\.otf\\'" "\\.woff\\'" "\\.woff2\\'"))))
     (dolist (pattern actual-patterns)
       (let ((files (directory-files-recursively source-dir pattern t)))
         (dolist (file files)
@@ -135,6 +145,8 @@ If PATTERNS is nil or empty, copy all font files (*.ttf, *.otf, *.woff, *.woff2)
 
 (defun font-install--refresh-font-cache ()
   "Refresh system font cache."
+  ;; Refreshing the cache immediately means newly installed fonts are
+  ;; visible to the next Emacs session without requiring a reboot.
   (font-install--message "Refreshing font cache...")
   (cond
    ((eq system-type 'gnu/linux)
@@ -203,9 +215,11 @@ If PATTERNS is nil or empty, copy all font files (*.ttf, *.otf, *.woff, *.woff2)
   (font-install--message "═════════════════════════════════════════════════════")
   (font-install--message "")
   
-  ;; Ensure directories exist
-  (font-install--ensure-directory font-install-dir)
-  (font-install--ensure-directory font-download-dir)
+    ;; Ensure directories exist
+    ;; Create install/download directories up front so individual font
+    ;; installs can stay focused on download/extract/copy work.
+    (font-install--ensure-directory font-install-dir)
+    (font-install--ensure-directory font-download-dir)
   
   ;; Install each font
   (let ((success 0)
@@ -243,8 +257,10 @@ If PATTERNS is nil or empty, copy all font files (*.ttf, *.otf, *.woff, *.woff2)
     (font-install--message "═════════════════════════════════════════════════════")
     (font-install--message ""))
   
-  ;; Clean up download directory
-  (when (yes-or-no-p "Clean up downloaded files? ")
+   ;; Offer cleanup at the end so users can inspect downloaded archives
+   ;; when troubleshooting failed installs, but still reclaim space easily.
+   ;; Clean up download directory
+   (when (yes-or-no-p "Clean up downloaded files? ")
     (delete-directory font-download-dir t)
     (font-install--message "✓ Cleaned up download directory")))
 
