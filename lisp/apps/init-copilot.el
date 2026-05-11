@@ -21,14 +21,20 @@
 
 ;; TODO: use M-x copilot-login
 (when (executable-find "node")
+  ;; `track-changes' is used by Copilot's overlay/update machinery; load it
+  ;; explicitly so the dependency is visible to future maintainers.
   (use-package track-changes
     :ensure (:host github :repo "emacs-straight/track-changes"
              :files ("*.el")))
 
+  ;; `copilot' provides inline AI completions. Guarding it with a Node
+  ;; check avoids enabling a feature whose backend cannot start.
   (use-package copilot
     :diminish
     :ensure (:host github :repo "copilot-emacs/copilot.el")
     :custom
+    ;; Disable automatic suggestions by default so ghost text does not
+    ;; compete with Corfu/normal editing until explicitly requested.
     (copilot-disable-predicates '(always))
     :hook
     (prog-mode . copilot-mode)
@@ -46,6 +52,8 @@
           ("M-f" . #'copilot-accept-completion-by-word)
           ("M-<return>" . #'copilot-accept-completion-by-line))
     :config
+    ;; Install the Copilot server automatically on first use so setup is
+    ;; mostly self-service once authentication is complete.
     (when (not (copilot-installed-version))
       (let ((display-buffer-alist (cons '("^\\*copilot-install-server\\*" display-buffer-no-window (allow-no-window . t)) display-buffer-alist)))
         (copilot-install-server)))))
@@ -77,4 +85,3 @@
 (provide 'init-copilot)
 
 ;;; init-copilot.el ends here
-

@@ -14,16 +14,22 @@
 ;;; Code:
 
 ;;; TypeScript/JavaScript — unified under Eglot (replaces tide)
+;; Register TS/JS tree-sitter modes with the TypeScript language server so
+;; the web stack shares one LSP backend and one set of editor commands.
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '((typescript-ts-mode tsx-ts-mode) . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs
                '((js-ts-mode) . ("typescript-language-server" "--stdio"))))
 
+;; Start Eglot automatically in common JS/TS tree-sitter modes so rename,
+;; formatting, and diagnostics feel built in.
 (dolist (hook '(typescript-ts-mode-hook tsx-ts-mode-hook js-ts-mode-hook))
   (add-hook hook #'eglot-ensure))
 
 ;; Keybindings consistent with the old tide setup, mapped to eglot equivalents
+;; Preserving the old muscle memory makes the migration from Tide to Eglot
+;; less disruptive for daily editing.
 (with-eval-after-load 'typescript-ts-mode
   (define-key typescript-ts-mode-map (kbd "C-c C-r") #'eglot-rename)
   (define-key typescript-ts-mode-map (kbd "C-c C-f") #'eglot-format)

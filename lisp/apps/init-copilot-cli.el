@@ -16,6 +16,9 @@
 ;;
 ;;; Code:
 
+;; `eat' provides the terminal widget that hosts the Copilot CLI session.
+;; Optional loading keeps this module tolerant on machines where the
+;; package has not been installed yet.
 (require 'eat nil t)
 
 (defgroup copilot-cli nil
@@ -101,6 +104,8 @@
 ;;; Helper functions
 (defun copilot-cli--project-root ()
   "Get the project root directory."
+  ;; Prefer project.el's root so the CLI starts in the same workspace
+  ;; context as file search, Magit, and other project-aware commands.
   (or (when (fboundp 'project-root)
         (when-let ((proj (project-current)))
           (project-root proj)))
@@ -109,6 +114,8 @@
 
 (defun copilot-cli--build-command ()
   "Build the copilot CLI command with arguments."
+  ;; Centralizing command assembly keeps model selection and extra args
+  ;; consistent across start/restart/helper commands.
   (let ((args (list copilot-cli-executable
                     "--model" copilot-cli-model)))
     (when copilot-cli-extra-args
@@ -117,6 +124,8 @@
 
 (defun copilot-cli--setup-windows ()
   "Setup the window layout for Copilot CLI."
+  ;; Reserve a stable right-hand pane so code stays visible on the left
+  ;; while prompts and answers remain nearby for comparison.
   (let* ((source-win (selected-window))
          (width-to-keep (- (window-width) copilot-cli-window-width)))
     ;; Split window, keeping source on left
@@ -128,6 +137,8 @@
 (defun copilot-cli ()
   "Start or switch to a Copilot CLI session using eat terminal."
   (interactive)
+  ;; Fail fast with clear messages instead of opening a useless terminal
+  ;; buffer when the CLI binary or Eat backend is unavailable.
   (unless (executable-find copilot-cli-executable)
     (user-error "Copilot CLI not found. Please install GitHub Copilot CLI"))
   (unless (fboundp 'eat)
@@ -156,14 +167,17 @@
       (setq copilot-cli--eat-buffer buf)
       (with-current-buffer buf
         (rename-buffer copilot-cli-buffer-name t)
-        ;; Add local keybindings
+        ;; Add local keybindings so Copilot-terminal actions stay scoped to
+        ;; this buffer instead of leaking into all Eat sessions.
         (local-set-key (kbd "C-c C-q") #'copilot-cli-quit)
         (local-set-key (kbd "C-c C-s") #'copilot-cli-send-file)
         (local-set-key (kbd "C-c C-b") #'copilot-cli-insert-source-file)
-        ;; Ensure mode switching keys are available
+        ;; Ensure mode switching keys are available because Eat alternates
+        ;; between Emacs-handled keys and terminal passthrough modes.
         (local-set-key (kbd "C-c C-j") #'eat-semi-char-mode)
         (local-set-key (kbd "C-c C-e") #'eat-emacs-mode)
-        ;; Start in semi-char mode (input mode)
+        ;; Start in semi-char mode so typing reaches the CLI immediately,
+        ;; while the local C-c bindings above still work naturally.
         (eat-semi-char-mode)))
     ;; Return to source window
     (select-window source-win)))
@@ -184,6 +198,8 @@
 ;;; Terminal interaction helpers
 (defun copilot-cli--send-to-terminal (text)
   "Send TEXT to the eat terminal."
+  ;; Funnel all terminal output through one helper so process I/O logic is
+  ;; easy to reason about and adjust later.
   (when (and copilot-cli--eat-buffer
              (buffer-live-p copilot-cli--eat-buffer))
     (with-current-buffer copilot-cli--eat-buffer
@@ -209,6 +225,7 @@
   "Open Copilot CLI with current buffer as context."
   (interactive)
   (let ((file (buffer-file-name)))
+    ;; Save first so the CLI sees the same bytes that Emacs is showing.
     (when file (save-buffer))
     (copilot-cli)
     (run-at-time 0.5 nil
@@ -223,6 +240,8 @@
   (let* ((content (buffer-substring-no-properties start end))
          (ext (or (file-name-extension (buffer-name) t) ".txt"))
          (temp-file (make-temp-file "copilot-region-" nil ext)))
+    ;; Persist the region to a temp file so the CLI can consume it through
+    ;; its native @file flow instead of a giant pasted inline prompt.
     (with-temp-file temp-file
       (insert content))
     (copilot-cli)
@@ -234,6 +253,8 @@
 (defun copilot-cli-explain ()
   "Ask Copilot CLI to explain code."
   (interactive)
+  ;; Use the active region when present, otherwise fall back to the whole
+  ;; buffer so one command supports both focused and broad explanations.
   (if (use-region-p)
       (copilot-cli-send-region (region-beginning) (region-end))
     (copilot-cli-send-buffer))
@@ -245,6 +266,8 @@
 (defun copilot-cli-review ()
   "Ask Copilot CLI to review code."
   (interactive)
+  ;; Reviews are most useful with full-file context, so always send the
+  ;; whole buffer instead of a possibly misleading fragment.
   (copilot-cli-send-buffer)
   (run-at-time 1.0 nil
                (lambda ()
@@ -256,6 +279,8 @@
   "Send buffer with errors to Copilot CLI."
   (interactive)
   (let ((errors (copilot-cli--collect-errors)))
+    ;; Pair the full source with concrete diagnostics when available so the
+    ;; fix prompt is grounded in real checker output.
     (copilot-cli-send-buffer)
     (run-at-time 1.0 nil
                  (lambda ()
@@ -267,6 +292,8 @@
 
 (defun copilot-cli--collect-errors ()
   "Collect errors from flycheck or flymake."
+  ;; Prefer checker output over vague prompts so "fix error" requests
+  ;; produce actionable, line-specific context for the model.
   (with-current-buffer (or copilot-cli--source-buffer (current-buffer))
     (cond
      ((bound-and-true-p flycheck-mode)
@@ -291,6 +318,8 @@
 (defun copilot-cli-generate-tests ()
   "Ask Copilot CLI to generate tests."
   (interactive)
+  ;; Test generation benefits from seeing the whole file's API surface and
+  ;; dependencies, so use the full buffer as context.
   (copilot-cli-send-buffer)
   (run-at-time 1.0 nil
                (lambda ()
@@ -301,6 +330,8 @@
 (defun copilot-cli-refactor (instruction)
   "Refactor with INSTRUCTION."
   (interactive "sRefactor instruction: ")
+  ;; Keep the human instruction explicit instead of burying it inside file
+  ;; content so refactor goals remain clear to the model.
   (copilot-cli-send-buffer)
   (run-at-time 1.0 nil
                (lambda ()
@@ -312,6 +343,7 @@
 (defun copilot-cli-stop ()
   "Stop the Copilot CLI process."
   (interactive)
+  ;; Stop only the Copilot subprocess so the rest of Emacs keeps running untouched.
   (when (and copilot-cli--eat-buffer
              (buffer-live-p copilot-cli--eat-buffer))
     (when-let ((proc (get-buffer-process copilot-cli--eat-buffer)))
@@ -333,14 +365,18 @@
              (buffer-live-p copilot-cli--eat-buffer))
     (kill-buffer copilot-cli--eat-buffer))
   (setq copilot-cli--eat-buffer nil)
+  ;; Restore a simple layout after closing the temporary side-by-side session.
   (delete-other-windows))
 
 ;;; Keybindings
+;; Expose a quick entry point in the existing toggle map for discoverability.
 (with-eval-after-load 'bind-key
   (when (boundp 'ltl/toggles-map)
     (define-key ltl/toggles-map (kbd "C") #'copilot-cli)))
 
 ;; Define prefix map for Copilot CLI commands
+;; Group all AI-terminal commands under one prefix so they are easy to
+;; discover and remember without scattering bindings across the config.
 (defvar copilot-cli-command-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "c") #'copilot-cli)

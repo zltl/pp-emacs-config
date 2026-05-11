@@ -11,10 +11,14 @@
 
 ;; Don't prompt to confirm theme safety. This avoids problems with
 ;; first-time startup on Emacs > 26.3.
+;; The practical effect is that a curated theme list loads cleanly on a
+;; new machine without interactive trust prompts during startup.
 (setq custom-safe-themes t)
 
 ;; I like tiled windows more than I need Emacs to maintain a static
 ;; number of columns and rows.
+;; Preventing implied resize avoids jarring frame jumps when fonts or UI
+;; elements change size during startup.
 (setopt frame-inhibit-implied-resize t)
 ;; Cursor
 ;; I like a non-blinking bar cursor.
@@ -40,6 +44,8 @@
 
 ;; Themes
 ;; Great looking theme
+;; `spacemacs-theme' is the primary visual baseline; loading it here means
+;; all later UI packages inherit a consistent palette.
 (use-package spacemacs-theme
   :config (load-theme 'spacemacs-dark t))
 ;; (use-package modus-themes
@@ -64,6 +70,8 @@
 
 ;; Mac has an anoying bug when visibly warning you about errors. I hate it.
 ;; And while we're at it, let's ask emacs to ignore the audible warning too.
+;; Disabling both visible and audible bells makes errors less disruptive,
+;; especially during repetitive navigation or completion mistakes.
 (setq visible-bell nil)
 (setq ring-bell-function 'ignore)
 
@@ -72,8 +80,12 @@
 ;; caught Road Runner, saying “Beep beep your ass.” This comes from
 ;; approximately the same era as the last time anyone wanted a system
 ;; bell.
+;; `mode-line-bell' keeps error feedback visible but subtle by flashing
+;; the mode line instead of ringing the system bell.
 (use-package mode-line-bell
   :hook (on-first-input . mode-line-bell-mode))
+;; `nyan-mode' is mostly aesthetic; it adds a playful progress indicator
+;; to the mode line without affecting editing behavior.
 (use-package nyan-mode
   :config (nyan-mode))
 ;; A fancy and fast mode-line inspired by minimalism design.
@@ -91,20 +103,28 @@
 (setf initial-scratch-message nil)
 
 ;; frame scaling/zooming
+;; `default-text-scale' provides persistent global zooming so different
+;; displays can be accommodated without editing font constants.
 (use-package default-text-scale
   :config
   (default-text-scale-mode))
 
 ;; Highlight the current line
+;; A subtle current-line highlight improves cursor tracking in large files
+;; and multi-pane layouts.
 (use-package hl-line
   :ensure nil
   :hook (on-first-buffer . global-hl-line-mode))
 
+;; `volatile-highlights' briefly highlights changed text, making actions
+;; like yank, undo, or replace easier to visually verify.
 (use-package volatile-highlights
   :config
   (volatile-highlights-mode t))
 
 ;; font — uses defcustom variables from init-custom-vars.el
+;; Apply fonts only in GUI sessions; terminal Emacs cannot use these font
+;; faces and would just produce redundant work.
 (when (display-graphic-p)
   (set-face-attribute 'default nil
                       :font ltl/default-font
@@ -115,18 +135,28 @@
                                :weight 'normal
                                :height ltl/font-size)))
 
+;; Helper for icon/font packages so we can install missing fonts only when
+;; necessary instead of prompting on every startup.
 (defun ltl/font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (if (find-font (font-spec :name font-name)) t nil))
 
+;; `all-the-icons' supplies icon glyphs for UI packages like dashboard or
+;; dired integrations, but only makes sense in graphical Emacs.
 (use-package all-the-icons
   :if (display-graphic-p)
   :defer t
   :config
+  ;; Auto-install the icon font on first use so icon-dependent packages do
+  ;; not silently render blank squares.
   (unless (ltl/font-installed-p "all-the-icons")
     (all-the-icons-install-fonts t)))
+;; `nerd-icons' has broader ecosystem support than all-the-icons, so this
+;; config keeps both available for packages that prefer one or the other.
 (use-package nerd-icons
   :defer t)
+;; Prefer Nerd Font-backed glyphs where possible because a single patched
+;; font can cover more packages with fewer separate font installs.
 (use-package all-the-icons-nerd-fonts
   :ensure
   (all-the-icons-nerd-fonts :host github :repo "mohkale/all-the-icons-nerd-fonts")
@@ -144,8 +174,12 @@
 ;; scroll wheels.
 (pixel-scroll-precision-mode)
 
+;; `doom-modeline' offers a dense but readable modeline with project,
+;; VCS, diagnostics, and buffer metadata in predictable positions.
 (use-package doom-modeline
   :custom
+  ;; Keep the bar/modeline compact so it is informative without dominating
+  ;; vertical space on laptop displays.
   (doom-modeline-height 18)
   (doom-modeline-bar-width 8)
   (doom-modeline-time-icon nil)
@@ -164,6 +198,8 @@
                   github debug repl lsp minor-modes input-method indent-info buffer-encoding
                   major-mode process vcs time "  ")))
 
+;; `solaire-mode' subtly differentiates "real" editing buffers from side
+;; buffers, which improves window hierarchy at a glance.
 (use-package solaire-mode
   :config
   (solaire-global-mode +1)
@@ -171,13 +207,19 @@
     (setf (alist-get face solaire-mode-remap-alist) nil)))
 
 ;; Tab-bar - Built-in tab management for multi-project workflows
+;; Built-in tab-bar gives lightweight workspaces without another package
+;; dependency, which is enough for separating projects/tasks visually.
 (use-package tab-bar
   :ensure nil
   :custom
+  ;; Always show the tab bar when multiple contexts are in use.
   (tab-bar-show 1)
+  ;; Hide close buttons to reduce accidental mouse-driven tab deletion.
   (tab-bar-close-button-show nil)
+  ;; New tabs should open in *scratch* so they start from a neutral buffer.
   (tab-bar-new-tab-choice "*scratch*")
   (tab-bar-tab-hints t)
+  ;; Meta+number-style selection scales well for keyboard-driven tab switching.
   (tab-bar-select-tab-modifiers '(meta))
   :bind
   (("C-x t n" . tab-bar-new-tab)

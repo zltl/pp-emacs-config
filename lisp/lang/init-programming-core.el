@@ -11,6 +11,8 @@
 ;;; Code:
 
 ;; Hideshow - Built-in code folding
+;; `hideshow' gives low-overhead folding for most programming modes, so
+;; large functions can be collapsed without relying on LSP or tree-sitter.
 (use-package hideshow
   :ensure nil
   :diminish hs-minor-mode
@@ -31,6 +33,8 @@
   :ensure nil
   :mode (("\\.tsx\\'" . tsx-ts-mode))
   :preface
+  ;; Installing grammars on demand keeps first startup lighter while still
+  ;; making one command enough to enable modern parsing/highlighting later.
   (defun ltl/setup-install-grammars ()
     "Install Tree-sitter grammars if they are absent."
     (interactive)
@@ -68,12 +72,16 @@
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.23.2" "typescript/src"))
                (vue . ("https://github.com/tree-sitter-grammars/tree-sitter-vue"))
                (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
+      ;; Register grammar sources centrally so installation and upgrades use
+      ;; known-good repositories/versions compatible with this config.
       (add-to-list 'treesit-language-source-alist grammar)
       (unless (treesit-language-available-p (car grammar))
         (progn
           (message "installing grammar: %s" grammar)
           (treesit-install-language-grammar (car grammar))))))
 
+  ;; Remap classic major modes to their tree-sitter variants so users get
+  ;; better syntax parsing automatically when grammars are available.
   (dolist (mapping
            '((python-mode . python-ts-mode)
              (css-mode . css-ts-mode)
@@ -91,10 +99,14 @@
 
 ;;; Combobulate - Structural Editing
 
+;; `combobulate' builds on tree-sitter to provide syntax-aware structural
+;; editing, which is safer than plain text motions for nested languages.
 (use-package combobulate
   :after treesit
   :ensure (combobulate :host github :repo "mickeynp/combobulate")
   :custom
+  ;; Keep structural-editing commands under a dedicated prefix so they do
+  ;; not clash with major-mode bindings.
   (combobulate-key-prefix "C-c o")
   :hook ((prog-mode . combobulate-mode)))
 
@@ -102,9 +114,13 @@
 
 (defun ltl/eglot-ensure ()
   "Start Eglot in non-Emacs Lisp buffers."
+  ;; Emacs Lisp has excellent native tooling already, so skipping Eglot
+  ;; there avoids needless language-server startup and duplicate features.
   (unless (derived-mode-p 'emacs-lisp-mode)
     (eglot-ensure)))
 
+;; `eglot' is the built-in LSP client, chosen here to keep the stack lean
+;; while still providing rename, formatting, diagnostics, and navigation.
 (use-package eglot
   :ensure nil
   :hook ((prog-mode . ltl/eglot-ensure))
@@ -114,13 +130,19 @@
               ("a" . eglot-code-actions)
               ("d" . eldoc-doc-buffer))
   :custom
+  ;; Shut down idle language servers when their last managed buffer closes
+  ;; so background processes do not accumulate across projects.
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0) ;; Disable logging for performance
   :config
+  ;; Explicit TSX registration ensures tsx-ts-mode gets the correct server
+  ;; even when default mode/server associations vary by package version.
   (add-to-list 'eglot-server-programs
                '(tsx-ts-mode . ("typescript-language-server" "--stdio"))))
 
 ;; Consult integration for Eglot
+;; Search workspace symbols through Consult's preview/narrowing UI instead
+;; of a plain completing-read prompt.
 (use-package consult-eglot
   :after (consult eglot)
   :bind (:map ltl/lsp-map
@@ -128,30 +150,44 @@
 
 ;;; Development Tools
 
+;; `eldoc-box' shows hover docs in a child frame, making LSP help easier
+;; to read than cramped echo-area messages.
 (use-package eldoc-box
   :diminish
   :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
 
+;; `compile-multi' stores multiple named build/test commands per project,
+;; which is convenient when one repo has several entry points.
 (use-package compile-multi
   :defer t
   :commands compile-multi)
 
+;; `apheleia' offers asynchronous formatting, so buffer formatting does
+;; not block the UI or require mode-specific formatter glue everywhere.
 (use-package apheleia
   :defer t
   :commands (apheleia-mode apheleia-format-buffer))
 
+;; Keep clang-format available as an explicit formatter for C/C++ buffers
+;; and one-off region formatting.
 (use-package clang-format
   :defer t
   :commands (clang-format-buffer clang-format-region))
 
+;; `dumb-jump' is a practical fallback for jump-to-definition when no
+;; language server is available or indexed yet.
 (use-package dumb-jump
   :defer t
   :commands (dumb-jump-go dumb-jump-back))
 
+;; `hl-todo' highlights actionable keywords inline so TODO/FIX/BUG notes
+;; stay visible during normal editing and review.
 (use-package hl-todo
   :ensure (:host github :repo "tarsius/hl-todo")
   :hook (prog-mode . hl-todo-mode)
   :config
+  ;; Extend the default keyword palette with this config's preferred task
+  ;; vocabulary so local conventions are highlighted consistently.
   (setq hl-todo-keyword-faces
         (append
          hl-todo-keyword-faces
@@ -163,17 +199,23 @@
            ("TWEAK" . "#fe9030")
            ("PERF"  . "#e09030")))))
 
+;; `rainbow-mode' previews colors using their actual value, which is very
+;; helpful when editing CSS, HTML, or design-token files.
 (use-package rainbow-mode
   :ensure (rainbow-mode :host github :repo "emacsmirror/rainbow-mode" :branch "master")
   :defer t
   :hook ((css-mode scss-mode html-mode) . rainbow-mode))
 
+;; `dap-mode' is kept on demand because debugging is important but not a
+;; startup-critical workflow.
 (use-package dap-mode
   :defer t
   :commands (dap-debug dap-debug-edit-template))
 
 ;;; Lisp Editing
 
+;; `paredit' keeps Lisp structure balanced while editing, which is worth
+;; the stricter behavior in Lispy modes.
 (use-package paredit
   :diminish
   :hook ((emacs-lisp-mode . enable-paredit-mode)
@@ -182,20 +224,28 @@
          (lisp-interaction-mode . enable-paredit-mode)
          (scheme-mode . enable-paredit-mode)))
 
+;; Color each nesting depth differently so deeply nested forms are easier
+;; to parse visually.
 (use-package rainbow-delimiters
   :diminish
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; Highlight the symbol at point and its siblings to speed up code reading
+;; without a full semantic highlighter.
 (use-package highlight-thing
   :diminish
   :hook (prog-mode . highlight-thing-mode))
 
+;; `sly' is the Common Lisp IDE entry point, kept lazy because it depends
+;; on an external Lisp runtime and is not always needed.
 (use-package sly
   :defer t
   :commands (sly sly-connect))
 
 ;;; Project Management
 
+;; `perspective' gives named workspaces, which helps keep unrelated
+;; project/task window sets separate in long Emacs sessions.
 (use-package perspective
   :defer t
   :custom
@@ -203,6 +253,8 @@
   :init
   (add-hook 'elpaca-after-init-hook
             (lambda ()
+              ;; Optional loading keeps the project-management layer from
+              ;; breaking startup on machines that do not use Perspective.
               (when (require 'perspective nil t)
                 (persp-mode 1)))))
 
