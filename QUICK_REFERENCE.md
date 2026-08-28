@@ -68,13 +68,15 @@ C-c g f     文件日志          magit-log-buffer-file
 C-c g t     时间机器          git-timemachine
 ```
 
-### Copilot
+### AI (minuet / agent CLI)
 ```
-C-c M-c     启用/禁用         copilot-mode
-M-\         接受建议          copilot-accept-completion
-M-n         下一个建议        copilot-next-completion
-M-p         上一个建议        copilot-previous-completion
-C-g         拒绝建议          keyboard-quit
+M-`         触发补全          minuet-complete-with-minibuffer
+M-A         接受全部          minuet-accept-suggestion
+C-c t m     自动补全开关       minuet-auto-suggestion-mode
+C-c c c     打开 agent        ltl/agent
+C-c c a     切换后端          ltl/agent-switch
+C-c c s     发送 buffer       ltl/agent-send-buffer
+C-c c d     看 diff           ltl/agent-diff-current-file
 ```
 
 ### Shell/Terminal
@@ -108,7 +110,7 @@ ltl/theme                     'spacemacs-dark
 
 ### 功能开关
 ```elisp
-ltl/enable-copilot            t
+ltl/enable-lsp                t
 ltl/enable-lsp                t      ; 控制 Eglot
 ltl/enable-tree-sitter        t
 ltl/enable-dashboard          t
@@ -159,7 +161,7 @@ M-x customize-group RET ltl RET
 ### 方法 3: 临时测试
 ```elisp
 ;; 在 *scratch* buffer 中
-(setq ltl/enable-copilot nil)
+(setq ltl/enable-lsp nil)
 M-x ltl/apply-custom-settings
 ```
 

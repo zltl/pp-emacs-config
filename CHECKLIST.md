@@ -190,15 +190,10 @@
   ```
   (需要在 Git 仓库中)
 
-### Copilot (如启用)
-- [ ] **Copilot 登录**  
-  ```elisp
-  M-x copilot-login
-  ```
-  按提示完成认证
-
-- [ ] **Copilot 建议**  
-  在代码文件中输入注释，应该看到灰色建议
+### AI agent (minuet / CLI)
+- [ ] **配置 minuet API**（`MINUET_ENDPOINT` / `MINUET_MODEL` / API key env）
+- [ ] **`M-`` 能触发补全**
+- [ ] **`C-c c c` 能打开 qodercli/agent 侧栏**；`C-c c a` 可切换后端
 
 ---
 

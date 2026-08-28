@@ -32,7 +32,7 @@ This is a well-organized Emacs configuration designed for developers, especially
 - **Modular Structure** - 24 modules organized in 6 categories (v3.1)
 - **Modern UI** - Beautiful themes, icons, tab-bar, and mode line
 - **Easy Customization** - 40+ customizable variables via `M-x customize-group RET ltl`
-- **AI-Powered** - GitHub Copilot, Copilot CLI, and gptel (OpenAI/Claude/Ollama)
+- **AI-Powered** - minuet inline completion, qodercli/cursor-agent side panel, and gptel
 - **Smart Completion** - Corfu + Vertico + LSP
 - **Tree-sitter** - Modern syntax highlighting for 30+ languages
 - **Elpaca 0.11** - Modern async package manager
@@ -124,55 +124,50 @@ emacs
 
 # Language-Specific Setup
 
-## GitHub Copilot
+## AI agents (minuet + CLI)
 
-### Copilot Inline Completion
-**Requirements:** Node.js must be installed.
+### Inline completion (minuet)
+**Requirements:** configure a cheap OpenAI-FIM-compatible endpoint via env:
 
-**Setup:**
-1. Start Emacs
-2. Run `M-x copilot-login`
-3. Follow the browser instructions to authenticate with GitHub
+```bash
+export MINUET_ENDPOINT="https://api.deepseek.com/beta/completions"
+export MINUET_MODEL="deepseek-chat"
+export MINUET_API_KEY_ENV="DEEPSEEK_API_KEY"
+export DEEPSEEK_API_KEY="..."
+```
 
 **Usage:**
 - `M-`` - Trigger completion
-- `TAB` - Accept suggestion
-- `M-n`/`M-p` - Next/previous suggestion
-- `C-c t `` - Toggle Copilot mode
+- `M-A` / `M-a` / `M-w` - Accept whole / line / word
+- `C-c t m` - Toggle auto-suggestion mode
 
-### Copilot CLI (Terminal Agent) NEW
-**Requirements:** GitHub Copilot CLI installed (`copilot` command).
+### Agent CLI (qodercli / cursor-agent)
+**Requirements:** `qodercli` and/or `agent` (`cursor-agent`) on `PATH`.
 
-**Install Copilot CLI:**
-```bash
-# Install via npm
-npm install -g @anthropic-ai/copilot
-
-# Or via GitHub CLI extension
-gh extension install github/gh-copilot
-```
-
-**Usage (C-c c prefix):**
+**Usage (`C-c c` prefix):**
 | Key | Command | Description |
 |-----|---------|-------------|
-| `C-c c c` | `copilot-cli` | Start Copilot CLI session |
-| `C-c c s` | `copilot-cli-send-buffer` | Send current buffer |
-| `C-c c r` | `copilot-cli-send-region` | Send selected region |
-| `C-c c e` | `copilot-cli-explain` | Explain code |
-| `C-c c v` | `copilot-cli-review` | Review code |
-| `C-c c f` | `copilot-cli-fix-error` | Fix errors (with flycheck/flymake) |
-| `C-c c t` | `copilot-cli-generate-tests` | Generate unit tests |
-| `C-c c R` | `copilot-cli-refactor` | Refactor with instruction |
-| `C-c c q` | `copilot-cli-quit` | Quit CLI session |
+| `C-c c c` | `ltl/agent` | Start/focus agent side panel |
+| `C-c c a` | `ltl/agent-switch` | Switch qodercli ↔ cursor-agent |
+| `C-c c s` | `ltl/agent-send-buffer` | Send current buffer |
+| `C-c c r` | `ltl/agent-send-region` | Send selected region |
+| `C-c c e` | `ltl/agent-explain` | Explain code |
+| `C-c c v` | `ltl/agent-review` | Review code |
+| `C-c c f` | `ltl/agent-fix-error` | Fix errors (flycheck/flymake) |
+| `C-c c t` | `ltl/agent-generate-tests` | Generate unit tests |
+| `C-c c R` | `ltl/agent-refactor` | Refactor with instruction |
+| `C-c c d` | `ltl/agent-diff-current-file` | Diff current file |
+| `C-c c q` | `ltl/agent-quit` | Quit agent session |
 
-**In CLI Terminal:**
+**In agent terminal:**
 - `C-c C-b` - Insert @file reference to source buffer
 - `C-c C-s` - Insert @file reference (choose file)
 - `C-c C-q` - Quit
+- `C-q C-y` - Send literal Ctrl+Y to the CLI
 
 **Features:**
-- Uses `eat` terminal emulator for proper terminal handling
-- Side-by-side layout: source code on left, CLI on right
+- Uses `eat` terminal emulator
+- Side-by-side layout: source on left, agent on right
 - Auto project directory detection
 - Integrates with flycheck/flymake for error context
 
@@ -554,8 +549,8 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │   │
 │   └── apps/              # Applications
 │       ├── init-applications.el # Dictionary, UUID, Rime, etc.
-│       ├── init-copilot.el      # AI inline completion
-│       ├── init-copilot-cli.el  # GitHub Copilot CLI integration NEW
+│       ├── init-minuet.el       # Inline AI completion (minuet)
+│       ├── init-agent-cli.el    # qodercli / cursor-agent side panel
 │       ├── init-org.el          # Org-mode
 │       └── init-shell.el        # Terminal (Eat/Eshell/Vterm)
 │
@@ -609,8 +604,8 @@ The configuration is organized into **6 logical categories** with **22 modules**
 
 ### Applications (`lisp/apps/`)
 - **init-applications.el** - Utilities (Dictionary, UUID, Rime input, etc.)
-- **init-copilot.el** - GitHub Copilot inline completion
-- **init-copilot-cli.el** - GitHub Copilot CLI integration (terminal agent) NEW
+- **init-minuet.el** - Inline AI completion via minuet
+- **init-agent-cli.el** - qodercli / cursor-agent terminal agent integration
 - **init-org.el** - Org-mode with modern styling and export features
 - **init-shell.el** - Terminal emulation (Eat, Eshell, Vterm)
 

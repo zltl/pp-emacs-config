@@ -59,6 +59,9 @@
   (:map ltl/toggles-map
         ("e" . evil-mode)))
 
+;; Discoverable alias; primary shortcut remains `M-0' from init-editor.el.
+(bind-key "t" #'treemacs-select-window ltl/toggles-map)
+(bind-key "r" #'ltl/reload-config ltl/toggles-map)
 (defun ltl/unbind-all (fn)
   "Unbinds a function everywhere."
   (dolist (key (where-is-internal fn nil))
@@ -115,6 +118,7 @@
   (which-key-add-keymap-based-replacements global-map
     "C-c f" "files"
     "C-c t" "toggles"
+    "C-c t r" "reload config"
     "C-c j" "goto"
     "C-c p" "smartparens"
     "C-c m" "multicursor"

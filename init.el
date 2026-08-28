@@ -104,6 +104,21 @@
      (message "✗ Failed to load %s: %s" module (error-message-string err))
      nil)))
 
+(defun ltl/reload-config ()
+  "Reload `init.el` and every `lisp/` module.
+Drops already-provided `init-*' / `init' features first so `require'
+actually re-reads the files. Package/mode state can still be stale;
+use a full Emacs restart when something looks wrong."
+  (interactive)
+  (dolist (feat (copy-sequence features))
+    (when (and (symbolp feat)
+               (let ((name (symbol-name feat)))
+                 (or (string= name "init")
+                     (string-prefix-p "init-" name))))
+      (setq features (delq feat features))))
+  (load (expand-file-name "init.el" user-emacs-directory) nil 'nomessage)
+  (message "Config reloaded (C-c t r). Restart Emacs if state looks stale."))
+
 ;; Utility libraries used across the config.
 ;; `async' lets commands or helpers offload work so the UI stays
 ;; responsive during heavy tasks.
@@ -225,8 +240,9 @@
 ;; RSS, and small standalone utilities.
 (ltl/safe-require 'init-org)
 (ltl/safe-require 'init-shell)
-;; (ltl/safe-require 'init-copilot)  ; Editor Copilot — disabled in favor of init-copilot-cli
-(ltl/safe-require 'init-copilot-cli)
+;; Copilot removed: use minuet (inline) + agent CLI (qodercli/cursor-agent).
+(ltl/safe-require 'init-minuet)
+(ltl/safe-require 'init-agent-cli)
 (ltl/safe-require 'init-ai)
 (ltl/safe-require 'init-elfeed)
 (ltl/safe-require 'init-applications)

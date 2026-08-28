@@ -38,12 +38,6 @@ For example, 110 means size 11, 120 means size 12."
 
 ;;; Feature Toggles
 
-(defcustom ltl/enable-copilot t
-  "Whether to enable GitHub Copilot.
-Requires proper Copilot authentication."
-  :type 'boolean
-  :group 'ltl)
-
 (defcustom ltl/enable-lsp t
   "Whether to enable LSP (Eglot) for programming languages.
 Disabling this can improve performance on slower machines."

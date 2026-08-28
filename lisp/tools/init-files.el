@@ -49,7 +49,13 @@
   :custom
   ;; Revert not only real files but also generated buffers like Dired or
   ;; process-backed listings when their source changes.
-  (global-auto-revert-non-file-buffers t))
+  (global-auto-revert-non-file-buffers t)
+  ;; Prefer filesystem notifications so agent CLI edits appear quickly.
+  (auto-revert-use-notify t)
+  ;; Brief feedback when an external agent/tool rewrites the visited file.
+  (auto-revert-verbose t)
+  ;; Fallback poll interval when notify is unavailable (e.g. some remote FS).
+  (auto-revert-interval 2))
 
 ;; Recent files
 ;; This maintains a list of recent files, as we often find in other

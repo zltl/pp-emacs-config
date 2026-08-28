@@ -226,7 +226,9 @@
    ("C-x t k" . tab-bar-close-tab)
    ("C-x t o" . tab-bar-switch-to-tab)
    ("C-<tab>" . tab-bar-switch-to-next-tab)
-   ("C-S-<tab>" . tab-bar-switch-to-prev-tab)))
-
+   ("C-S-<tab>" . tab-bar-switch-to-prev-tab))
+  :config
+  ;; `tab-bar-mode-map' shadows global `M-0'; free it for treemacs-select-window.
+  (define-key tab-bar-mode-map (kbd "M-0") nil))
 (provide 'init-themes)
 ;;; init-themes.el ends here

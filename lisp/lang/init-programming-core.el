@@ -154,7 +154,15 @@
 ;; to read than cramped echo-area messages.
 (use-package eldoc-box
   :diminish
-  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode)
+  :custom-face
+  ;; A distinct body + visible border keeps the popup from blending into
+  ;; the buffer on thin macOS child frames / dark themes.
+  (eldoc-box-body ((t (:background "#212026"))))
+  (eldoc-box-border ((t (:background "#5d4d7a"))))
+  :config
+  (setf (alist-get 'internal-border-width eldoc-box-frame-parameters) 2)
+  (setf (alist-get 'child-frame-border-width eldoc-box-frame-parameters) 2))
 
 ;; `compile-multi' stores multiple named build/test commands per project,
 ;; which is convenient when one repo has several entry points.
