@@ -128,9 +128,10 @@ Default is 100MB. Increase if you experience stuttering."
   :type 'integer
   :group 'ltl)
 
-(defcustom ltl/read-process-output-max (* 1024 1024)
+(defcustom ltl/read-process-output-max (* 1024 1024 4)
   "Maximum bytes to read from subprocess in a single chunk.
-Default is 1MB. Increase for better LSP/Eglot performance."
+Default is 4MB. Language-server responses are often in the
+800K–3M range; a larger pipe means fewer command-loop wakeups."
   :type 'integer
   :group 'ltl)
 

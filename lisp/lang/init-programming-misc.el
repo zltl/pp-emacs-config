@@ -6,9 +6,11 @@
 ;; - JVM languages (Scala, Java)
 ;; - Functional languages (Haskell, Elixir)
 ;; - Other languages (Julia, C#, PowerShell)
-;; - Configuration file formats (YAML, TOML, Docker, etc.)
+;; - Configuration file formats (YAML, TOML, Docker, Jsonnet, etc.)
 ;;
 ;;; Code:
+
+(declare-function ltl/eglot-ensure "init-programming-core")
 
 ;;; JVM Languages
 
@@ -38,7 +40,7 @@
 (use-package haskell-mode
   :defer t
   :mode "\\.l?hs\\'"
-  :hook ((haskell-mode haskell-literate-mode) . eglot-ensure))
+  :hook ((haskell-mode haskell-literate-mode) . ltl/eglot-ensure))
 
 ;; `elixir-mode' is enough to get syntax support for Elixir scripts and modules.
 (use-package elixir-mode
@@ -68,6 +70,36 @@
 (use-package nix-mode
   :defer t
   :mode "\\.nix\\'")
+
+;; `jsonnet-mode' covers Jsonnet programs and `.libsonnet` libraries.
+;; Eval/format use the official `jsonnet` / `jsonnetfmt` CLIs from
+;; libjsonnet (or go-jsonnet). Eglot starts only when a language server
+;; is already on PATH, so opening a file does not error without one.
+(defun ltl/jsonnet-eglot-maybe ()
+  "Start Eglot for Jsonnet when a language server is available."
+  (when (or (executable-find "jsonnet-language-server")
+            (executable-find "jsonnet-lsp"))
+    (ltl/eglot-ensure)))
+
+(use-package jsonnet-mode
+  :defer t
+  :mode (("\\.jsonnet\\'" . jsonnet-mode)
+         ("\\.libsonnet\\'" . jsonnet-mode))
+  :hook (jsonnet-mode . ltl/jsonnet-eglot-maybe)
+  :custom
+  (jsonnet-indent-level 2)
+  :config
+  (with-eval-after-load 'apheleia
+    (setf (alist-get 'jsonnetfmt apheleia-formatters)
+          '("jsonnetfmt" "-"))
+    (setf (alist-get 'jsonnet-mode apheleia-mode-alist)
+          'jsonnetfmt)))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               `(jsonnet-mode . ,(eglot-alternatives
+                                  '("jsonnet-language-server"
+                                    ("jsonnet-lsp" "lsp"))))))
 
 ;;; Markup and Data Formats
 

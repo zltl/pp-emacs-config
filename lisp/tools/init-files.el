@@ -52,10 +52,11 @@
   (global-auto-revert-non-file-buffers t)
   ;; Prefer filesystem notifications so agent CLI edits appear quickly.
   (auto-revert-use-notify t)
-  ;; Brief feedback when an external agent/tool rewrites the visited file.
-  (auto-revert-verbose t)
+  ;; Verbose revert messages force a minibuffer redisplay on every
+  ;; external write (formatters, agents). Keep them off unless debugging.
+  (auto-revert-verbose nil)
   ;; Fallback poll interval when notify is unavailable (e.g. some remote FS).
-  (auto-revert-interval 2))
+  (auto-revert-interval 5))
 
 ;; Recent files
 ;; This maintains a list of recent files, as we often find in other

@@ -13,6 +13,7 @@
 ;; `seq' provides sequence helpers used below for filtering missing Go
 ;; tools; requiring it explicitly keeps the dependency obvious.
 (require 'seq)
+(declare-function ltl/eglot-ensure "init-programming-core")
 
 ;;; C/C++
 
@@ -70,7 +71,7 @@ Searches upward from current directory for .clang-format file."
 ;; indentation and language-server startup with project conventions.
 (use-package cc-mode
   :ensure nil
-  :hook ((c-mode c++-mode) . eglot-ensure)
+  :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/eglot-ensure)
   :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/apply-clang-format-style)
   ;; Ensure electric indentation is active in both classic and tree-sitter
   ;; C/C++ modes for immediate block-aware indentation on RET.
@@ -93,13 +94,13 @@ Searches upward from current directory for .clang-format file."
   :defer t
   :mode "\\.rs\\'"
   :bind (:map rust-mode-map
-              ("C-c C-r" . 'rust-run)
-              ("C-c C-c" . 'rust-compile)
-              ("C-c C-f" . 'rust-format-buffer)
-              ("C-c C-t" . 'rust-test))
+              ("C-c C-r" . #'rust-run)
+              ("C-c C-c" . #'rust-compile)
+              ("C-c C-f" . #'rust-format-buffer)
+              ("C-c C-t" . #'rust-test))
   ;; Rust benefits from typographic symbol prettification and automatic LSP startup.
   :hook (rust-mode . prettify-symbols-mode)
-  :hook (rust-mode . eglot-ensure))
+  :hook ((rust-mode rust-ts-mode) . ltl/eglot-ensure))
 
 ;;; Go
 
@@ -165,7 +166,7 @@ Installs each package separately since they may be from different modules."
   :interpreter "go"
   ;; Start LSP and tool checks whenever entering Go buffers so navigation,
   ;; formatting, and debugger tooling are ready quickly.
-  :hook ((go-mode go-ts-mode) . eglot-ensure)
+  :hook ((go-mode go-ts-mode) . ltl/eglot-ensure)
   :hook ((go-mode go-ts-mode) . ltl/go-check-tools))
 
 (provide 'init-programming-systems)

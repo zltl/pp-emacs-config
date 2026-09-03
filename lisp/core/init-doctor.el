@@ -15,7 +15,7 @@
     ("ag" . "The Silver Searcher (optional but recommended)")
     ("fd" . "Modern find alternative (optional)")
     ("rg" . "Ripgrep search tool (optional)")
-    ("node" . "Node.js for Copilot and some LSP servers (optional)"))
+    ("node" . "Node.js for some LSP servers (optional)"))
   "List of programs to check for availability.")
 
 (defun ltl/doctor-check-executables ()
@@ -175,6 +175,45 @@
         nil))))
 
 ;;;
+;;; Vterm / Agent TTY Check
+;;;
+
+(defun ltl/doctor-check-vterm ()
+  "Check vterm package, native module, and compile-time tools."
+  (message "Checking vterm (AI agent TTY)...")
+  (let* ((pkg (locate-library "vterm"))
+         (mod (or (and (fboundp 'ltl/vterm--module-loaded-p)
+                       (ltl/vterm--module-loaded-p))
+                  (locate-library "vterm-module")))
+         (missing (and (fboundp 'ltl/vterm--missing-build-tools)
+                       (ltl/vterm--missing-build-tools)))
+         (hint (if (fboundp 'ltl/vterm--install-hint)
+                   (ltl/vterm--install-hint)
+                 "sudo apt install -y build-essential cmake libtool-bin libvterm-dev")))
+    (cond
+     ((not (and (boundp 'module-file-suffix) module-file-suffix))
+      (message "✗ This Emacs has no dynamic module support; vterm cannot load")
+      nil)
+     ((and pkg mod)
+      (message "✓ vterm ready (%s)" (file-name-nondirectory mod))
+      t)
+     (pkg
+      (message "⚠ vterm package is installed, but vterm-module is not compiled")
+      (when missing
+        (message "  Missing build tools: %s" (mapconcat #'identity missing "; ")))
+      (message "  Run: M-x ltl/vterm-setup")
+      (message "  Ubuntu/Arch: setup installs compile tools automatically")
+      (message "  Manual fallback: %s" hint)
+      t)
+     (t
+      (message "⚠ vterm is not installed yet (Elpaca will fetch it)")
+      (when missing
+        (message "  Missing build tools: %s" (mapconcat #'identity missing "; ")))
+      (message "  Run: M-x ltl/vterm-setup  (Ubuntu/Arch auto-installs tools)")
+      (message "  Manual fallback: %s" hint)
+      t))))
+
+;;;
 ;;; Main Doctor Command
 ;;;
 
@@ -204,6 +243,11 @@
     (push (cons "Language Servers" (ltl/doctor-check-language-servers)) results)
     (message "")
     (push (cons "Tree-sitter" (ltl/doctor-check-tree-sitter)) results)
+    (message "")
+    (push (cons "Vterm" (ltl/doctor-check-vterm)) results)
+    (message "")
+    (message "ℹ If Emacs feels sticky while typing, run M-x ltl/profile-cpu")
+    (message "  then reproduce the hitch. Report shows what owned the command loop.")
     
     ;; Summary
     (message "")

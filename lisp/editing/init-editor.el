@@ -196,20 +196,25 @@
                       (expand-file-name "var" user-emacs-directory))))
 (savehist-mode +1)
 
-;; Keep files up-to-date when they change outside Emacs
-;; This duplicates the earlier auto-revert intent intentionally so the
-;; core editing module remains self-contained even if file tooling changes.
-(global-auto-revert-mode t)
+;; Auto-revert is configured once in `init-files' (notify-based, quieter).
+;; Enabling it here as well started two revert loops.
 
 ;; `smartparens' adds structural editing commands beyond plain auto-pairs:
 ;; slurp/barf, sexp navigation, unwrap, and context-aware pair handling.
 (use-package smartparens
   :ensure t
   :hook (prog-mode text-mode markdown-mode)
-  :config
-  ;; `smartparens-config' ships sensible language defaults so we get
-  ;; mature pairing rules without hand-maintaining each language table.
-  (require 'smartparens-config)
+  :commands
+  (sp-cheat-sheet
+   sp-kill-sexp sp-unwrap-sexp
+   sp-forward-barf-sexp sp-forward-slurp-sexp
+   sp-backward-barf-sexp sp-backward-slurp-sexp
+   sp-forward-sexp sp-backward-sexp sp-next-sexp sp-previous-sexp
+   sp-down-sexp sp-beginning-of-sexp sp-end-of-sexp sp-up-sexp)
+  :init
+  ;; Build the complete prefix map immediately.  `:commands' above gives
+  ;; every target an autoload, so C-c p works before a mode hook happens
+  ;; to load Smartparens.
   (defvar-keymap sp/forward-barf|slurp
     :doc "Forward barf/slurp"
     "b" #'sp-forward-barf-sexp
@@ -228,26 +233,36 @@
     "a" #'sp-beginning-of-sexp
     "e" #'sp-end-of-sexp
     "u" #'sp-up-sexp)
-  (keymap-set ltl/smartparen "f" sp/forward-barf|slurp)
-  (keymap-set ltl/smartparen "b" sp/backward-barf|slurp)
-  (keymap-set ltl/smartparen "n" sp/navigation)
-  (which-key-add-keymap-based-replacements ltl/smartparen
-    "f" `("Forward" . ,sp/forward-barf|slurp)
-    "b" `("Backward" . ,sp/backward-barf|slurp)
-    "n" `("Navigation" . ,sp/navigation))
+  (keymap-set ltl/smartparen-map "f" sp/forward-barf|slurp)
+  (keymap-set ltl/smartparen-map "b" sp/backward-barf|slurp)
+  (keymap-set ltl/smartparen-map "n" sp/navigation)
   :bind
-  (:map ltl/smartparen
+  (:map ltl/smartparen-map
         ("h" . #'sp-cheat-sheet)
         ("k" . #'sp-kill-sexp)
-        ("u" . #'sp-unwrap-sexp)))
+        ("u" . #'sp-unwrap-sexp))
+  :config
+  ;; `smartparens-config' ships sensible language defaults so we get
+  ;; mature pairing rules without hand-maintaining each language table.
+  (require 'smartparens-config)
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements ltl/smartparen-map
+      "f" `("Forward" . ,sp/forward-barf|slurp)
+      "b" `("Backward" . ,sp/backward-barf|slurp)
+      "n" `("Navigation" . ,sp/navigation))))
 
 ;; multi cursor
 ;; `multiple-cursors' is ideal for repetitive edits across similar lines
 ;; where regex replace would be overkill and plain macros too fragile.
 (use-package multiple-cursors
   :defer t
+  :commands
+  (mc/edit-lines
+   mc/edit-beginnings-of-lines mc/edit-ends-of-lines
+   mc/mark-all-like-this mc/mark-all-in-region
+   mc/mark-all-dwim mc/mark-all-word-like-this)
   :bind
-  (:map ltl/multicursor
+  (:map ltl/multicursor-map
         ("l" . #'mc/edit-lines)
         ("a" . #'mc/edit-beginnings-of-lines)
         ("e" . #'mc/edit-ends-of-lines)
@@ -269,28 +284,20 @@
 ;; nested code and complements imenu/LSP navigation.
 (use-package breadcrumb
   :defer t
-  ;; disable breadcrumb whel using lsp-mode, because lsp have this feature already.
-  ;; :hook (lsp-mode . (lambda () (breadcrumb-mode 0)))
-  :init
-  (add-hook 'elpaca-after-init-hook
-            (lambda ()
-              ;; Breadcrumb is a convenience layer, so load it opportunistically
-              ;; without making the whole editor module depend on it.
-              (when (require 'breadcrumb nil t)
-                (breadcrumb-mode 1)))))
+  :hook (prog-mode . breadcrumb-local-mode))
 
 ;; treemacs
 ;; `treemacs' provides a persistent project tree when a sidebar is more
 ;; efficient than repeated find-file/project commands.
 (use-package treemacs
+  :defer t
+  :commands (treemacs treemacs-select-window)
   :custom
-  ;; Allow temporary width tweaks instead of forcing a fixed sidebar width.
-  (treemacs-width-is-initially-locked nil)
+  ;; Keep a fixed sidebar width when the frame or other windows resize.
+  (treemacs-width-is-initially-locked t)
   :config
   ;; Deferred Git state keeps the tree responsive in large repositories.
-  (treemacs-git-mode 'deferred)
-  :bind
-  ("M-0" . treemacs-select-window))
+  (treemacs-git-mode 'deferred))
 ;; Match Treemacs icons to the rest of the nerd-icons-based UI.
 (use-package treemacs-nerd-icons
   :after treemacs
@@ -341,7 +348,11 @@
 ;; Indentation guides are helpful in deeply nested code, especially when
 ;; whitespace is significant or long functions mix multiple scopes.
 (use-package indent-bars
-  :hook (prog-mode . indent-bars-mode)
+  ;; Guides help in indentation-significant languages. Enabling them in
+  ;; every `prog-mode' buffer added overlay work to Elisp, C, and Go
+  ;; where they are mostly noise.
+  :hook ((python-mode python-ts-mode yaml-mode yaml-ts-mode jsonnet-mode)
+         . indent-bars-mode)
   :custom
   ;; Prefer real characters over pixel bars so rendering stays crisp in
   ;; terminals and mixed-font setups.

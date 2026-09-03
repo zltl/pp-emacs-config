@@ -185,9 +185,7 @@
   (doom-modeline-time-icon nil)
   (doom-modeline-buffer-encoding 'nondefault)
   (doom-modeline-unicode-fallback t)
-  (doom-modeline-enable-word-count t)
-  (doom-modeline-continuous-word-count-modes
-   '(markdown-mode gfm-mode org-mode rst-mode latex-mode tex-mode text-mode))
+  (doom-modeline-enable-word-count nil)
   :hook (after-init . doom-modeline-mode)
   :config
   ;; HACK: Add some padding to the right
@@ -226,9 +224,6 @@
    ("C-x t k" . tab-bar-close-tab)
    ("C-x t o" . tab-bar-switch-to-tab)
    ("C-<tab>" . tab-bar-switch-to-next-tab)
-   ("C-S-<tab>" . tab-bar-switch-to-prev-tab))
-  :config
-  ;; `tab-bar-mode-map' shadows global `M-0'; free it for treemacs-select-window.
-  (define-key tab-bar-mode-map (kbd "M-0") nil))
+   ("C-S-<tab>" . tab-bar-switch-to-prev-tab)))
 (provide 'init-themes)
 ;;; init-themes.el ends here

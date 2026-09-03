@@ -31,8 +31,7 @@
   :ensure (:host github :repo "magit/magit")
   :functions ltl/magit-clone-read-args-a
   :after org
-  :bind
-  ("C-x g" . magit-status)
+  :commands (magit-status magit-blame magit-log-current magit-log-buffer-file)
   :custom
   ;; Default clones into ~/src so repositories do not pile up in random
   ;; working directories chosen by the current buffer.
@@ -51,6 +50,17 @@ existing directory under `magit-clone-default-directory'."
     (let ((vertico-preselect 'prompt))
       (apply orig-fun args)))
   (advice-add 'magit-clone-read-args :around #'ltl/magit-clone-read-args-a))
+
+;; Bind the shared Git prefix directly.  Keeping these outside Magit's
+;; deferred `:after org' declaration makes the prefix available at startup;
+;; each command remains an autoload and loads Magit only when invoked.
+(bind-keys :map ltl/git-map
+  ("g" . magit-status)
+  ("b" . magit-blame)
+  ("l" . magit-log-current)
+  ("f" . magit-log-buffer-file))
+(bind-key "C-x g" #'magit-status)
+
 ;; show todos
 ;; Surface TODO/FIXME markers directly in Magit status so code review and
 ;; release prep can catch unfinished work without a separate grep pass.
@@ -77,7 +87,18 @@ existing directory under `magit-clone-default-directory'."
   ;; Single-line anchors generate cleaner links when you only need to
   ;; point at one exact location.
   (git-link-use-single-line-number t)
-  :commands (git-link git-link-commit git-link-homepage))
+  :commands (git-link git-link-commit git-link-homepage)
+  :bind
+  (:map ltl/git-map
+        ("k" . git-link)))
+
+;; `git-timemachine' walks a file's Git history one revision at a time.
+(use-package git-timemachine
+  :defer t
+  :commands git-timemachine
+  :bind
+  (:map ltl/git-map
+        ("t" . git-timemachine)))
 
 ;; Ediff - Side-by-side diff (built-in, improved defaults)
 ;; Prefer the current frame and horizontal splits so diffs stay visible
@@ -97,8 +118,9 @@ existing directory under `magit-clone-default-directory'."
          (text-mode . diff-hl-mode)
          (dired-mode . diff-hl-dired-mode))
   :config
-  ;; Update highlights as the buffer changes instead of only on save.
-  (diff-hl-flydiff-mode)
+  ;; Flydiff recomputes the hunk on every edit. Update on save instead;
+  ;; Magit hooks below still refresh after Git operations.
+  (diff-hl-flydiff-mode -1)
   (with-eval-after-load 'magit
     ;; Refresh diff-hl around Magit updates so fringe markers do not lag
     ;; behind the repository state after staging/reverting.

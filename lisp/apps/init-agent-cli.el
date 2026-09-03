@@ -1,8 +1,8 @@
-;;; init-agent-cli.el --- Multi-backend AI agent CLI in eat -*- lexical-binding: t -*-
+;;; init-agent-cli.el --- Multi-backend AI agent CLI in vterm -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;;
-;; Side-by-side AI agent workflow using eat, with switchable backends and
+;; Side-by-side AI agent workflow using vterm, with switchable backends and
 ;; multiple concurrent sessions:
 ;; - qodercli
 ;; - cursor-agent (`agent` / `cursor-agent`)
@@ -10,17 +10,29 @@
 ;;
 ;; Use `C-c c l' to list sessions and select one; `C-c c n' starts another
 ;; session in the agent pane (existing sessions stay alive).
+;; Session list and buffer names use the task summary the agent writes
+;; (`aiTitle` in the CLI transcript). `C-c c m' overrides it by hand.
 ;; `C-c c a' switches the default backend and remembers it across restarts.
 ;; `C-c c c' opens that saved backend, not whichever session happens to be current.
 ;;
+;; Full-screen agent TUIs run in vterm so PTY emulation stays in C.
+;; Eat's Elisp emulator (used for ordinary shells) can freeze Emacs on
+;; Ink-style redraws; do not send these CLIs through Eat.
+;; First launch compiles `vterm-module' via `ltl/vterm-ensure'.
+;;
 ;;; Code:
 
-(require 'eat nil t)
 (require 'cl-lib)
 (require 'subr-x)
 
+(declare-function ltl/vterm-ensure "init-shell")
+(declare-function ltl/vterm-setup "init-shell")
+(declare-function vterm "vterm")
+(declare-function vterm-send-string "vterm")
+(declare-function vterm-copy-mode "vterm")
+
 (defgroup ltl-agent nil
-  "Eat-backed AI agent CLI integration."
+  "Vterm-backed AI agent CLI integration."
   :group 'tools
   :prefix "ltl/agent-")
 
@@ -62,23 +74,20 @@ Nil means auto-pick the first installed backend from `ltl/agent-backends'.
 (defcustom ltl/agent-backends
   '((qodercli
      :command "qodercli"
-     :buffer-prefix "*Qoder-CLI*"
      :args nil
      :file-ref "@%s ")
     (cursor-agent
      :command "agent"
      :fallback-command "cursor-agent"
-     :buffer-prefix "*Cursor-Agent*"
      :args nil
      :file-ref "@%s ")
     (claude-code
      :command "claude"
-     :buffer-prefix "*Claude-Code*"
      :args nil
      :file-ref "@%s "))
   "Backend definitions for `ltl/agent-backend'.
 Each entry is (SYMBOL . PLIST) with keys:
-:command, optional :fallback-command, :buffer-prefix, :args, :file-ref."
+:command, optional :fallback-command, :args, :file-ref."
   :type '(alist :key-type symbol :value-type plist)
   :group 'ltl-agent)
 
@@ -135,10 +144,16 @@ Nil means auto-detect via project.el / .git / `default-directory'."
   :type 'string
   :group 'ltl-agent)
 
+(defcustom ltl/agent-summary-max-length 60
+  "Maximum length of an inferred or edited agent task summary."
+  :type 'integer
+  :group 'ltl-agent)
+
 (defvar ltl/agent--sessions nil
   "List of live agent sessions.
 Each session is a plist:
-:id :backend :buffer :root :skip-permissions :label :created.")
+:id :backend :buffer :root :skip-permissions :cli-session-id
+:summary :summary-locked :created.")
 
 (defvar ltl/agent--current nil
   "Currently selected agent session plist.")
@@ -306,26 +321,156 @@ the new directory."
        (buffer-live-p (plist-get session :buffer))
        (get-buffer-process (plist-get session :buffer))))
 
+(defun ltl/agent--sanitize-summary (text)
+  "Return TEXT as a short buffer-safe task summary, or nil."
+  (when (and text (stringp text))
+    (let* ((line (replace-regexp-in-string "[\x00-\x1f\x7f*]+" " " text))
+           (line (replace-regexp-in-string "[ \t]+" " " line))
+           (line (string-trim line)))
+      (when (and (not (string-empty-p line))
+                 (string-match-p "[[:alpha:][:multibyte:]]" line))
+        (when (> (length line) ltl/agent-summary-max-length)
+          (setq line (string-trim
+                      (truncate-string-to-width
+                       line ltl/agent-summary-max-length nil nil t))))
+        line))))
+
+(defun ltl/agent--new-cli-session-id ()
+  "Return a UUID for `--session-id'."
+  (if-let* ((exe (executable-find "uuidgen")))
+      (string-trim (shell-command-to-string exe))
+    (let ((s (md5 (format "%s|%s|%s|%s"
+                          (emacs-pid) (float-time)
+                          (random most-positive-fixnum)
+                          (random most-positive-fixnum)))))
+      (format "%s-%s-4%s-a%s-%s"
+              (substring s 0 8)
+              (substring s 8 12)
+              (substring s 13 16)
+              (substring s 17 20)
+              (substring s 20 32)))))
+
+(defun ltl/agent--session-id-args (backend sid)
+  "CLI args that pin BACKEND to SID, or nil if unsupported."
+  (when (and sid (memq backend '(qodercli claude-code)))
+    (list "--session-id" sid)))
+
+(defun ltl/agent--project-slug (root)
+  "Encode ROOT the way qoder/claude name `projects/' directories."
+  (replace-regexp-in-string
+   "/" "-"
+   (directory-file-name (expand-file-name root))))
+
+(defun ltl/agent--transcript-path (session)
+  "JSONL transcript where BACKEND writes SESSION's `aiTitle'."
+  (let* ((backend (plist-get session :backend))
+         (root (plist-get session :root))
+         (sid (plist-get session :cli-session-id))
+         (home (expand-file-name "~"))
+         (base (pcase backend
+                 ('qodercli (expand-file-name "projects"
+                                              (expand-file-name ".qoder" home)))
+                 ('claude-code (expand-file-name "projects"
+                                                 (expand-file-name ".claude" home)))
+                 (_ nil))))
+    (when (and base sid root)
+      (expand-file-name (concat sid ".jsonl")
+                        (expand-file-name (ltl/agent--project-slug root) base)))))
+
+(defun ltl/agent--read-ai-title (path)
+  "Return the last `aiTitle' the agent wrote in JSONL PATH, or nil."
+  (when (and path (file-readable-p path))
+    (with-temp-buffer
+      (insert-file-contents path)
+      (goto-char (point-min))
+      (let (title)
+        (while (not (eobp))
+          (let ((line (buffer-substring-no-properties
+                       (line-beginning-position) (line-end-position))))
+            (when (string-match-p "\"ai-title\"" line)
+              (let* ((obj (ignore-errors
+                            (json-parse-string line :object-type 'alist)))
+                     (got (cdr (or (assq 'aiTitle obj)
+                                   (assoc "aiTitle" obj)))))
+                (when (stringp got)
+                  (setq title got)))))
+          (forward-line 1))
+        title))))
+
+(defun ltl/agent--agent-title (session)
+  "Task summary the agent itself assigned to SESSION, or nil."
+  (ltl/agent--sanitize-summary
+   (ltl/agent--read-ai-title (ltl/agent--transcript-path session))))
+
+(defun ltl/agent--desired-buffer-name (summary)
+  "Buffer name for an agent session with SUMMARY."
+  (if (and summary (not (string-empty-p summary)))
+      (format "*ai-agent: %s*" summary)
+    "*ai-agent*"))
+
+(defun ltl/agent--sync-buffer-name (session)
+  "Rename SESSION's buffer to match its task summary."
+  (when-let* ((buf (plist-get session :buffer))
+              ((buffer-live-p buf))
+              (want (ltl/agent--desired-buffer-name
+                     (plist-get session :summary))))
+    (unless (string= (buffer-name buf) want)
+      (with-current-buffer buf
+        (rename-buffer want t)))))
+
+(defun ltl/agent--set-summary (session summary &optional lock)
+  "Store SUMMARY on SESSION and rename its buffer.
+If LOCK is non-nil, later agent titles will not overwrite it."
+  (let ((summary (ltl/agent--sanitize-summary summary)))
+    (when (and summary
+               (or lock (not (plist-get session :summary-locked))))
+      (plist-put session :summary summary)
+      (when lock
+        (plist-put session :summary-locked t))
+      (ltl/agent--sync-buffer-name session)
+      summary)))
+
+(defun ltl/agent--refresh-session-summary (session)
+  "Read the agent's own task summary for SESSION unless the user set one."
+  (unless (plist-get session :summary-locked)
+    (when-let* ((title (ltl/agent--agent-title session)))
+      (unless (equal title (plist-get session :summary))
+        (ltl/agent--set-summary session title)))))
+
+(defun ltl/agent--schedule-summary-refresh (session)
+  "Poll SESSION for the `aiTitle' the agent writes after the first turn."
+  (dolist (delay '(2.0 6.0 15.0 45.0))
+    (run-at-time
+     delay nil
+     (lambda ()
+       (when (and (memq session ltl/agent--sessions)
+                  (buffer-live-p (plist-get session :buffer)))
+         (ltl/agent--refresh-session-summary session))))))
+
 (defun ltl/agent--session-label (session)
-  "Human-readable label for SESSION."
-  (or (plist-get session :label)
-      (format "#%s %s%s @ %s"
+  "Human-readable label for SESSION, preferring its task summary."
+  (or (plist-get session :summary)
+      (format "#%s @ %s"
               (plist-get session :id)
-              (plist-get session :backend)
-              (if (plist-get session :skip-permissions) " [yolo]" "")
               (abbreviate-file-name (or (plist-get session :root) "~")))))
 
-(defun ltl/agent--make-buffer-name (backend skip)
-  "Unique buffer name for BACKEND, optionally SKIP permissions."
-  (let* ((plist (ltl/agent--backend-plist backend))
-         (base (or (plist-get plist :buffer-prefix)
-                   (plist-get plist :buffer-name)
-                   "*Agent-CLI*"))
-         (base (if (and (eq backend 'claude-code) skip)
-                   (replace-regexp-in-string
-                    "\\*$" "-YOLO*" base t t)
-                 base)))
-    (generate-new-buffer-name base)))
+(defun ltl/agent--choice-labels (sessions)
+  "Return an alist of unique (LABEL . SESSION) for SESSIONS."
+  (let ((counts (make-hash-table :test #'equal)))
+    (dolist (s sessions)
+      (let ((base (ltl/agent--session-label s)))
+        (puthash base (1+ (gethash base counts 0)) counts)))
+    (mapcar (lambda (s)
+              (let ((base (ltl/agent--session-label s)))
+                (cons (if (> (gethash base counts) 1)
+                          (format "%s (#%s)" base (plist-get s :id))
+                        base)
+                      s)))
+            sessions)))
+
+(defun ltl/agent--make-buffer-name (&optional summary)
+  "Return a unique agent buffer name, using SUMMARY when available."
+  (generate-new-buffer-name (ltl/agent--desired-buffer-name summary)))
 
 (defun ltl/agent--build-command (backend &optional skip extra-args)
   "Build shell command for BACKEND with optional SKIP and EXTRA-ARGS."
@@ -339,12 +484,20 @@ the new directory."
                (or skip ltl/agent-claude-skip-permissions)
                (not (member "--dangerously-skip-permissions" args)))
       (setq args (append args '("--dangerously-skip-permissions"))))
-    (mapconcat #'identity (cons exe (mapcar #'identity args)) " ")))
+    (mapconcat #'shell-quote-argument (cons exe args) " ")))
+
+(defun ltl/agent--pane-width ()
+  "Width of the agent pane.
+TTY frames have less horizontal room, so the pane is capped narrower
+than the GUI default."
+  (if (display-graphic-p)
+      ltl/agent-window-width
+    (min ltl/agent-window-width 72)))
 
 (defun ltl/agent--split-agent-window ()
   "Split a right-hand pane for the agent CLI and return the new window.
 The selected window is left unchanged."
-  (split-window-right (max 20 (- (window-width) ltl/agent-window-width))))
+  (split-window-right (max 20 (- (window-width) (ltl/agent--pane-width)))))
 
 (defun ltl/agent--agent-window ()
   "Return a window already showing an agent session buffer, if any."
@@ -396,24 +549,41 @@ Reuses an existing agent side window instead of splitting again."
     (when (eq ltl/agent--current session)
       (setq ltl/agent--current (car ltl/agent--sessions)))))
 
-(defun ltl/agent--ensure-eat ()
-  "Load Eat. Signal a user-error if it is not available."
-  (or (featurep 'eat) (require 'eat nil t))
-  (unless (fboundp 'eat)
-    (user-error "eat package not available")))
+(defun ltl/agent--ensure-vterm ()
+  "Load vterm and compile `vterm-module' if needed."
+  (if (fboundp 'ltl/vterm-ensure)
+      (ltl/vterm-ensure)
+    (require 'vterm nil t)
+    (unless (and (fboundp 'vterm) (featurep 'vterm-module))
+      (user-error
+       "vterm is not ready. Load init-shell or run M-x ltl/vterm-setup"))))
 
-(defun ltl/agent--start-eat (cmd)
-  "Run CMD in a new Eat buffer in the selected window."
-  (ltl/agent--ensure-eat)
-  (let ((display-buffer-overriding-action '(display-buffer-same-window)))
-    (eat cmd t)))
+(defun ltl/agent--start-vterm (cmd name)
+  "Run CMD in a new vterm buffer named NAME in the selected window."
+  (ltl/agent--ensure-vterm)
+  (let ((vterm-shell cmd)
+        (vterm-kill-buffer-on-exit nil)
+        (vterm-buffer-name name)
+        (display-buffer-overriding-action '(display-buffer-same-window)))
+    (vterm name)))
+
+(defun ltl/agent--prepare-vterm-buffer ()
+  "Tune this vterm buffer for an agent TUI session."
+  (setq-local vterm-kill-buffer-on-exit nil)
+  (when-let* ((proc (get-buffer-process (current-buffer))))
+    (set-process-query-on-exit-flag proc nil))
+  (local-set-key (kbd "C-c C-q") #'ltl/agent-quit)
+  (local-set-key (kbd "C-c C-s") #'ltl/agent-send-file)
+  (local-set-key (kbd "C-c C-b") #'ltl/agent-insert-source-file)
+  (when (fboundp 'vterm-copy-mode)
+    (local-set-key (kbd "C-c C-j") #'vterm-copy-mode)))
 
 (defun ltl/agent--start-session (&optional backend skip keep-existing)
   "Create a new agent session for BACKEND.
 SKIP non-nil enables Claude --dangerously-skip-permissions.
 Unless KEEP-EXISTING is non-nil, quit the current session first.
 The new session is shown in the existing agent pane when possible."
-  (ltl/agent--ensure-eat)
+  (ltl/agent--ensure-vterm)
   (let ((reuse-win (or (and ltl/agent--current
                             (buffer-live-p (plist-get ltl/agent--current :buffer))
                             (get-buffer-window
@@ -430,11 +600,14 @@ The new session is shown in the existing agent pane when possible."
                           ltl/agent-claude-skip-permissions)))
            (extra ltl/agent--next-extra-args)
            (root (ltl/agent--project-root))
-           (cmd (ltl/agent--build-command backend skip extra))
+           (cli-id (ltl/agent--new-cli-session-id))
+           (cmd (ltl/agent--build-command
+                 backend skip
+                 (append extra (ltl/agent--session-id-args backend cli-id))))
            (source-win (selected-window))
            (source-buf (current-buffer))
            (id (cl-incf ltl/agent--id-counter))
-           (name (ltl/agent--make-buffer-name backend skip))
+           (name (ltl/agent--make-buffer-name))
            (agent-win (if (and reuse-win (window-live-p reuse-win))
                           reuse-win
                         (setq created-win (ltl/agent--split-agent-window)))))
@@ -445,30 +618,28 @@ The new session is shown in the existing agent pane when possible."
           (progn
             (select-window agent-win)
             (let* ((default-directory root)
-                   (buf (ltl/agent--start-eat cmd))
+                   (buf (ltl/agent--start-vterm cmd name))
                    (session (list :id id
                                   :backend backend
                                   :buffer buf
                                   :root root
                                   :skip-permissions skip
+                                  :cli-session-id cli-id
                                   :created (current-time)
-                                  :label nil)))
+                                  :summary nil
+                                  :summary-locked nil)))
               (with-current-buffer buf
-                (rename-buffer name t)
+                (unless (string= (buffer-name) name)
+                  (rename-buffer name t))
                 (setq-local ltl/agent--session-id id)
-                (add-hook 'kill-buffer-hook #'ltl/agent--on-buffer-kill nil t)
-                (local-set-key (kbd "C-c C-q") #'ltl/agent-quit)
-                (local-set-key (kbd "C-c C-s") #'ltl/agent-send-file)
-                (local-set-key (kbd "C-c C-b") #'ltl/agent-insert-source-file)
-                (local-set-key (kbd "C-c C-j") #'eat-semi-char-mode)
-                (local-set-key (kbd "C-c C-e") #'eat-emacs-mode)
-                (eat-semi-char-mode))
-              (plist-put session :label (ltl/agent--session-label session))
+                (ltl/agent--prepare-vterm-buffer)
+                (add-hook 'kill-buffer-hook #'ltl/agent--on-buffer-kill nil t))
               (ltl/agent--register-session session)
               (ltl/agent--display-session session)
+              (ltl/agent--schedule-summary-refresh session)
               (when (window-live-p source-win)
                 (select-window source-win))
-              (message "Agent session %s" (plist-get session :label))
+              (message "Agent session %s" (ltl/agent--session-label session))
               session))
         (error
          (when (and created-win (window-live-p created-win))
@@ -543,7 +714,7 @@ If a live session of that backend exists, show it. Otherwise start one.
 Other backends already running are left alone (`C-c c l' to switch).
 With a prefix argument, start a new session like `ltl/agent-new'."
   (interactive "P")
-  (ltl/agent--ensure-eat)
+  (ltl/agent--ensure-vterm)
   (ltl/agent--prune-sessions)
   (if arg
       (ltl/agent-new arg)
@@ -555,17 +726,19 @@ With a prefix argument, start a new session like `ltl/agent-new'."
 
 ;;;###autoload
 (defun ltl/agent-select ()
-  "List agent sessions and select one to display."
+  "List agent sessions by task summary and select one to display."
   (interactive)
   (ltl/agent--prune-sessions)
   (unless ltl/agent--sessions
     (user-error "No agent sessions; start one with C-c c n"))
-  (let* ((candidates
-          (mapcar (lambda (s)
-                    (cons (ltl/agent--session-label s) s))
-                  (reverse ltl/agent--sessions)))
+  (dolist (s ltl/agent--sessions)
+    (ltl/agent--refresh-session-summary s))
+  (let* ((candidates (ltl/agent--choice-labels
+                      (reverse ltl/agent--sessions)))
          (default (and ltl/agent--current
-                       (ltl/agent--session-label ltl/agent--current)))
+                       (car (cl-find-if (lambda (cell)
+                                          (eq (cdr cell) ltl/agent--current))
+                                        candidates))))
          (choice (completing-read
                   "Agent session: "
                   (mapcar #'car candidates)
@@ -575,6 +748,23 @@ With a prefix argument, start a new session like `ltl/agent-new'."
       (user-error "Unknown session"))
     (ltl/agent--display-session session t)
     (message "Selected %s" choice)))
+
+;;;###autoload
+(defun ltl/agent-rename (summary)
+  "Set the current agent session's task summary to SUMMARY.
+This overrides the `aiTitle' the agent wrote; `C-c c l' and the
+buffer name follow this value."
+  (interactive
+   (list (read-string "Task summary: "
+                      (or (and ltl/agent--current
+                               (plist-get ltl/agent--current :summary))
+                          ""))))
+  (ltl/agent--prune-sessions)
+  (let ((session (or ltl/agent--current
+                     (user-error "No agent session"))))
+    (unless (ltl/agent--set-summary session summary t)
+      (user-error "Task summary must contain some text"))
+    (message "Agent session: %s" (plist-get session :summary))))
 
 ;;;###autoload
 (defun ltl/agent-claude-dangerous ()
@@ -600,8 +790,11 @@ With a prefix argument, start a new session like `ltl/agent-new'."
       (user-error "No live agent session"))
     (setq ltl/agent--current session)
     (with-current-buffer buf
-      (when-let* ((proc (get-buffer-process (current-buffer))))
-        (process-send-string proc text)))))
+      (cond
+       ((fboundp 'vterm-send-string)
+        (vterm-send-string text t))
+       ((get-buffer-process buf)
+        (process-send-string (get-buffer-process buf) text))))))
 
 (defun ltl/agent-insert-source-file ()
   "Insert a file reference for the source buffer."
@@ -755,9 +948,7 @@ Enter: show only the agent buffer. Exit: restore the previous layout."
     (setq ltl/agent--fullscreen-config (current-window-configuration))
     (let ((buf (plist-get ltl/agent--current :buffer)))
       (delete-other-windows)
-      (switch-to-buffer buf)
-      (when (fboundp 'eat-semi-char-mode)
-        (eat-semi-char-mode)))
+      (switch-to-buffer buf))
     (message "Agent fullscreen on (toggle again with C-c c z)"))))
 
 ;;;###autoload
@@ -837,16 +1028,18 @@ print a message."
   (message "All agent sessions closed"))
 
 (with-eval-after-load 'bind-key
-  (when (boundp 'ltl/toggles-map)
-    (define-key ltl/toggles-map (kbd "C") #'ltl/agent)))
+  (when (boundp 'ltl/tools-map)
+    (define-key ltl/tools-map (kbd "a") #'ltl/agent)))
 
 (defvar ltl/agent-command-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "c") #'ltl/agent)
     (define-key map (kbd "n") #'ltl/agent-new)
     (define-key map (kbd "l") #'ltl/agent-select)
+    (define-key map (kbd "m") #'ltl/agent-rename)
     (define-key map (kbd "a") #'ltl/agent-switch)
     (define-key map (kbd "i") #'ltl/agent-status)
+    (define-key map (kbd "V") #'ltl/vterm-setup)
     (define-key map (kbd "w") #'ltl/agent-set-directory)
     (define-key map (kbd "!") #'ltl/agent-claude-dangerous)
     (define-key map (kbd "s") #'ltl/agent-send-buffer)
@@ -872,8 +1065,10 @@ print a message."
     "c" "focus/open"
     "n" "new session"
     "l" "list/select session"
+    "m" "name session"
     "a" "switch backend"
     "i" "installed agents"
+    "V" "setup vterm"
     "w" "set workdir"
     "!" "claude skip-permissions"
     "s" "send buffer"

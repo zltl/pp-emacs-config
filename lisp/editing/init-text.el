@@ -47,8 +47,8 @@
   :bind
   ([remap ispell-word] . jinx-correct)
   :bind
-  (:map ltl/toggles-map
-   ("$" . jinx-mode)))
+  (:map ltl/tools-map
+        ("$" . jinx-mode)))
 
 (provide 'init-text)
 ;; init-text.el ends here

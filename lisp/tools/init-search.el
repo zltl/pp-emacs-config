@@ -14,12 +14,10 @@
   :defer t
   :commands ag)
 
-;; Use consult-line for in-buffer search (consistent with Vertico + Consult ecosystem)
-;; Note: consult is loaded in init-complete.el
-;; Rebinding C-s keeps search UI consistent with the rest of the
-;; minibuffer completion stack and gives live preview of matches.
-(with-eval-after-load 'consult
-  (global-set-key (kbd "C-s") #'consult-line))
+;; `C-s' is bound directly in the Consult declaration in
+;; `init-complete.el'. Keeping the binding there installs its autoload
+;; immediately; a `with-eval-after-load' here would leave C-s on isearch
+;; until some other command happened to load Consult first.
 
 
 (provide 'init-search)

@@ -47,7 +47,7 @@ This is a well-organized Emacs configuration designed for developers, especially
 ## System Requirements
 
 - **Emacs 30+** (required)
-- **Node.js** (for Copilot and some language servers)
+- **Node.js** (for some language servers)
 - **Git** (required)
 
 ## Fonts
@@ -142,13 +142,20 @@ export DEEPSEEK_API_KEY="..."
 - `C-c t m` - Toggle auto-suggestion mode
 
 ### Agent CLI (qodercli / cursor-agent)
-**Requirements:** `qodercli` and/or `agent` (`cursor-agent`) on `PATH`.
+**Requirements:** `qodercli` and/or `agent` (`cursor-agent`) on `PATH`. First use compiles `vterm-module` (`M-x ltl/vterm-setup` or `C-c c V`). On Ubuntu/Debian and Arch Linux, missing cmake/libtool packages are installed automatically (sudo may prompt).
 
 **Usage (`C-c c` prefix):**
 | Key | Command | Description |
 |-----|---------|-------------|
 | `C-c c c` | `ltl/agent` | Start/focus agent side panel |
-| `C-c c a` | `ltl/agent-switch` | Switch qodercli ↔ cursor-agent |
+| `C-c c n` | `ltl/agent-new` | Start another session |
+| `C-c c l` | `ltl/agent-select` | Select a live session (by task summary) |
+| `C-c c m` | `ltl/agent-rename` | Set the session task summary |
+| `C-c c a` | `ltl/agent-switch` | Switch default backend |
+| `C-c c i` | `ltl/agent-status` | Show installed backends |
+| `C-c c V` | `ltl/vterm-setup` | Install/compile vterm module |
+| `C-c c w` | `ltl/agent-set-directory` | Set new-session workdir |
+| `C-c c !` | `ltl/agent-claude-dangerous` | Start Claude skip-permissions |
 | `C-c c s` | `ltl/agent-send-buffer` | Send current buffer |
 | `C-c c r` | `ltl/agent-send-region` | Send selected region |
 | `C-c c e` | `ltl/agent-explain` | Explain code |
@@ -157,19 +164,26 @@ export DEEPSEEK_API_KEY="..."
 | `C-c c t` | `ltl/agent-generate-tests` | Generate unit tests |
 | `C-c c R` | `ltl/agent-refactor` | Refactor with instruction |
 | `C-c c d` | `ltl/agent-diff-current-file` | Diff current file |
+| `C-c c z` | `ltl/agent-fullscreen` | Toggle fullscreen |
+| `C-c c k` | `ltl/agent-stop` | Stop current process |
+| `C-c c x` | `ltl/agent-restart` | Restart current session |
 | `C-c c q` | `ltl/agent-quit` | Quit agent session |
+| `C-c c Q` | `ltl/agent-quit-all` | Quit every session |
 
 **In agent terminal:**
 - `C-c C-b` - Insert @file reference to source buffer
 - `C-c C-s` - Insert @file reference (choose file)
 - `C-c C-q` - Quit
-- `C-q C-y` - Send literal Ctrl+Y to the CLI
+- `C-c C-j` - Toggle vterm copy-mode (scroll / select text)
 
 **Features:**
-- Uses `eat` terminal emulator
+- Uses `vterm` (libvterm in C) so a full-screen agent TUI does not freeze Emacs
 - Side-by-side layout: source on left, agent on right
 - Auto project directory detection
 - Integrates with flycheck/flymake for error context
+- `M-x ltl/vterm-setup` installs the package, compile tools (Ubuntu/Arch), and the native module
+
+If an old Eat-backed session is still frozen, kill the `agent`/`qodercli`/`claude` child from another shell, then restart Emacs so new sessions use vterm.
 
 ## Go
 **Install Go:**
@@ -400,11 +414,11 @@ rm -rf ~/.emacs.d/var/
 
 **Problem: LSP not working**
 - Ensure language server is installed (e.g., `gopls`, `clangd`, `rust-analyzer`)
-- Check LSP logs: `M-x lsp-workspace-show-log`
-- Restart LSP: `M-x lsp-workspace-restart`
+- Check Eglot events: `M-x eglot-events-buffer`
+- Restart Eglot: `M-x eglot-reconnect`
 
 **Problem: Tree-sitter not working**
-- Run `M-x mp-setup-install-grammars` to install grammars
+- Run `M-x ltl/setup-install-grammars` to install grammars
 - Check if grammars are installed: `M-x treesit-language-available-p`
 
 **Problem: Fonts not displaying correctly**
@@ -538,7 +552,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │   │   ├── init-bindings.el   # Global keybindings
 │   │   ├── init-files.el      # File management, project.el
 │   │   ├── init-git.el        # Git integration (Magit)
-│   │   └── init-search.el     # Search tools (ag/swiper)
+│   │   └── init-search.el     # Search tools (ag/Consult)
 │   │
 │   ├── lang/              # Programming language support
 │   │   ├── init-programming-core.el      # LSP, Tree-sitter, tools
@@ -552,7 +566,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 │       ├── init-minuet.el       # Inline AI completion (minuet)
 │       ├── init-agent-cli.el    # qodercli / cursor-agent side panel
 │       ├── init-org.el          # Org-mode
-│       └── init-shell.el        # Terminal (Eat/Eshell/Vterm)
+│       └── init-shell.el        # Terminal (Vterm/Eat/Eshell)
 │
 ├── etc/                   # Package configuration files
 │   ├── eshell/           # Eshell history/aliases
@@ -592,7 +606,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 ### Tools (`lisp/tools/`)
 - **init-bindings.el** - Keybindings and which-key
 - **init-files.el** - File handling (recentf, project.el, dired)
-- **init-search.el** - Search tools (swiper, counsel, ag)
+- **init-search.el** - Search tools (Consult and ag)
 - **init-git.el** - Git integration (Magit, git-link, git-timemachine)
 
 ### Language Support (`lisp/lang/`)
@@ -605,9 +619,9 @@ The configuration is organized into **6 logical categories** with **22 modules**
 ### Applications (`lisp/apps/`)
 - **init-applications.el** - Utilities (Dictionary, UUID, Rime input, etc.)
 - **init-minuet.el** - Inline AI completion via minuet
-- **init-agent-cli.el** - qodercli / cursor-agent terminal agent integration
+- **init-agent-cli.el** - qodercli / cursor-agent / claude-code side panel in vterm
 - **init-org.el** - Org-mode with modern styling and export features
-- **init-shell.el** - Terminal emulation (Eat, Eshell, Vterm)
+- **init-shell.el** - Terminal emulation (Vterm, Eat, Eshell)
 
 ## Key Features
 
@@ -636,23 +650,32 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - **magit-todos** - TODO tracking
 
 ### AI Assistance
-- **GitHub Copilot** - AI pair programming (inline completion)
-- **GitHub Copilot CLI** - Terminal-based AI agent for code tasks NEW
-- **ChatGPT Shell** - Interactive AI assistant
+- **minuet** - Inline ghost-text completion (OpenAI-FIM compatible)
+- **Agent CLI** - qodercli / cursor-agent / claude-code side panel
+- **gptel** - LLM chat in Emacs
 
 ## Important Keybindings
 
 ### Custom Prefix Keys
 - `C-c f` - **File operations**
   - `C-c f r` - Recent files
-- `C-c t` - **Toggles**
+- `C-c t` - **Tools and toggles**
   - `C-c t $` - Spell check (jinx-mode)
-  - `C-c t `` - Copilot mode
-  - `C-c t C` - Copilot CLI
+  - `C-c t m` - minuet auto-suggestion
+  - `C-c t a` - Agent CLI
   - `C-c t e` - Evil mode
-  - `C-c t c` - Copilot chat
-- `C-c c` - **Copilot CLI commands** NEW
-  - `C-c c c` - Start CLI session
+  - `C-c t r` - Reload configuration
+  - `C-c t t` - Select Treemacs
+  - `C-c t v` - Open vterm
+  - `C-c t w` - Resize menu
+    - `h` / `l` - Narrower / wider
+    - `j` / `k` - Shorter / taller
+    - `=` - Balance windows
+    - `a` - Resize visible Agent pane to its preset
+    - `t` - Resize Treemacs to its preset
+    - The menu stays visible; exit with `q` or `C-g`
+- `C-c c` - **Agent CLI commands**
+  - `C-c c c` - Start/focus CLI session
   - `C-c c s` - Send buffer
   - `C-c c e` - Explain code
   - `C-c c v` - Review code
@@ -669,15 +692,20 @@ The configuration is organized into **6 logical categories** with **22 modules**
   - `C-c l a` - Code actions
   - `C-c l d` - Show documentation
   - `C-c l s` - Search symbols
+- `C-c a` - **gptel**
+- `C-c n` - **Denote notes**
+- `C-c g` - **Git commands**
+- `C-c h` - **Helpful at point**
+- `C-c w` - **Perspective workspaces** (when Perspective is enabled)
 
 ### Essential Bindings
 - `C-x g` - Magit status
-- `C-s` - Swiper search
+- `C-s` - Consult line search
 - `M-x` - Enhanced command palette
 - `M-o` - Switch windows (ace-window)
-- `M-0` - Toggle Treemacs
+- `C-c t t` - Select Treemacs window
 - `C-x u` - Visual undo (vundo)
-- `M-`` - Copilot complete
+- `M-`` - minuet complete
 
 ## Maintenance & Debugging
 

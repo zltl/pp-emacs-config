@@ -33,7 +33,7 @@
   fd --version
   ```
   
-- [ ] **Node.js** (Copilot 需要)  
+- [ ] **Node.js** (部分 language server 需要)  
   ```bash
   node --version
   ```
@@ -173,9 +173,9 @@
 
 - [ ] **LSP 工作** (如已安装服务器)  
   ```elisp
-  M-x lsp
+  M-x eglot
   ```
-  在代码文件中启动，应该看到 LSP 连接成功
+  在代码文件中启动，应该看到 Eglot 连接成功
 
 - [ ] **跳转到定义** (M-.)  
   光标放在函数名上，按 M-. 应该跳转
@@ -193,7 +193,8 @@
 ### AI agent (minuet / CLI)
 - [ ] **配置 minuet API**（`MINUET_ENDPOINT` / `MINUET_MODEL` / API key env）
 - [ ] **`M-`` 能触发补全**
-- [ ] **`C-c c c` 能打开 qodercli/agent 侧栏**；`C-c c a` 可切换后端
+- [ ] **`M-x ltl/vterm-setup` 能编译 vterm-module**（Ubuntu/Arch 会自动安装 cmake / libtool 等编译工具）
+- [ ] **`C-c c c` 能打开 qodercli/agent 侧栏**（`vterm-mode`）；`C-c c a` 可切换后端
 
 ---
 
@@ -285,13 +286,13 @@
 - [ ] 查看日志
 
 ### 场景 3: 搜索代码
-- [ ] `M-s g` ripgrep 搜索
+- [ ] `M-s r` 使用 consult-ripgrep 搜索
 - [ ] 结果正确显示
 - [ ] 可以跳转到匹配位置
 
 ### 场景 4: 项目浏览
-- [ ] `M-x projectile-find-file` (C-c p f)
-- [ ] `M-x projectile-switch-project` (C-c p p)
+- [ ] `M-x project-find-file` (`C-x p f`)
+- [ ] `M-x project-switch-project` (`C-x p p`)
 - [ ] 项目文件正确列出
 
 ---

@@ -185,14 +185,26 @@ M-x  ; 输入命令
 
 ### 10. AI 功能测试（如果已配置）
 
-#### Copilot
+#### minuet
 ```elisp
-M-`  ; 触发 Copilot 补全
+M-`  ; 触发 minuet 补全
 ```
 
 **预期结果：**
-- 显示建议（如果已登录）
-- 或提示需要登录
+- 显示建议（如果已配置 API）
+- 或提示缺少 endpoint / API key
+
+#### agent CLI（vterm）
+```elisp
+M-x ltl/vterm-setup   ; 首次：Ubuntu/Arch 自动装编译工具，并编译 vterm-module
+C-c c c               ; 打开 agent 侧栏后继续在左侧编辑
+```
+
+**预期结果：**
+- `*ai-agent*` 是 `vterm-mode`，不是 Eat；agent 写出 `aiTitle` 后会变成 `*ai-agent: …*`
+- `C-c c l` 按 agent 自己的任务摘要列出 session，`C-c c m` 可手改
+- agent TUI 刷新时左侧仍能输入，`C-g` 有效
+- 改变窗口大小后 TUI 跟上新尺寸，Emacs 不卡死
 
 ### 11. 按键绑定测试
 
@@ -200,8 +212,13 @@ M-`  ; 触发 Copilot 补全
 
 ```elisp
 C-x C-f  ; 应该调用 find-file-at-point
-C-x b    ; 应该调用 switch-to-buffer
+C-x b    ; 应该调用 consult-buffer
 C-c j c  ; Avy jump to char
+C-c l r  ; Eglot rename
+C-c g g  ; Magit status
+C-c t v  ; Vterm
+C-c t w h  ; 缩窄当前窗口，随后可直接按 l 调回
+C-c t w =  ; 平衡窗口
 M-x ltl/doctor  ; 健康检查
 ```
 
@@ -267,8 +284,8 @@ emacs  # 重新启动，会重新安装
 **解决方法：**
 1. 运行健康检查：`M-x ltl/doctor`
 2. 检查语言服务器是否安装
-3. 查看 LSP 日志：`M-x lsp-workspace-show-log`
-4. 重启 LSP：`M-x lsp-workspace-restart`
+3. 查看 Eglot 事件：`M-x eglot-events-buffer`
+4. 重启 Eglot：`M-x eglot-reconnect`
 
 ### 问题 4: 字体显示异常
 
@@ -286,7 +303,7 @@ emacs  # 重新启动，会重新安装
 
 **解决方法：**
 ```elisp
-M-x mp-setup-install-grammars
+M-x ltl/setup-install-grammars
 ```
 
 ## 测试完成清单

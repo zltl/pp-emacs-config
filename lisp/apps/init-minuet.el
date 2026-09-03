@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 ;;
-;; Copilot-free ghost-text completion using minuet.
+;; Ghost-text completion using minuet.
 ;; Default provider is openai-fim-compatible so cheap/self-hosted endpoints
 ;; (DeepSeek, OpenRouter, local OpenAI-compatible servers) can be used.
 ;; Suggestions are on-demand by default to control cost.
@@ -22,7 +22,7 @@
    ("M-w" . minuet-accept-suggestion-word)
    ("M-e" . minuet-dismiss-suggestion))
   :bind
-  (:map ltl/toggles-map
+  (:map ltl/tools-map
         ("m" . minuet-auto-suggestion-mode))
   :config
   ;; Reduce automatic request volume if the user enables auto suggestions.

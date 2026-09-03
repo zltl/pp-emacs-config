@@ -16,11 +16,11 @@
   :custom
   ;; Default to Org so AI sessions support headings, lists, and code blocks.
   (gptel-default-mode 'org-mode)
-  :config
-  ;; Key bindings for gptel
-  (global-set-key (kbd "C-c a a") #'gptel)
-  (global-set-key (kbd "C-c a s") #'gptel-send)
-  (global-set-key (kbd "C-c a m") #'gptel-menu))
+  :bind
+  (:map ltl/ai-map
+        ("a" . gptel)
+        ("s" . gptel-send)
+        ("m" . gptel-menu)))
 
 (provide 'init-ai)
 ;;; init-ai.el ends here

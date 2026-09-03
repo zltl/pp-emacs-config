@@ -143,23 +143,16 @@ use a full Emacs restart when something looks wrong."
 
 ;; gc
 ;; `gcmh' raises the GC threshold while you are actively typing and runs
-;; collection during idle time, which reduces random pauses in normal
-;; editing without giving up memory cleanup entirely.
+;; collection during idle time. A 20s delay let a large heap build up and
+;; then pause the UI for a noticeable GC; a shorter idle delay keeps
+;; pauses smaller. The high threshold matches `ltl/gc-cons-threshold'.
 (use-package gcmh
   :diminish
   :config
   (gcmh-mode)
   :custom
-  ;; A higher threshold means fewer collections during bursts of LSP,
-  ;; minibuffer, or package-manager activity.
-  (gcmh-high-cons-threshold 33554432)
-  ;; :custom
-  ;; Set the delay to 20s instead of the default 15. I tried using `auto', but
-  ;; with the default 20 of `gcmh-auto-idle-delay-factor', it triggers GC each
-  ;; 1s on my machine. Setting the factor to a higher value should solve the
-  ;; issue on my machine, but I don't think it is right to assume it will work
-  ;; the same way on other machines. So we switch back to a fixed delay of 20s.
-  (gcmh-idle-delay 20))
+  (gcmh-high-cons-threshold ltl/gc-cons-threshold)
+  (gcmh-idle-delay 8))
 
 ;; warn when opening files bigger than 100MB
 ;; Large files can make Emacs appear frozen; warn first so the user can
@@ -204,12 +197,19 @@ use a full Emacs restart when something looks wrong."
 ;; `init-doctor' provides a diagnostic entry point so startup can report
 ;; environment problems in a user-friendly way later on.
 (ltl/safe-require 'init-doctor)
+;; Redisplay, so-long, and profiler helpers. Loaded early so later
+;; modules inherit a command loop that skips stale work while typing.
+(ltl/safe-require 'init-perf)
 
 ;; UI modules
 ;; Theme and startup-screen choices are loaded early so the first frame
 ;; already reflects the intended visual style.
 (ltl/safe-require 'init-themes)
 (ltl/safe-require 'init-dashboard)
+
+;; Keymap namespaces must exist before package modules attach bindings to
+;; `C-c f/t/j/p/m/l/a/n/g'.
+(ltl/safe-require 'init-bindings)
 
 ;; Editing modules
 ;; Editing behavior comes before tools/languages so every major mode gets
@@ -221,7 +221,6 @@ use a full Emacs restart when something looks wrong."
 ;; Tool modules
 ;; Tooling modules wire in global capabilities such as keys, file/project
 ;; navigation, Git, and search.
-(ltl/safe-require 'init-bindings)
 (ltl/safe-require 'init-files)
 (ltl/safe-require 'init-git)
 (ltl/safe-require 'init-search)
@@ -240,7 +239,6 @@ use a full Emacs restart when something looks wrong."
 ;; RSS, and small standalone utilities.
 (ltl/safe-require 'init-org)
 (ltl/safe-require 'init-shell)
-;; Copilot removed: use minuet (inline) + agent CLI (qodercli/cursor-agent).
 (ltl/safe-require 'init-minuet)
 (ltl/safe-require 'init-agent-cli)
 (ltl/safe-require 'init-ai)

@@ -11,6 +11,8 @@
 ;;
 ;;; Code:
 
+(declare-function ltl/eglot-ensure "init-programming-core")
+
 ;;; Python
 
 ;; Use built-in python.el (provides python-mode)
@@ -20,7 +22,7 @@
   :ensure nil  ; built-in, no need to install
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
-  :hook (python-mode . eglot-ensure))
+  :hook ((python-mode python-ts-mode) . ltl/eglot-ensure))
 
 ;; `python-docstring' helps keep docstrings formatted to convention while
 ;; writing them, which reduces style cleanup later.

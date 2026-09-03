@@ -38,7 +38,15 @@
 ;; Native-comp warnings are still available when needed, but hiding the
 ;; popup keeps routine startup from feeling noisy.
 (when (featurep 'native-compile)
-  (setq native-comp-async-report-warnings-errors 'silent))
+  (setq native-comp-async-report-warnings-errors 'silent
+        native-comp-async-query-on-exit nil))
+
+;; These must be set before the first frame; later UI modules keep the
+;; same values. Implied resize during font/theme load is a visible hitch.
+(setq frame-inhibit-implied-resize t
+      inhibit-startup-screen t
+      inhibit-startup-echo-area-message user-login-name
+      inhibit-compacting-font-caches t)
 
 ;; UX: Respect DEBUG envvar as an alternative to --debug-init
 ;; This is convenient when launching Emacs from shell scripts or desktop

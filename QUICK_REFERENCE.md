@@ -10,6 +10,16 @@ M-x customize-group ltl           打开自定义界面
 M-x ltl/apply-custom-settings     应用自定义设置
 ```
 
+### 自定义前缀
+```
+C-c f  文件          C-c t  工具/开关      C-c c  Agent
+C-c j  跳转          C-c p  Smartparens    C-c m  多光标
+C-c l  Eglot/LSP     C-c a  gptel          C-c n  Denote
+C-c g  Git           C-c h  Helpful        C-c w  工作区（Perspective）
+C-c o  Combobulate
+```
+在任一前缀后按 `C-h` 查看完整按键。
+
 ### 包管理（Elpaca）
 ```
 M-x elpaca-manager               包管理器界面
@@ -42,8 +52,9 @@ M-x combobulate-mode                   启用结构编辑
 
 ### 文件管理
 ```
-C-x C-f     打开文件          find-file
-C-x b       切换缓冲区        switch-to-buffer
+C-x C-f     打开文件          find-file-at-point
+C-x b       切换缓冲区        consult-buffer
+C-c f r     最近文件          consult-recent-file
 C-x C-s     保存              save-buffer
 C-x s       保存所有          save-some-buffers
 C-x k       关闭缓冲区        kill-buffer
@@ -51,50 +62,80 @@ C-x k       关闭缓冲区        kill-buffer
 
 ### 搜索（Vertico/Consult）
 ```
-C-s         向前搜索          isearch-forward
+C-s         当前缓冲区搜索     consult-line
 C-r         向后搜索          isearch-backward
-M-s g       Grep 搜索         consult-ripgrep
-M-s l       跳转到行          consult-goto-line
-M-s o       查找             consult-outline
-M-s i       Imenu            consult-imenu
+M-s r       项目 Grep 搜索     consult-ripgrep
+M-s l       当前缓冲区搜索     consult-line
+M-g g       跳转到行          consult-goto-line
+M-g o       大纲搜索          consult-outline
+M-g i       Imenu            consult-imenu
+M-g f       Flymake 错误      consult-flymake
+M-g F       Flycheck 错误     flycheck-list-errors
 ```
 
 ### Git（Magit）
 ```
 C-x g       Magit 状态        magit-status
+C-c g g     Magit 状态        magit-status
 C-c g b     Blame            magit-blame
 C-c g l     日志             magit-log-current
 C-c g f     文件日志          magit-log-buffer-file
 C-c g t     时间机器          git-timemachine
+C-c g k     复制 Git 链接      git-link
 ```
 
-### AI (minuet / agent CLI)
+### AI（minuet / agent CLI / gptel）
 ```
 M-`         触发补全          minuet-complete-with-minibuffer
 M-A         接受全部          minuet-accept-suggestion
 C-c t m     自动补全开关       minuet-auto-suggestion-mode
+C-c t a     打开 agent        ltl/agent
 C-c c c     打开 agent        ltl/agent
+C-c c l     按任务摘要切换     ltl/agent-select
+C-c c m     设置任务摘要       ltl/agent-rename
 C-c c a     切换后端          ltl/agent-switch
 C-c c s     发送 buffer       ltl/agent-send-buffer
 C-c c d     看 diff           ltl/agent-diff-current-file
+C-c c V     安装 Vterm        ltl/vterm-setup
+C-c a a     打开 gptel        gptel
+C-c a s     发送到 gptel      gptel-send
+C-c a m     gptel 菜单        gptel-menu
 ```
 
 ### Shell/Terminal
 ```
 M-x eshell                    启动 Eshell
 M-x shell                     启动 Shell
-M-x vterm                     启动 Vterm（如果安装）
+M-x ltl/vterm-setup           安装编译工具并编译 Vterm
+M-x vterm                     启动 Vterm
+C-c t v                       启动 Vterm
 C-c C-c                       中断进程
 C-c C-k                       杀死进程
 ```
 
+### 窗口大小（可连续按）
+```
+C-c t w h/l   缩窄 / 加宽当前窗口
+C-c t w j/k   缩短 / 增高当前窗口
+C-c t w =     平衡当前 frame 的窗口
+C-c t w a     Agent 预设宽度
+C-c t w t     Treemacs 预设宽度
+```
+Transient 菜单会在底部常驻，可连续按 `h/l/j/k/=/a/t`；按 `q` 或 `C-g` 退出。
+数字前缀可指定步数；菜单打开后按 `C-u 80 a` 可将 Agent 目标设为 80 列。
+
 ### 性能分析
 ```
-M-x benchmark-init/show-durations-tabulated    查看启动时间
+C-c t P                                        采样 8 秒 CPU 并出报告
+M-x ltl/profile-cpu                            同上（可加数字前缀改秒数）
+M-x ltl/profile-memory                         采样 5 秒内存
 M-x profiler-start                             开始性能分析
 M-x profiler-report                            查看报告
 M-x profiler-stop                              停止分析
 ```
+卡顿时先 `C-c t P`，立刻复现操作，报告里占用最高的函数就是主因。
+Emacs Lisp 跑在单线程命令循环上，加 async/多线程不能让打字更快；
+本配置已经把 LSP、格式化、包管理放在进程外，并减少了主循环上的同步工作。
 
 ---
 
@@ -110,7 +151,6 @@ ltl/theme                     'spacemacs-dark
 
 ### 功能开关
 ```elisp
-ltl/enable-lsp                t
 ltl/enable-lsp                t      ; 控制 Eglot
 ltl/enable-tree-sitter        t
 ltl/enable-dashboard          t
@@ -135,7 +175,7 @@ ltl/lsp-language-servers      '((go . "gopls")
 ### 性能设置
 ```elisp
 ltl/gc-cons-threshold         (* 100 1024 1024)  ; 100 MB
-ltl/read-process-output-max   (* 1024 1024)      ; 1 MB
+ltl/read-process-output-max   (* 1024 1024 4)    ; 4 MB
 ```
 
 ---
@@ -273,7 +313,7 @@ M-x ltl/apply-custom-settings
 
 ## 快速技巧
 
-1. **使用 which-key** - 按任何前缀键（如 C-c）然后等待，会显示可用命令
+1. **使用 which-key** - 按前缀键后再按 `C-h`，显示该前缀下的可用命令
 
 2. **补全无处不在** - Vertico 和 Corfu 提供智能补全
 

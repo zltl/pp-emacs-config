@@ -41,7 +41,7 @@
     (insert "Emacs 配置优化 v3.0\n")
     (insert "LSP Mode 语言服务器\n")
     (insert "Tree-sitter 语法树\n")
-    (insert "GitHub Copilot AI 助手\n\n")
+    (insert "minuet / gptel AI 助手\n\n")
     
     ;; Programming example
     (insert "Programming Example:\n")

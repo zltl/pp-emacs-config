@@ -26,11 +26,11 @@
   ;; Offer candidates automatically so completion feels proactive instead
   ;; of requiring a manual trigger for every symbol.
   (corfu-auto t)
-  ;; A short delay balances responsiveness with reduced distraction while typing.
-  (corfu-auto-delay 0.1)
-  ;; Start suggesting after a single character to help in languages with
-  ;; long identifiers and keyword-heavy APIs.
-  (corfu-auto-prefix 1)
+  ;; 100ms + 1-char prefix asked Eglot/Cape on almost every key. A
+  ;; slightly longer delay and 2-char prefix keeps completion useful
+  ;; without stalling the command loop while typing.
+  (corfu-auto-delay 0.25)
+  (corfu-auto-prefix 2)
   ;; Wrapping makes keyboard navigation continuous when browsing candidate lists.
   (corfu-cycle t)
   ;; Prefer the typed text first so accidental auto-selection does not
@@ -99,12 +99,14 @@
               ;; Optional loading means the rest of completion still works
               ;; even if Cape has not been installed yet.
               (require 'cape nil t)))
-  ;; Add generic text/file/elisp fallbacks so completion remains useful
-  ;; even when no language server is attached.
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  ;; Scanning every buffer for dabbrev on each completion is a common
+  ;; freeze. Keep file/keyword fallbacks; limit dabbrev to this buffer.
+  (setq cape-dabbrev-min-length 4
+        cape-dabbrev-check-other-buffers nil)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev t))
 
 ;; Prescient - Intelligent sorting and filtering
 ;; Prescient learns from usage over time, so the commands and candidates
@@ -149,16 +151,17 @@
 ;; modeline feedback, which pairs well with Eglot and external linters.
 (use-package flycheck
   :diminish
-  :hook (after-init . global-flycheck-mode)
+  ;; Not global: Eglot already provides Flymake diagnostics. A second
+  ;; checker on every idle-change doubled lint work in programming
+  ;; buffers. Elisp still benefits from Flycheck's byte-compiler checker.
+  :hook (emacs-lisp-mode . flycheck-mode)
   :custom
   ;; Inherit the current load-path so local Emacs Lisp modules are linted
   ;; against the same environment they actually run in.
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-indication-mode 'left-fringe)
-  ;; Check on save and after short idle pauses to catch problems quickly
-  ;; without firing on every keystroke.
-  (flycheck-check-syntax-automatically '(save mode-enabled idle-change))
-  (flycheck-idle-change-delay 0.5))
+  ;; Check on save, not while typing.
+  (flycheck-check-syntax-automatically '(save mode-enabled)))
 
 ;;; ============================================================================
 ;;; Vertico Prescient
@@ -215,6 +218,7 @@
 ;; history integration, and better minibuffer UX.
 (use-package consult
   :bind
+  ("C-s" . consult-line)
   ([remap switch-to-buffer] . consult-buffer)
   ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
   ([remap switch-to-buffer-other-frame] . consult-buffer-other-frame)
@@ -238,6 +242,7 @@
   ("M-s F" . consult-locate)
   ("M-g e" . consult-compile-error)
   ("M-g f" . consult-flymake)
+  ("M-g F" . flycheck-list-errors)
   ([remap repeat-complex-command] . consult-complex-command)
   ("M-s e" . consult-isearch-history)
   ([remap isearch-edit-string] . consult-isearch-history)
@@ -262,7 +267,10 @@
 ;; `embark' turns the current minibuffer candidate into an action hub:
 ;; open, export, grep, copy, etc., without leaving completion flow.
 (use-package embark
-  :defer t)
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings)))
 
 ;; `embark-consult' gives live previews in Embark collect buffers so bulk
 ;; action lists remain navigable instead of becoming static dumps.

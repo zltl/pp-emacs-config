@@ -173,9 +173,10 @@ buffer's text scale."
   ;; This is the directory where your notes live.
   (denote-directory (expand-file-name "~/denote/"))
   :bind
-  (("C-c n n" . denote)
-   ("C-c n f" . denote-open-or-create)
-   ("C-c n i" . denote-link)))
+  (:map ltl/notes-map
+        ("n" . denote)
+        ("f" . denote-open-or-create)
+        ("i" . denote-link)))
 
 (provide 'init-org)
 ;;; init-org.el ends here
