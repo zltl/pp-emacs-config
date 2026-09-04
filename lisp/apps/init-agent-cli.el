@@ -343,18 +343,16 @@ the new directory."
 
 (defun ltl/agent--new-cli-session-id ()
   "Return a UUID for `--session-id'."
-  (if-let* ((exe (executable-find "uuidgen")))
-      (string-trim (shell-command-to-string exe))
-    (let ((s (md5 (format "%s|%s|%s|%s"
-                          (emacs-pid) (float-time)
-                          (random most-positive-fixnum)
-                          (random most-positive-fixnum)))))
-      (format "%s-%s-4%s-a%s-%s"
-              (substring s 0 8)
-              (substring s 8 12)
-              (substring s 13 16)
-              (substring s 17 20)
-              (substring s 20 32)))))
+  (let ((s (md5 (format "%s|%s|%s|%s"
+                        (emacs-pid) (float-time)
+                        (random most-positive-fixnum)
+                        (random most-positive-fixnum)))))
+    (format "%s-%s-4%s-a%s-%s"
+            (substring s 0 8)
+            (substring s 8 12)
+            (substring s 13 16)
+            (substring s 17 20)
+            (substring s 20 32))))
 
 (defun ltl/agent--session-id-args (backend sid)
   "CLI args that pin BACKEND to SID, or nil if unsupported."

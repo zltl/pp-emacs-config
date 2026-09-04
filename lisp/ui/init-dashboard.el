@@ -6,9 +6,9 @@
 ;;
 ;;; Code:
 
-;; `dashboard' gives a friendly landing page with recent files, projects,
-;; and agenda items, which reduces friction when opening Emacs "just to
-;; jump back into something".
+;; `dashboard' gives a friendly landing page with recent files and
+;; projects, which reduces friction when opening Emacs "just to jump
+;; back into something".
 (use-package dashboard
   :if ltl/enable-dashboard
   :config
@@ -19,12 +19,11 @@
   ;; Reuse built-in project.el for project discovery to stay consistent
   ;; with the rest of the configuration.
   (setq dashboard-projects-backend 'project-el)
-  ;; A short list is enough to resume work; 50 recents + agenda I/O made
-  ;; the first frame wait on disk for no real benefit.
+  ;; A short list is enough to resume work. Agenda items would load Org
+  ;; during startup; open a .org file or `M-x org-agenda' instead.
   (setq dashboard-items '((recents   . 8)
                           (bookmarks . 5)
                           (projects  . 5)
-                          (agenda    . 3)
                           (registers . 3)))
   (setq dashboard-set-init-info t
         dashboard-set-footer nil))

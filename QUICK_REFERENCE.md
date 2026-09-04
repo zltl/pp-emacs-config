@@ -38,6 +38,7 @@ M-,         返回              xref-pop-marker-stack
 M-?         查找引用          xref-find-references
 C-c l r     重命名符号        eglot-rename
 C-c l f     格式化文档        eglot-format
+C-c l F     异步格式化        apheleia-format-buffer
 C-c l a     代码操作          eglot-code-actions
 C-c l d     打开 *eldoc*      eldoc-doc-buffer
 C-c l h     光标处文档        ltl/eldoc-help-at-point
@@ -84,6 +85,7 @@ C-c g b     Blame            magit-blame
 C-c g l     日志             magit-log-current
 C-c g f     文件日志          magit-log-buffer-file
 C-c g t     时间机器          git-timemachine
+C-c g o     仓库 TODO         magit-todos-list
 C-c g k     复制 Git 链接      git-link
 ```
 

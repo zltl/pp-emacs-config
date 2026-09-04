@@ -109,7 +109,6 @@ interactively; it is no longer called during startup."
 ;; `combobulate' builds on tree-sitter to provide syntax-aware structural
 ;; editing, which is safer than plain text motions for nested languages.
 (use-package combobulate
-  :after treesit
   :ensure (combobulate :host github :repo "mickeynp/combobulate")
   :custom
   ;; Keep structural-editing commands under a dedicated prefix so they do
@@ -152,6 +151,9 @@ language servers that freeze the command loop on first contact."
               ("p" . ltl/eldoc-scroll-down)
               ("h" . ltl/eldoc-help-at-point))
   :custom
+  ;; Do not sit on the command loop waiting for initialize.
+  ;; The buffer stays editable; the server attaches when it is ready.
+  (eglot-sync-connect nil)
   ;; Shut down idle language servers when their last managed buffer closes
   ;; so background processes do not accumulate across projects.
   (eglot-autoshutdown t)
@@ -189,7 +191,13 @@ language servers that freeze the command loop on first contact."
   ;; Explicit TSX registration ensures tsx-ts-mode gets the correct server
   ;; even when default mode/server associations vary by package version.
   (add-to-list 'eglot-server-programs
-               '(tsx-ts-mode . ("typescript-language-server" "--stdio"))))
+               '(tsx-ts-mode . ("typescript-language-server" "--stdio")))
+  ;; Prefer pyright; fall back to pylsp when it is not installed.
+  (add-to-list 'eglot-server-programs
+               `((python-mode python-ts-mode) .
+                 ,(eglot-alternatives
+                   '(("pyright-langserver" "--stdio")
+                     "pylsp")))))
 
 ;; Consult integration for Eglot
 ;; Search workspace symbols through Consult's preview/narrowing UI instead
@@ -334,11 +342,19 @@ child frames, so this pops the Eldoc buffer instead."
   :defer t
   :commands compile-multi)
 
-;; `apheleia' offers asynchronous formatting, so buffer formatting does
-;; not block the UI or require mode-specific formatter glue everywhere.
+;; `apheleia' formats in a subprocess on save. That is the async path;
+;; `clang-format-buffer' / `rust-format-buffer' stay available but block.
 (use-package apheleia
   :defer t
-  :commands (apheleia-mode apheleia-format-buffer))
+  :commands (apheleia-mode apheleia-format-buffer)
+  :hook ((go-mode go-ts-mode
+          rust-mode rust-ts-mode
+          python-mode python-ts-mode
+          js-ts-mode typescript-ts-mode tsx-ts-mode
+          c-mode c++-mode c-ts-mode c++-ts-mode)
+         . apheleia-mode)
+  :bind (:map ltl/lsp-map
+              ("F" . apheleia-format-buffer)))
 
 ;; Keep clang-format available as an explicit formatter for C/C++ buffers
 ;; and one-off region formatting.

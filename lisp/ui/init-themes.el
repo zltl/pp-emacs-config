@@ -101,13 +101,22 @@
 (setf inhibit-splash-screen t)
 (setf initial-major-mode 'fundamental-mode)
 (setf initial-scratch-message nil)
+;; Emacs creates *scratch* as `lisp-interaction-mode' before this file
+;; runs. That is a `prog-mode', so yas / page-break-lines / smartparens
+;; would load during startup. Match `initial-major-mode'.
+(when-let* ((scratch (get-buffer "*scratch*")))
+  (with-current-buffer scratch
+    (unless (eq major-mode 'fundamental-mode)
+      (fundamental-mode))))
 
 ;; frame scaling/zooming
 ;; `default-text-scale' provides persistent global zooming so different
 ;; displays can be accommodated without editing font constants.
 (use-package default-text-scale
-  :config
-  (default-text-scale-mode))
+  :defer t
+  :bind (("C-M-=" . default-text-scale-increase)
+         ("C-M--" . default-text-scale-decrease)
+         ("C-M-0" . default-text-scale-reset)))
 
 ;; Highlight the current line
 ;; A subtle current-line highlight improves cursor tracking in large files
@@ -119,8 +128,7 @@
 ;; `volatile-highlights' briefly highlights changed text, making actions
 ;; like yank, undo, or replace easier to visually verify.
 (use-package volatile-highlights
-  :config
-  (volatile-highlights-mode t))
+  :hook (on-first-buffer . volatile-highlights-mode))
 
 ;; font — uses defcustom variables from init-custom-vars.el
 ;; Apply fonts only in GUI sessions; terminal Emacs cannot use these font

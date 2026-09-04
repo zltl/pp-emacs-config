@@ -360,8 +360,10 @@
 
 ;; `envrc' imports per-project environment variables from .envrc, which
 ;; keeps language servers, compilers, and tests aligned with the shell.
+;; Wait for the first file so direnv does not race startup, dashboard,
+;; and the first Eglot handshake.
 (use-package envrc
-  :hook (after-init . envrc-global-mode))
+  :hook (on-first-file . envrc-global-mode))
 
 (provide 'init-editor)
 ;;; init-editor.el ends here

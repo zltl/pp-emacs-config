@@ -30,7 +30,6 @@
 (use-package magit
   :ensure (:host github :repo "magit/magit")
   :functions ltl/magit-clone-read-args-a
-  :after org
   :commands (magit-status magit-blame magit-log-current magit-log-buffer-file)
   :custom
   ;; Default clones into ~/src so repositories do not pile up in random
@@ -51,9 +50,7 @@ existing directory under `magit-clone-default-directory'."
       (apply orig-fun args)))
   (advice-add 'magit-clone-read-args :around #'ltl/magit-clone-read-args-a))
 
-;; Bind the shared Git prefix directly.  Keeping these outside Magit's
-;; deferred `:after org' declaration makes the prefix available at startup;
-;; each command remains an autoload and loads Magit only when invoked.
+;; Bind the shared Git prefix to autoloads so Magit loads only when used.
 (bind-keys :map ltl/git-map
   ("g" . magit-status)
   ("b" . magit-blame)
@@ -61,12 +58,12 @@ existing directory under `magit-clone-default-directory'."
   ("f" . magit-log-buffer-file))
 (bind-key "C-x g" #'magit-status)
 
-;; show todos
-;; Surface TODO/FIXME markers directly in Magit status so code review and
-;; release prep can catch unfinished work without a separate grep pass.
+;; Scan the repo for TODO/FIXME only when asked. Enabling
+;; `magit-todos-mode' globally made every `magit-status' grep the tree.
 (use-package magit-todos
-  :after magit
-  :config (magit-todos-mode 1))
+  :commands magit-todos-list
+  :bind (:map ltl/git-map
+              ("o" . magit-todos-list)))
 
 ;; Forge - GitHub/GitLab integration for Magit
 ;; Requires magit >= 4.5; ensure latest magit is installed
@@ -121,6 +118,10 @@ existing directory under `magit-clone-default-directory'."
   ;; Flydiff recomputes the hunk on every edit. Update on save instead;
   ;; Magit hooks below still refresh after Git operations.
   (diff-hl-flydiff-mode -1)
+  ;; Newer diff-hl can run `git' off the command loop. Ignore the
+  ;; variable on older builds.
+  (when (boundp 'diff-hl-update-async)
+    (setq diff-hl-update-async t))
   (with-eval-after-load 'magit
     ;; Refresh diff-hl around Magit updates so fringe markers do not lag
     ;; behind the repository state after staging/reverting.

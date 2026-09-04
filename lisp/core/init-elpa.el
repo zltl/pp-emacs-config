@@ -135,8 +135,7 @@
 (use-package page-break-lines
   :ensure (page-break-lines :host github :repo "purcell/page-break-lines")
   :diminish
-  :config
-  (global-page-break-lines-mode))
+  :hook ((prog-mode text-mode) . page-break-lines-mode))
 
 (provide 'init-elpa)
 ;;; init-elpa.el ends here

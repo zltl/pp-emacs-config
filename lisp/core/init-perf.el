@@ -8,6 +8,11 @@
 ;; redisplay while keys are pending, and letting subprocesses (LSP,
 ;; formatters, Git) run out of process.
 ;;
+;; Do not add `make-thread' wrappers, `emacs-lsp-booster', or `async.el'
+;; child Emacs processes for Eglot/Magit. Those either share the same
+;; lock or cannot share buffer/server state. Idle timers and sentinels
+;; are the right tools.
+;;
 ;; This module holds the low-level editor/runtime knobs. Package-level
 ;; decisions (when to start Eglot, Flycheck, Corfu, etc.) live in the
 ;; modules that own those packages.

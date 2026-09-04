@@ -119,18 +119,6 @@ use a full Emacs restart when something looks wrong."
   (load (expand-file-name "init.el" user-emacs-directory) nil 'nomessage)
   (message "Config reloaded (C-c t r). Restart Emacs if state looks stale."))
 
-;; Utility libraries used across the config.
-;; `async' lets commands or helpers offload work so the UI stays
-;; responsive during heavy tasks.
-(use-package async
-  :commands (async-start))
-;; `dash' adds list combinators that make non-trivial Elisp pipelines
-;; shorter and easier to read when a module needs them.
-(use-package dash)
-;; `s' provides practical string helpers so later modules do not need to
-;; reimplement trimming, joining, or formatting glue code.
-(use-package s)
-
 ;;; No littering
 ;; Many packages leave crumbs in user-emacs-directory or even
 ;; $HOME. Finding and configuring them individually is a hassle, so we
@@ -176,7 +164,8 @@ use a full Emacs restart when something looks wrong."
 (use-package scratch
   :ensure (scratch :type git :protocol https
                    :host github :repo "ffevotte/scratch.el"
-                   :inherit nil))
+                   :inherit nil)
+  :commands scratch)
 ;; Show event history and command history of some or all buffers.
 ;; (use-package command-log-mode)
 ;; load PATH from shell
@@ -190,9 +179,16 @@ use a full Emacs restart when something looks wrong."
   ;; omits ~/go/bin and other interactive-shell directories.
   (dolist (var '("GOPATH" "GOBIN" "GOPROXY"))
     (add-to-list 'exec-path-from-shell-variables var))
+  ;; A login shell can take hundreds of milliseconds. Do it after the
+  ;; first frame is up; Go still prepends ~/go/bin in `ltl/go-setup'.
   (when (or (daemonp)
             (memq window-system '(mac ns x pgtk)))
-    (exec-path-from-shell-initialize)))
+    (run-with-idle-timer
+     0.5 nil
+     (lambda ()
+       (exec-path-from-shell-initialize)
+       (when (fboundp 'ltl/go-ensure-exec-path)
+         (ltl/go-ensure-exec-path t))))))
 
 ;; Load configuration modules with error handling
 (message "Loading configuration modules...")

@@ -130,7 +130,7 @@
 ;; which cuts repetitive typing in programming and prose modes.
 (use-package yasnippet
   :diminish yas-minor-mode
-  :hook (after-init . yas-global-mode)
+  :hook ((prog-mode text-mode org-mode) . yas-minor-mode)
   :config
   ;; Keep logs quiet unless something worth noticing happens.
   (setq yas-verbosity 1)

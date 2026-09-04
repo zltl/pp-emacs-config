@@ -246,10 +246,10 @@ Or from Emacs: `M-x ltl/go-install-tools`. Opening a `.go` file no longer asks t
 export GOPROXY=https://proxy.golang.com.cn,direct
 ```
 
-`exec-path-from-shell` also copies `GOPATH`, `GOBIN`, and `GOPROXY` on graphical and daemon frames (`mac`, `ns`, `x`, and `pgtk`).
+`exec-path-from-shell` copies `GOPATH`, `GOBIN`, and `GOPROXY` on graphical and daemon frames (`mac`, `ns`, `x`, and `pgtk`), on a short idle timer so the first frame is not waiting on a login shell.
 
 **Eglot / gopls:**
-- Starts automatically in `go-mode` / `go-ts-mode`
+- Starts automatically in `go-mode` / `go-ts-mode` (`eglot-sync-connect` is nil, so the buffer stays editable during handshake)
 - Event log off (`eglot-events-buffer-config` `:size 0`; the old `eglot-events-buffer-size` is ignored on Emacs 32)
 - Semantic tokens and inlay hints stay opt-in (`M-x eglot-semantic-tokens-mode` if you want them)
 - `staticcheck` and analysis progress reporting are off; `vendor`, `.git`, `node_modules`, and `testdata` are filtered
@@ -456,6 +456,9 @@ rm -rf ~/.emacs.d/var/
 - Restart Eglot: `M-x eglot-reconnect`
 - Event logging is off by default. Temporarily set `eglot-events-buffer-config` to `(:size 2000000 :format full)` and `M-x eglot-reconnect`, then `M-x eglot-events-buffer`
 - Go: `M-x ltl/go-install-tools` if `gopls` / `goimports` / `dlv` are missing
+- C/C++: `clangd`
+- JavaScript/TypeScript: `npm i -g typescript-language-server typescript`
+- Python: `pip install pyright` (`pyright-langserver --stdio`) or `pylsp`
 
 **Problem: Emacs freezes for a moment after opening a Go file**
 - That is gopls's first workspace dump, not per-keystroke traffic
@@ -684,14 +687,15 @@ The configuration is organized into **6 categories** and **27 modules**:
 - **Avy** - Jump to visible text
 
 ### Programming Support
-- **Eglot** - Built-in LSP for Go, C/C++, Python, TypeScript, Rust, etc.
+- **Eglot** - Built-in LSP for Go, C/C++, Python, TypeScript, Rust, etc. Connects asynchronously; Emacs 30+ JSON is used as-is (no booster).
+- **Apheleia** - Format-on-save in a subprocess (`C-c l F` to run now)
 - **Flymake** - Diagnostics in Eglot buffers (Flycheck is Elisp-only)
 - **Tree-sitter** - Built-in highlighting; grammars installed on demand
 - **project.el** - Built-in project management
 
 ### Git Integration
 - **Magit** - Full-featured Git interface
-- **magit-todos** - TODO tracking
+- **magit-todos** - `C-c g o` / `M-x magit-todos-list` (not on every Magit status)
 - **diff-hl** - Fringe uncommitted changes
 - **Forge** - GitHub/GitLab from Magit
 
@@ -737,7 +741,8 @@ The configuration is organized into **6 categories** and **27 modules**:
 - `C-c m` - **Multiple cursors**
 - `C-c l` - **Eglot/LSP commands** (in programming modes)
   - `C-c l r` - Rename symbol
-  - `C-c l f` - Format buffer
+  - `C-c l f` - Format buffer (Eglot)
+  - `C-c l F` - Format buffer (Apheleia, async)
   - `C-c l a` - Code actions
   - `C-c l d` - Open `*eldoc*` (full symbol documentation)
   - `C-c l h` - Help at point (GUI hover / TTY `*eldoc*`)
@@ -745,7 +750,7 @@ The configuration is organized into **6 categories** and **27 modules**:
   - `C-c l s` - Search symbols
 - `C-c a` - **gptel**
 - `C-c n` - **Denote notes**
-- `C-c g` - **Git commands**
+- `C-c g` - **Git commands** (`C-c g o` lists TODOs)
 - `C-c h` - **Helpful at point**
 - `C-c w` - **Perspective workspaces** (when Perspective is enabled)
 

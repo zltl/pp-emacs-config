@@ -14,6 +14,7 @@
 ;; tools; requiring it explicitly keeps the dependency obvious.
 (require 'seq)
 (declare-function ltl/eglot-ensure "init-programming-core")
+(declare-function apheleia-format-buffer "apheleia")
 (defvar eglot-workspace-configuration)
 
 ;;; C/C++
@@ -72,6 +73,7 @@ Searches upward from current directory for .clang-format file."
 ;; indentation and language-server startup with project conventions.
 (use-package cc-mode
   :ensure nil
+  :defer t
   :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/eglot-ensure)
   :hook ((c-mode c++-mode c-ts-mode c++-ts-mode) . ltl/apply-clang-format-style)
   ;; Ensure electric indentation is active in both classic and tree-sitter
@@ -97,7 +99,7 @@ Searches upward from current directory for .clang-format file."
   :bind (:map rust-mode-map
               ("C-c C-r" . #'rust-run)
               ("C-c C-c" . #'rust-compile)
-              ("C-c C-f" . #'rust-format-buffer)
+              ("C-c C-f" . #'apheleia-format-buffer)
               ("C-c C-t" . #'rust-test))
   ;; Rust benefits from typographic symbol prettification and automatic LSP startup.
   :hook (rust-mode . prettify-symbols-mode)

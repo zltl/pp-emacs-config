@@ -33,12 +33,7 @@
 ;; `pet' detects project-specific Python tooling and environments, which
 ;; helps formatters/linters/LSP align with the active virtualenv/poetry/uv setup.
 (use-package pet
-  :defer t
-  :config
-  ;; Negative depth lets project environment setup happen early in Python
-  ;; buffers so downstream tools see the correct interpreter context.
-  (add-hook 'python-base-mode-hook 'pet-mode -10)
-  (add-hook 'python-ts-mode-hook 'pet-mode -10))
+  :hook ((python-base-mode python-ts-mode) . pet-mode))
 
 ;;; Lua
 
