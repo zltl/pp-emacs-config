@@ -185,9 +185,13 @@ use a full Emacs restart when something looks wrong."
 ;; servers, formatters, and language runtimes.
 (use-package exec-path-from-shell
   :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  (when (daemonp)
+  ;; PGTK (Wayland) Emacs 29+ reports `pgtk', not `x'. Skipping it left
+  ;; GUI sessions with the desktop PATH from ~/.profile, which often
+  ;; omits ~/go/bin and other interactive-shell directories.
+  (dolist (var '("GOPATH" "GOBIN" "GOPROXY"))
+    (add-to-list 'exec-path-from-shell-variables var))
+  (when (or (daemonp)
+            (memq window-system '(mac ns x pgtk)))
     (exec-path-from-shell-initialize)))
 
 ;; Load configuration modules with error handling

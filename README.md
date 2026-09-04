@@ -1,11 +1,11 @@
 # A Clean and Fast Emacs Configuration
 
-[![Emacs](https://img.shields.io/badge/Emacs-30+-purple.svg)](https://www.gnu.org/software/emacs/)
+[![Emacs](https://img.shields.io/badge/Emacs-29+-purple.svg)](https://www.gnu.org/software/emacs/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > A modern, modular Emacs configuration optimized for professional development.
 
-**IMPORTANT:** This configuration requires **Emacs 30 or higher**.
+**IMPORTANT:** This configuration requires **Emacs 29 or higher**. Emacs 30+ is recommended.
 
 ## Overview
 
@@ -26,19 +26,19 @@ This is a well-organized Emacs configuration designed for developers, especially
 
 ## Highlights
 
-> **Latest Update (2025-01):** Major modernization — Corfu completion, project.el, diff-hl, gptel AI, elfeed RSS
+> **Latest Update (2026-09):** Multi-backend agent CLI (sessions, `aiTitle`, persisted backend), Eglot/gopls hitch, Go PATH, terminal Eldoc
 
-- **Fast Startup** - Optimized with lazy loading (30+ packages deferred) and native compilation
-- **Modular Structure** - 24 modules organized in 6 categories (v3.1)
-- **Modern UI** - Beautiful themes, icons, tab-bar, and mode line
-- **Easy Customization** - 40+ customizable variables via `M-x customize-group RET ltl`
-- **AI-Powered** - minuet inline completion, qodercli/cursor-agent side panel, and gptel
-- **Smart Completion** - Corfu + Vertico + LSP
-- **Tree-sitter** - Modern syntax highlighting for 30+ languages
-- **Elpaca 0.11** - Modern async package manager
+- **Fast Startup** - Lazy loading, native compilation, and `init-perf` command-loop knobs
+- **Modular Structure** - 27 modules in 6 categories (`lisp/core|ui|editing|tools|lang|apps`)
+- **Modern UI** - Themes, icons, tab-bar, and doom-modeline
+- **Easy Customization** - `ltl/` variables via `M-x customize-group RET ltl`
+- **AI-Powered** - minuet inline completion, qodercli/cursor-agent/claude/codex side panel, and gptel
+- **Smart Completion** - Corfu + Vertico + Eglot (Flymake diagnostics; Flycheck only in Elisp)
+- **Tree-sitter** - Built-in highlighting; grammars install on demand (`M-x ltl/setup-install-grammars`)
+- **Elpaca 0.12** - Async package manager
 - **Project-Aware** - Built-in project.el integration
 - **App Ecosystem** - Elfeed RSS, Forge GitHub, auth-source-pass
-- **Health Check** - Built-in diagnostic tool (`M-x ltl/doctor`)
+- **Health Check** - `M-x ltl/doctor`
 
 ---
 
@@ -46,7 +46,7 @@ This is a well-organized Emacs configuration designed for developers, especially
 
 ## System Requirements
 
-- **Emacs 30+** (required)
+- **Emacs 29+** (required; 30+ recommended)
 - **Node.js** (for some language servers)
 - **Git** (required)
 
@@ -117,17 +117,26 @@ emacs
 **First Launch Notes:**
 - Initial startup takes 2-3 minutes (installing packages)
 - If you see errors, restart Emacs
-- Tree-sitter grammars install automatically
-- Some packages may require Node.js
+- Tree-sitter grammars are **not** compiled at startup. Run `M-x ltl/setup-install-grammars` when you need them
+- Some language servers require Node.js
 
 ---
 
 # Language-Specific Setup
 
-## AI agents (minuet + CLI)
+## AI agents (minuet + CLI + gptel)
+
+Three layers, all optional:
+
+| Layer | Module | What it is |
+|-------|--------|------------|
+| Inline completion | `init-minuet.el` | Ghost-text / minibuffer FIM completion |
+| Agent side panel | `init-agent-cli.el` | Full TUI CLIs in vterm, multiple sessions |
+| Buffer chat | `init-ai.el` | `gptel` (OpenAI / Claude / Ollama, via `~/.authinfo.gpg`) |
 
 ### Inline completion (minuet)
-**Requirements:** configure a cheap OpenAI-FIM-compatible endpoint via env:
+
+On-demand by default (cheaper). Provider is `openai-fim-compatible` so DeepSeek, OpenRouter, or a local OpenAI-compatible server works.
 
 ```bash
 export MINUET_ENDPOINT="https://api.deepseek.com/beta/completions"
@@ -136,85 +145,120 @@ export MINUET_API_KEY_ENV="DEEPSEEK_API_KEY"
 export DEEPSEEK_API_KEY="..."
 ```
 
-**Usage:**
-- `M-`` - Trigger completion
-- `M-A` / `M-a` / `M-w` - Accept whole / line / word
-- `C-c t m` - Toggle auto-suggestion mode
+- `M-`` — trigger completion
+- `M-A` / `M-a` / `M-w` — accept whole / line / word
+- `M-e` — dismiss
+- `C-c t m` — toggle auto-suggestion (`minuet-auto-suggestion-debounce-delay` 0.6s)
 
-### Agent CLI (qodercli / cursor-agent)
-**Requirements:** `qodercli` and/or `agent` (`cursor-agent`) on `PATH`. First use compiles `vterm-module` (`M-x ltl/vterm-setup` or `C-c c V`). On Ubuntu/Debian and Arch Linux, missing cmake/libtool packages are installed automatically (sudo may prompt).
+### Agent CLI (qodercli / cursor-agent / claude-code / codex)
 
-**Usage (`C-c c` prefix):**
+A right-hand vterm pane that can run several agent TUIs at once. Do **not** send these CLIs through Eat — Ink-style redraws freeze Emacs. First use compiles `vterm-module` (`M-x ltl/vterm-setup` or `C-c c V`). On Ubuntu/Debian and Arch, missing cmake/libtool packages are installed automatically (sudo may prompt).
+
+**Backends** (first installed is the default until you pick one):
+
+| Backend | Executable | Notes |
+|---------|------------|--------|
+| `qodercli` | `qodercli` | `--session-id`; task title from `~/.qoder/projects/.../*.jsonl` |
+| `cursor-agent` | `agent`, fallback `cursor-agent` | Cursor Agent CLI |
+| `claude-code` | `claude` | `--session-id`; `C-c c !` adds `--dangerously-skip-permissions` |
+| `codex` | `codex` | OpenAI Codex CLI (`@file` refs). Listed in `C-c c i` even if missing |
+
+`C-c c a` saves the default backend to `var/agent-backend` and restores it on the next Emacs start. After that, `C-c c c` opens **that** backend, not whichever session last had focus.
+
+**Sessions:**
+
+- `C-c c n` starts another session; the old ones stay alive
+- `C-c c l` lists live sessions by task summary
+- Buffer name follows the summary: `*ai-agent: …*`
+- qodercli / claude-code write `aiTitle` into their JSONL transcript; Emacs polls it and renames the buffer
+- `C-c c m` sets the summary by hand and locks it so the CLI title cannot overwrite it
+- Prefix on `C-c c n`: `C-u` replaces the current session; `C-u C-u` asks for a workdir first
+- New sessions reuse the existing right pane (no extra split). TTY width is capped at 72 columns (`ltl/agent-window-width` is 100 on GUI)
+- Workdir is project.el / `.git` / `default-directory`, or `C-c c w` / `ltl/agent-directory`
+
+**Keys (`C-c c` prefix, also `C-c t a`):**
+
 | Key | Command | Description |
 |-----|---------|-------------|
-| `C-c c c` | `ltl/agent` | Start/focus agent side panel |
-| `C-c c n` | `ltl/agent-new` | Start another session |
-| `C-c c l` | `ltl/agent-select` | Select a live session (by task summary) |
-| `C-c c m` | `ltl/agent-rename` | Set the session task summary |
-| `C-c c a` | `ltl/agent-switch` | Switch default backend |
-| `C-c c i` | `ltl/agent-status` | Show installed backends |
+| `C-c c c` | `ltl/agent` | Focus or start the **saved** default backend |
+| `C-c c n` | `ltl/agent-new` | Another session (same backend) |
+| `C-c c l` | `ltl/agent-select` | Pick a live session by task summary |
+| `C-c c m` | `ltl/agent-rename` | Set / lock the task summary |
+| `C-c c a` | `ltl/agent-switch` | Switch default backend (persisted) |
+| `C-c c i` | `ltl/agent-status` | Show which CLIs are on `PATH` |
 | `C-c c V` | `ltl/vterm-setup` | Install/compile vterm module |
-| `C-c c w` | `ltl/agent-set-directory` | Set new-session workdir |
-| `C-c c !` | `ltl/agent-claude-dangerous` | Start Claude skip-permissions |
-| `C-c c s` | `ltl/agent-send-buffer` | Send current buffer |
-| `C-c c r` | `ltl/agent-send-region` | Send selected region |
-| `C-c c e` | `ltl/agent-explain` | Explain code |
-| `C-c c v` | `ltl/agent-review` | Review code |
-| `C-c c f` | `ltl/agent-fix-error` | Fix errors (flycheck/flymake) |
+| `C-c c w` | `ltl/agent-set-directory` | Workdir for the next new session |
+| `C-c c !` | `ltl/agent-claude-dangerous` | New Claude session, skip permissions |
+| `C-c c s` | `ltl/agent-send-buffer` | `@file` the current buffer |
+| `C-c c r` | `ltl/agent-send-region` | Send the region via a temp file |
+| `C-c c e` | `ltl/agent-explain` | Explain region or buffer |
+| `C-c c v` | `ltl/agent-review` | Review current buffer |
+| `C-c c f` | `ltl/agent-fix-error` | Buffer + Flymake/Flycheck diagnostics |
 | `C-c c t` | `ltl/agent-generate-tests` | Generate unit tests |
-| `C-c c R` | `ltl/agent-refactor` | Refactor with instruction |
-| `C-c c d` | `ltl/agent-diff-current-file` | Diff current file |
-| `C-c c z` | `ltl/agent-fullscreen` | Toggle fullscreen |
-| `C-c c k` | `ltl/agent-stop` | Stop current process |
-| `C-c c x` | `ltl/agent-restart` | Restart current session |
-| `C-c c q` | `ltl/agent-quit` | Quit agent session |
+| `C-c c R` | `ltl/agent-refactor` | Refactor with a typed instruction |
+| `C-c c d` | `ltl/agent-diff-current-file` | Magit/VC diff of the current file |
+| `C-c c z` | `ltl/agent-fullscreen` | Toggle agent-only layout |
+| `C-c c k` | `ltl/agent-stop` | Kill the subprocess, keep the buffer |
+| `C-c c x` | `ltl/agent-restart` | Restart same backend / root / flags |
+| `C-c c q` | `ltl/agent-quit` | Quit this session; show the next if any |
 | `C-c c Q` | `ltl/agent-quit-all` | Quit every session |
 
-**In agent terminal:**
-- `C-c C-b` - Insert @file reference to source buffer
-- `C-c C-s` - Insert @file reference (choose file)
-- `C-c C-q` - Quit
-- `C-c C-j` - Toggle vterm copy-mode (scroll / select text)
+**Inside the agent vterm:**
 
-**Features:**
-- Uses `vterm` (libvterm in C) so a full-screen agent TUI does not freeze Emacs
-- Side-by-side layout: source on left, agent on right
-- Auto project directory detection
-- Integrates with flycheck/flymake for error context
-- `M-x ltl/vterm-setup` installs the package, compile tools (Ubuntu/Arch), and the native module
+- `C-c C-b` — `@` the source buffer file
+- `C-c C-s` — `@` a file you pick
+- `C-c C-q` — quit this session
+- `C-c C-j` — vterm copy-mode (scroll / select)
 
-If an old Eat-backed session is still frozen, kill the `agent`/`qodercli`/`claude` child from another shell, then restart Emacs so new sessions use vterm.
+**Layout:** source on the left, agent on the right. `C-c t w a` snaps the visible agent pane to its preset width.
+
+Install Codex later with the official CLI (`codex` on `PATH`); until then `C-c c i` shows `[--] codex` and `C-c c a` will not select it.
+
+If an old Eat-backed session is still frozen, kill the `agent` / `qodercli` / `claude` / `codex` child from another shell, then restart Emacs so new sessions use vterm.
+
+### gptel
+
+`C-c a a` opens a chat buffer (`org-mode` by default). `C-c a s` sends, `C-c a m` is the gptel menu. Configure API keys in `~/.authinfo.gpg`.
 
 ## Go
-**Install Go:**
+
+Put the toolchain and `go install` binaries on `PATH`. This config prepends `~/.local/go/bin` and `~/go/bin` when you open a Go buffer, because GUI Emacs often inherits `~/.profile` and misses directories that only live in `~/.bashrc`.
+
+**Install Go** (official installer, or keep a user-local tree at `~/.local/go`):
 ```bash
-# Visit https://go.dev/doc/install for official instructions
-# Or use your package manager
-
-# Gentoo
-sudo emerge --ask dev-lang/go
-
-# Ubuntu/Debian
-sudo apt install golang-go
-
+# Visit https://go.dev/doc/install
+# Ubuntu/Debian package Go is often too old for current gopls
 # macOS
 brew install go
 ```
 
-**Install Language Server:**
+**Install tools** (gopls, goimports, delve):
 ```bash
 go install golang.org/x/tools/gopls@latest
+go install golang.org/x/tools/cmd/goimports@latest
+go install github.com/go-delve/delve/cmd/dlv@latest
 ```
 
-**For Chinese users (optional):**
+Or from Emacs: `M-x ltl/go-install-tools`. Opening a `.go` file no longer asks to install tools (that prompt froze `find-file`). A missing tool is mentioned once in the echo area.
+
+**Proxy (optional):**
 ```bash
 export GOPROXY=https://proxy.golang.com.cn,direct
 ```
 
+`exec-path-from-shell` also copies `GOPATH`, `GOBIN`, and `GOPROXY` on graphical and daemon frames (`mac`, `ns`, `x`, and `pgtk`).
+
+**Eglot / gopls:**
+- Starts automatically in `go-mode` / `go-ts-mode`
+- Event log off (`eglot-events-buffer-config` `:size 0`; the old `eglot-events-buffer-size` is ignored on Emacs 32)
+- Semantic tokens and inlay hints stay opt-in (`M-x eglot-semantic-tokens-mode` if you want them)
+- `staticcheck` and analysis progress reporting are off; `vendor`, `.git`, `node_modules`, and `testdata` are filtered
+- Hover docs use `eldoc-box` on a GUI. In a terminal, open `*eldoc*` with `C-c l d` (or `C-c l h`). Scroll with `C-c l n` / `C-c l p`. While `*eldoc*` is visible, the hover popup is hidden
+
 **Features:**
-- Auto-formatting on save
-- Auto-import organization
-- LSP features (goto definition, find references, etc.)
+- LSP navigation (definition, references, rename, format, code actions)
+- Flymake diagnostics (not Flycheck)
+- `M-x ltl/profile-cpu` (`C-c t P`) if a first-open hitch comes back
 
 ## C/C++
 
@@ -278,20 +322,15 @@ bear -- make
 
 **Install Language Server:**
 ```bash
-pip install 'python-lsp-server[all]' pylsp-mypy pyls-isort pylsp-rope
-# Or just use pyright (already configured)
-```
-
-**Install Linting Tools:**
-```bash
-pip install pylint flake8 black
+# Default mapping is pyright (see ltl/lsp-language-servers)
+pip install pyright
+# Or: pip install 'python-lsp-server[all]'
 ```
 
 **Features:**
-- Auto-formatting with black
-- Type checking with mypy
-- Import sorting
-- Virtual environment detection (via `pet` package)
+- Eglot in `python-mode` / `python-ts-mode`
+- Virtualenv / Poetry / uv detection via `pet`
+- Docstring helpers via `python-docstring`
 
 ## Rust
 
@@ -413,13 +452,19 @@ rm -rf ~/.emacs.d/var/
 - Check `*Messages*` buffer for warnings
 
 **Problem: LSP not working**
-- Ensure language server is installed (e.g., `gopls`, `clangd`, `rust-analyzer`)
-- Check Eglot events: `M-x eglot-events-buffer`
+- Ensure the language server is on Emacs `exec-path` (e.g. `gopls` in `~/go/bin`)
 - Restart Eglot: `M-x eglot-reconnect`
+- Event logging is off by default. Temporarily set `eglot-events-buffer-config` to `(:size 2000000 :format full)` and `M-x eglot-reconnect`, then `M-x eglot-events-buffer`
+- Go: `M-x ltl/go-install-tools` if `gopls` / `goimports` / `dlv` are missing
+
+**Problem: Emacs freezes for a moment after opening a Go file**
+- That is gopls's first workspace dump, not per-keystroke traffic
+- Confirm `eglot-events-buffer-config` is `(:size 0 :format short)` and semantic tokens are off
+- Profile the hitch: `M-x ltl/profile-cpu` or `C-c t P`
 
 **Problem: Tree-sitter not working**
-- Run `M-x ltl/setup-install-grammars` to install grammars
-- Check if grammars are installed: `M-x treesit-language-available-p`
+- Run `M-x ltl/setup-install-grammars` (not done at startup)
+- Check a language: `M-: (treesit-language-available-p 'go)`
 
 **Problem: Fonts not displaying correctly**
 - Ensure all required fonts are installed
@@ -474,20 +519,20 @@ This will check:
 - ✓ Language servers (gopls, clangd, rust-analyzer, etc.)
 - ✓ Directory structure
 - ✓ Elpaca package manager
-- ✓ Tree-sitter grammars
+- ✓ Tree-sitter availability (grammars are optional until you install them)
 
 Example output:
 ```
 ═══════════════════════════════════════════════════════
   Emacs Configuration Health Check
-  2025-10-11 20:00:00
+  2026-09-04 15:00:00
 ═══════════════════════════════════════════════════════
 
-✓ Emacs version: 30.0.50
+✓ Emacs version: 32.0.50
 ✓ Directory exists: lisp
 ✓ Directory exists: etc
 ✓ Elpaca is loaded
-  Installer version: 0.11
+  Installer version: 0.12
 ✓ All required programs found
 ✓ Found programs: git, ag, node
 ✓ All required fonts installed
@@ -518,115 +563,114 @@ Time elapsed: 0.15 seconds
 
 ---
 
-# Configuration Structure (v3.0)
+# Configuration Structure
 
 ## Modular Organization
 
-The configuration is organized into **6 logical categories** with **22 modules**:
+The configuration is organized into **6 categories** and **27 modules**:
 
 ```
 .emacs.d/
 ├── init.el                 # Main entry point
 ├── early-init.el           # Early initialization
-├── custom.el              # Auto-generated customizations (gitignored)
-├── README.md              # This file
-├── LICENSE                # MIT License
+├── custom.el               # Auto-generated customizations (gitignored)
+├── README.md               # This file
+├── LICENSE                 # MIT License
 │
-├── lisp/                  # Configuration modules (organized by category)
-│   ├── core/              # Core functionality
-│   │   ├── init-const.el      # System constants and detection
-│   │   ├── init-elpa.el       # Elpaca package manager
-│   │   ├── init-custom-vars.el # 40+ customizable variables
-│   │   └── init-doctor.el     # Health check tool
+├── lisp/                   # Configuration modules
+│   ├── core/
+│   │   ├── init-const.el       # OS / Emacs version predicates
+│   │   ├── init-elpa.el        # Elpaca 0.12
+│   │   ├── init-custom-vars.el # ltl/ customizable variables
+│   │   ├── init-doctor.el      # M-x ltl/doctor
+│   │   └── init-perf.el        # Redisplay, so-long, profiler
 │   │
-│   ├── ui/                # User interface
-│   │   ├── init-themes.el     # Themes, fonts, icons
-│   │   └── init-dashboard.el  # Startup dashboard
+│   ├── ui/
+│   │   ├── init-themes.el      # Theme, fonts, icons, modeline
+│   │   └── init-dashboard.el   # Startup dashboard
 │   │
-│   ├── editing/           # Editing functionality
-│   │   ├── init-editor.el     # Core editing features
-│   │   ├── init-text.el       # Text manipulation
-│   │   └── init-complete.el   # Completion (Corfu/Vertico)
+│   ├── editing/
+│   │   ├── init-editor.el      # Smartparens, multiple-cursors, Treemacs
+│   │   ├── init-text.el        # jinx spell-check
+│   │   └── init-complete.el    # Corfu, Vertico, Consult, Yasnippet
 │   │
-│   ├── tools/             # Development tools
-│   │   ├── init-bindings.el   # Global keybindings
-│   │   ├── init-files.el      # File management, project.el
-│   │   ├── init-git.el        # Git integration (Magit)
-│   │   └── init-search.el     # Search tools (ag/Consult)
+│   ├── tools/
+│   │   ├── init-bindings.el    # C-c prefix maps, which-key
+│   │   ├── init-window-resize.el
+│   │   ├── init-files.el       # recentf, project.el, dired
+│   │   ├── init-git.el         # Magit, Forge, diff-hl
+│   │   └── init-search.el      # Consult / ag
 │   │
-│   ├── lang/              # Programming language support
-│   │   ├── init-programming-core.el      # LSP, Tree-sitter, tools
-│   │   ├── init-programming-systems.el   # C/C++, Rust, Go
+│   ├── lang/
+│   │   ├── init-programming-core.el      # Tree-sitter, Eglot, Eldoc
+│   │   ├── init-programming-systems.el   # C/C++, Rust, Go, Protobuf
 │   │   ├── init-programming-web.el       # JS/TS, Tailwind
 │   │   ├── init-programming-scripting.el # Python, Lua
 │   │   └── init-programming-misc.el      # Other languages
 │   │
-│   └── apps/              # Applications
-│       ├── init-applications.el # Dictionary, UUID, Rime, etc.
-│       ├── init-minuet.el       # Inline AI completion (minuet)
-│       ├── init-agent-cli.el    # qodercli / cursor-agent side panel
+│   └── apps/
+│       ├── init-applications.el # Dictionary, UUID, Rime
+│       ├── init-minuet.el       # Inline AI completion
+│       ├── init-agent-cli.el    # Agent side panel (vterm)
+│       ├── init-ai.el           # gptel
+│       ├── init-elfeed.el       # RSS
 │       ├── init-org.el          # Org-mode
-│       └── init-shell.el        # Terminal (Vterm/Eat/Eshell)
+│       └── init-shell.el        # Vterm / Eat / Eshell
 │
-├── etc/                   # Package configuration files
-│   ├── eshell/           # Eshell history/aliases
-│   └── yasnippet/        # Snippet templates
-│
-├── var/                   # Variable data (generated)
-│   ├── history           # Command history
-│   ├── lsp/              # LSP server data
-│   ├── org/              # Org-mode caches
-│   └── projectile/       # Project caches
-│
-├── elpaca/               # Package manager data
-│   ├── builds/           # Built packages
-│   └── repos/            # Package source repositories
-│
-├── eln-cache/            # Native compilation cache (Emacs 28+)
-└── tree-sitter/          # Tree-sitter grammars
+├── etc/                    # Package configuration files
+├── var/                    # Generated caches (no-littering)
+├── elpaca/
+│   ├── builds/             # Built packages
+│   └── sources/            # Package checkouts
+├── eln-cache/              # Native compilation cache
+└── tree-sitter/            # Installed grammars
 ```
 
-## Configuration Modules (v3.0)
+## Configuration Modules
 
 ### Core (`lisp/core/`)
 - **init-const.el** - System constants (OS detection, Emacs version checks)
-- **init-elpa.el** - Elpaca package manager setup and `use-package` integration
-- **init-custom-vars.el** - 40+ user-customizable variables (`M-x customize-group RET ltl`)
-- **init-doctor.el** - Health check diagnostic tool (`M-x ltl/doctor`)
+- **init-elpa.el** - Elpaca package manager and `use-package` integration
+- **init-custom-vars.el** - User-customizable `ltl/` variables (`M-x customize-group RET ltl`)
+- **init-doctor.el** - Health check (`M-x ltl/doctor`)
+- **init-perf.el** - Redisplay, font-lock stealth, so-long, `ltl/profile-cpu`
 
 ### UI (`lisp/ui/`)
-- **init-themes.el** - Theme (Spacemacs Dark), fonts, mode line (doom-modeline)
+- **init-themes.el** - Theme (Spacemacs Dark), fonts, doom-modeline
 - **init-dashboard.el** - Startup dashboard with recent files and projects
 
 ### Editing (`lisp/editing/`)
-- **init-editor.el** - Core editing (smartparens, multiple-cursors, treemacs, ace-window)
-- **init-complete.el** - Completion (Corfu, Vertico, Consult, Yasnippet, Flycheck)
-- **init-text.el** - Text manipulation (spell checking with jinx)
+- **init-editor.el** - Smartparens, multiple-cursors, Treemacs, ace-window
+- **init-complete.el** - Corfu, Vertico, Consult, Yasnippet; Flycheck only in `emacs-lisp-mode`
+- **init-text.el** - Spell checking with jinx
 
 ### Tools (`lisp/tools/`)
 - **init-bindings.el** - Keybindings and which-key
-- **init-files.el** - File handling (recentf, project.el, dired)
-- **init-search.el** - Search tools (Consult and ag)
-- **init-git.el** - Git integration (Magit, git-link, git-timemachine)
+- **init-window-resize.el** - Persistent resize menu (`C-c t w`)
+- **init-files.el** - recentf, project.el, dired
+- **init-search.el** - Consult and ag
+- **init-git.el** - Magit, magit-todos, Forge, git-link, git-timemachine, diff-hl
 
 ### Language Support (`lisp/lang/`)
-- **init-programming-core.el** - Core infrastructure (Tree-sitter, LSP, Combobulate, dev tools)
-- **init-programming-systems.el** - Systems languages (C/C++, Rust, Go, Protobuf)
-- **init-programming-web.el** - Web development (TypeScript/JavaScript, Tailwind CSS)
-- **init-programming-scripting.el** - Scripting (Python, Lua, Shell)
-- **init-programming-misc.el** - Other languages (Scala, Haskell, Julia, etc.) and config files
+- **init-programming-core.el** - Tree-sitter, Eglot, Combobulate, Eldoc hover
+- **init-programming-systems.el** - C/C++, Rust, Go, Protobuf
+- **init-programming-web.el** - TypeScript/JavaScript, Tailwind CSS
+- **init-programming-scripting.el** - Python, Lua, Shell
+- **init-programming-misc.el** - Other languages and config files
 
 ### Applications (`lisp/apps/`)
-- **init-applications.el** - Utilities (Dictionary, UUID, Rime input, etc.)
+- **init-applications.el** - Dictionary, UUID, Rime input
 - **init-minuet.el** - Inline AI completion via minuet
-- **init-agent-cli.el** - qodercli / cursor-agent / claude-code side panel in vterm
-- **init-org.el** - Org-mode with modern styling and export features
-- **init-shell.el** - Terminal emulation (Vterm, Eat, Eshell)
+- **init-agent-cli.el** - qodercli / cursor-agent / claude-code / codex side panel in vterm
+- **init-ai.el** - gptel
+- **init-elfeed.el** - RSS reader
+- **init-org.el** - Org-mode
+- **init-shell.el** - Vterm, Eat, Eshell
 
 ## Key Features
 
 ### Package Management
-- **Elpaca 0.11** - Modern async package manager
+- **Elpaca 0.12** - Modern async package manager
   - Asynchronous, parallel package installation
   - Flexible UI for package management (`M-x elpaca-manager`)
   - Direct source downloads for easy development
@@ -640,18 +684,20 @@ The configuration is organized into **6 logical categories** with **22 modules**
 - **Avy** - Jump to visible text
 
 ### Programming Support
-- **Eglot** - Language Server Protocol (built-in) for Go, C/C++, Python, TypeScript, etc.
-- **Tree-sitter** - Modern syntax highlighting
-- **Flycheck** - Real-time error checking
+- **Eglot** - Built-in LSP for Go, C/C++, Python, TypeScript, Rust, etc.
+- **Flymake** - Diagnostics in Eglot buffers (Flycheck is Elisp-only)
+- **Tree-sitter** - Built-in highlighting; grammars installed on demand
 - **project.el** - Built-in project management
 
 ### Git Integration
 - **Magit** - Full-featured Git interface
 - **magit-todos** - TODO tracking
+- **diff-hl** - Fringe uncommitted changes
+- **Forge** - GitHub/GitLab from Magit
 
 ### AI Assistance
 - **minuet** - Inline ghost-text completion (OpenAI-FIM compatible)
-- **Agent CLI** - qodercli / cursor-agent / claude-code side panel
+- **Agent CLI** - qodercli / cursor-agent / claude-code / codex side panel
 - **gptel** - LLM chat in Emacs
 
 ## Important Keybindings
@@ -665,6 +711,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
   - `C-c t a` - Agent CLI
   - `C-c t e` - Evil mode
   - `C-c t r` - Reload configuration
+  - `C-c t P` - CPU profile a hitch (`ltl/profile-cpu`)
   - `C-c t t` - Select Treemacs
   - `C-c t v` - Open vterm
   - `C-c t w` - Resize menu
@@ -674,12 +721,14 @@ The configuration is organized into **6 logical categories** with **22 modules**
     - `a` - Resize visible Agent pane to its preset
     - `t` - Resize Treemacs to its preset
     - The menu stays visible; exit with `q` or `C-g`
-- `C-c c` - **Agent CLI commands**
-  - `C-c c c` - Start/focus CLI session
-  - `C-c c s` - Send buffer
-  - `C-c c e` - Explain code
-  - `C-c c v` - Review code
-  - `C-c c f` - Fix errors
+- `C-c c` - **Agent CLI** (qodercli / cursor-agent / claude-code / codex in vterm)
+  - `C-c c c` - Focus or start the saved default backend
+  - `C-c c n` - New session (`C-u` replace, `C-u C-u` pick workdir)
+  - `C-c c l` / `C-c c m` - List sessions by `aiTitle` / rename
+  - `C-c c a` - Switch default backend (remembered across restarts)
+  - `C-c c !` - Claude skip-permissions
+  - `C-c c s` / `r` / `e` / `v` / `f` — send buffer, region, explain, review, fix
+  - `C-c c z` / `q` / `Q` — fullscreen / quit one / quit all
 - `C-c j` - **Jump/Goto**
   - `C-c j c` - Jump to char (avy)
   - `C-c j j` - Jump to word (avy)
@@ -690,7 +739,9 @@ The configuration is organized into **6 logical categories** with **22 modules**
   - `C-c l r` - Rename symbol
   - `C-c l f` - Format buffer
   - `C-c l a` - Code actions
-  - `C-c l d` - Show documentation
+  - `C-c l d` - Open `*eldoc*` (full symbol documentation)
+  - `C-c l h` - Help at point (GUI hover / TTY `*eldoc*`)
+  - `C-c l n` / `C-c l p` - Scroll documentation without leaving the source
   - `C-c l s` - Search symbols
 - `C-c a` - **gptel**
 - `C-c n` - **Denote notes**
@@ -721,7 +772,7 @@ The configuration is organized into **6 logical categories** with **22 modules**
 
 ### First Launch
 - Initial startup is slow (installing packages)
-- Tree-sitter grammars install automatically
+- Tree-sitter grammars are not compiled automatically; run `M-x ltl/setup-install-grammars`
 - Restart if you encounter errors
 
 ## Further Reading

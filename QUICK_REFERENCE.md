@@ -39,7 +39,10 @@ M-?         查找引用          xref-find-references
 C-c l r     重命名符号        eglot-rename
 C-c l f     格式化文档        eglot-format
 C-c l a     代码操作          eglot-code-actions
-C-c l d     查看文档          eldoc-doc-buffer
+C-c l d     打开 *eldoc*      eldoc-doc-buffer
+C-c l h     光标处文档        ltl/eldoc-help-at-point
+C-c l n     向下滚文档        ltl/eldoc-scroll-up
+C-c l p     向上滚文档        ltl/eldoc-scroll-down
 C-c l s     搜索符号          consult-eglot-symbols
 ```
 
@@ -87,15 +90,24 @@ C-c g k     复制 Git 链接      git-link
 ### AI（minuet / agent CLI / gptel）
 ```
 M-`         触发补全          minuet-complete-with-minibuffer
-M-A         接受全部          minuet-accept-suggestion
+M-A / M-a / M-w  接受全部/行/词
+M-e         关掉补全          minuet-dismiss-suggestion
 C-c t m     自动补全开关       minuet-auto-suggestion-mode
-C-c t a     打开 agent        ltl/agent
-C-c c c     打开 agent        ltl/agent
-C-c c l     按任务摘要切换     ltl/agent-select
-C-c c m     设置任务摘要       ltl/agent-rename
-C-c c a     切换后端          ltl/agent-switch
-C-c c s     发送 buffer       ltl/agent-send-buffer
-C-c c d     看 diff           ltl/agent-diff-current-file
+C-c t a     打开默认后端      ltl/agent
+C-c c c     打开默认后端      ltl/agent（记住 C-c c a 的选择）
+C-c c n     新会话            ltl/agent-new（C-u 替换，C-u C-u 选目录）
+C-c c l     按任务摘要切换     ltl/agent-select（读 CLI 的 aiTitle）
+C-c c m     手写任务摘要       ltl/agent-rename
+C-c c a     切换并记住后端     ltl/agent-switch
+C-c c i     已安装的 CLI      ltl/agent-status
+C-c c !     Claude 跳过权限    ltl/agent-claude-dangerous
+C-c c w     下次会话目录       ltl/agent-set-directory
+C-c c s     @ 当前文件         ltl/agent-send-buffer
+C-c c r     发送选区          ltl/agent-send-region
+C-c c e/v/f 解释 / 审查 / 修错
+C-c c t / R 生成测试 / 重构
+C-c c z     全屏切换          ltl/agent-fullscreen
+C-c c q / Q 退出当前 / 全部
 C-c c V     安装 Vterm        ltl/vterm-setup
 C-c a a     打开 gptel        gptel
 C-c a s     发送到 gptel      gptel-send
@@ -321,7 +333,7 @@ M-x ltl/apply-custom-settings
 
 4. **Magit 是神器** - `C-x g` 打开后，按 `?` 查看所有命令
 
-5. **Eglot 悬停文档** - 光标停在符号上，按 `C-c l d` 查看文档
+5. **Eglot 文档** - 光标停在符号上看 hover；终端或要滚长文档时按 `C-c l d` 打开 `*eldoc*`，`C-c l n` / `C-c l p` 滚动。`*eldoc*` 开着时 hover 会关掉
 
 6. **Treemacs 项目浏览** - `M-x treemacs` 打开项目树
 

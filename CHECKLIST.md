@@ -194,7 +194,7 @@
 - [ ] **配置 minuet API**（`MINUET_ENDPOINT` / `MINUET_MODEL` / API key env）
 - [ ] **`M-`` 能触发补全**
 - [ ] **`M-x ltl/vterm-setup` 能编译 vterm-module**（Ubuntu/Arch 会自动安装 cmake / libtool 等编译工具）
-- [ ] **`C-c c c` 能打开 qodercli/agent 侧栏**（`vterm-mode`）；`C-c c a` 可切换后端
+- [ ] **`C-c c c` 能打开已安装后端的侧栏**（`vterm-mode`）；`C-c c a` 可切换；`C-c c i` 会列出 qodercli / cursor-agent / claude / codex（未安装显示 `[--]`）
 
 ---
 

@@ -7,6 +7,7 @@
 ;; - qodercli
 ;; - cursor-agent (`agent` / `cursor-agent`)
 ;; - claude-code (`claude`), with a one-shot dangerous/skip-permissions launch
+;; - codex (`codex`), listed even when the CLI is not installed yet
 ;;
 ;; Use `C-c c l' to list sessions and select one; `C-c c n' starts another
 ;; session in the agent pane (existing sessions stay alive).
@@ -43,7 +44,8 @@ Nil means auto-pick the first installed backend from `ltl/agent-backends'.
   :type '(choice (const :tag "Auto (first installed)" nil)
                  (const qodercli)
                  (const cursor-agent)
-                 (const claude-code))
+                 (const claude-code)
+                 (const codex))
   :group 'ltl-agent)
 
 (defun ltl/agent--state-file ()
@@ -83,6 +85,10 @@ Nil means auto-pick the first installed backend from `ltl/agent-backends'.
      :file-ref "@%s ")
     (claude-code
      :command "claude"
+     :args nil
+     :file-ref "@%s ")
+    (codex
+     :command "codex"
      :args nil
      :file-ref "@%s "))
   "Backend definitions for `ltl/agent-backend'.

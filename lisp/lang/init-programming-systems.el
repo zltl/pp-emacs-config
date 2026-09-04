@@ -14,6 +14,7 @@
 ;; tools; requiring it explicitly keeps the dependency obvious.
 (require 'seq)
 (declare-function ltl/eglot-ensure "init-programming-core")
+(defvar eglot-workspace-configuration)
 
 ;;; C/C++
 
@@ -110,8 +111,40 @@ Searches upward from current directory for .clang-format file."
     ("dlv" . "github.com/go-delve/delve/cmd/dlv@latest"))
   "Map of Go tool names to their install packages.")
 
-(defvar ltl/go-tools-last-check-time nil
-  "Timestamp of the last Go tools update check.")
+(defvar ltl/go-exec-path-initialized nil
+  "Non-nil after Go bin directories have been added to `exec-path'.")
+
+(defvar ltl/go-tools-missing-warned nil
+  "Non-nil after a missing-tools notice has been shown this session.")
+
+(defun ltl/prepend-exec-path (dir)
+  "Prepend DIR to `exec-path' and the PATH environment variable."
+  (when (and dir (file-directory-p dir))
+    (setq dir (directory-file-name (expand-file-name dir)))
+    (setq exec-path (cons dir (delete dir exec-path)))
+    (let ((parts (parse-colon-path (or (getenv "PATH") ""))))
+      (unless (member dir parts)
+        (setenv "PATH" (string-join (cons dir parts) path-separator))))))
+
+(defun ltl/go-ensure-exec-path (&optional force)
+  "Make the Go toolchain and `go install' binaries visible to Emacs.
+GUI sessions often inherit ~/.profile rather than ~/.bashrc, so
+~/go/bin and ~/.local/go/bin are missing even when the tools exist.
+With FORCE, scan again (used after a fresh `go install')."
+  (when (or force (not ltl/go-exec-path-initialized))
+    (dolist (dir (list (expand-file-name ".local/go/bin" "~")
+                       (expand-file-name "go/bin" "~")
+                       (getenv "GOBIN")
+                       (when-let* ((gopath (getenv "GOPATH")))
+                         (expand-file-name "bin" (car (split-string gopath path-separator))))))
+      (ltl/prepend-exec-path dir))
+    (setq ltl/go-exec-path-initialized t)))
+
+(defun ltl/go-missing-tools ()
+  "Return alist entries from `ltl/go-tools-map' that are not on `exec-path'."
+  (ltl/go-ensure-exec-path)
+  (seq-filter (lambda (tool) (not (executable-find (car tool))))
+              ltl/go-tools-map))
 
 (defun ltl/go-install-tools (&optional packages)
   "Install or update Go tools in the background.
@@ -119,6 +152,9 @@ Installs each package separately since they may be from different modules."
   ;; Running installs asynchronously keeps Emacs usable while toolchains
   ;; update, which matters because `go install' can take a while.
   (interactive)
+  (ltl/go-ensure-exec-path)
+  (unless (executable-find "go")
+    (user-error "Go toolchain not found. Install Go first"))
   (let* ((pkgs (or packages (mapcar #'cdr ltl/go-tools-map)))
          (remaining (length pkgs))
          (failed nil))
@@ -133,30 +169,45 @@ Installs each package separately since they may be from different modules."
                      (push (process-name proc) failed))
                    (cl-decf remaining)
                    (when (zerop remaining)
+                     (ltl/go-ensure-exec-path t)
                      (if failed
                          (message "Go tools installation finished with errors: %s" failed)
-                       (message "Go tools installation complete."))
-                     (setq ltl/go-tools-last-check-time (current-time))))))))
+                       (message "Go tools installation complete. Run M-x eglot if LSP did not start."))))))))
 
 (defun ltl/go-check-tools ()
-  "Check for missing or outdated Go tools."
-  ;; Only prompt in Go buffers and at most daily so the assistant is
-  ;; helpful without becoming naggy.
+  "Report missing Go tools without blocking file-open.
+Never prompt here: `y-or-n-p' in a mode hook freezes `find-file'
+until the user answers, and a declined prompt used to repeat on
+every subsequent Go buffer."
+  (ltl/go-ensure-exec-path)
   (when (and (or (eq major-mode 'go-mode)
                  (eq major-mode 'go-ts-mode))
+             (not ltl/go-tools-missing-warned)
              (executable-find "go"))
-    (let* ((missing (seq-filter (lambda (tool) (not (executable-find (car tool)))) ltl/go-tools-map))
-           (should-check (or (not ltl/go-tools-last-check-time)
-                             (> (float-time (time-since ltl/go-tools-last-check-time))
-                                (* 60 60 24))))) ; Check daily
-      (cond
-       (missing
-        (when (y-or-n-p (format "Missing Go tools (%s). Install now? "
-                                (mapconcat #'car missing ", ")))
-          (ltl/go-install-tools (mapcar #'cdr missing))))
-       (should-check
-        (when (y-or-n-p "Check for Go tool updates? ")
-          (ltl/go-install-tools)))))))
+    (when-let* ((missing (ltl/go-missing-tools)))
+      (setq ltl/go-tools-missing-warned t)
+      (message "Missing Go tools (%s). Run M-x ltl/go-install-tools"
+               (mapconcat #'car missing ", ")))))
+
+(defun ltl/go-eglot-config ()
+  "Ask gopls for a smaller first-load payload in this buffer.
+Set before `eglot-ensure' so workspace/configuration sees it."
+  (setq-local eglot-workspace-configuration
+              '(:gopls (:semanticTokens :json-false
+                        :staticcheck :json-false
+                        :analysisProgressReporting :json-false
+                        :directoryFilters ["-**/node_modules"
+                                           "-**/.git"
+                                           "-**/vendor"
+                                           "-**/testdata"]))))
+
+(defun ltl/go-setup ()
+  "Ensure Go binaries are on PATH, then start LSP."
+  ;; Path first so Eglot can see gopls that live in ~/go/bin.
+  (ltl/go-ensure-exec-path)
+  (ltl/go-check-tools)
+  (ltl/go-eglot-config)
+  (ltl/eglot-ensure))
 
 ;; `go-mode' handles classic Go buffers while tree-sitter remaps may
 ;; promote some files to go-ts-mode automatically.
@@ -164,10 +215,7 @@ Installs each package separately since they may be from different modules."
   :defer t
   :mode "\\.go\\'"
   :interpreter "go"
-  ;; Start LSP and tool checks whenever entering Go buffers so navigation,
-  ;; formatting, and debugger tooling are ready quickly.
-  :hook ((go-mode go-ts-mode) . ltl/eglot-ensure)
-  :hook ((go-mode go-ts-mode) . ltl/go-check-tools))
+  :hook ((go-mode go-ts-mode) . ltl/go-setup))
 
 (provide 'init-programming-systems)
 ;;; init-programming-systems.el ends here

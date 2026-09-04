@@ -260,7 +260,7 @@ Safe to re-run.  Prints a short status in the echo area."
                (locate-library "vterm"))))
 
 ;; vterm - libvterm terminal emulator
-;; Agent TUIs (cursor-agent / Claude / qodercli) run here so PTY work
+;; Agent TUIs (cursor-agent / Claude / qodercli / Codex) run here so PTY work
 ;; stays in C instead of Eat's Elisp emulator, which can freeze Emacs.
 (use-package vterm
   :ensure (vterm :host github

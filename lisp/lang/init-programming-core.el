@@ -147,20 +147,44 @@ language servers that freeze the command loop on first contact."
               ("r" . eglot-rename)
               ("f" . eglot-format)
               ("a" . eglot-code-actions)
-              ("d" . eldoc-doc-buffer))
+              ("d" . eldoc-doc-buffer)
+              ("n" . ltl/eldoc-scroll-up)
+              ("p" . ltl/eldoc-scroll-down)
+              ("h" . ltl/eldoc-help-at-point))
   :custom
   ;; Shut down idle language servers when their last managed buffer closes
   ;; so background processes do not accumulate across projects.
   (eglot-autoshutdown t)
-  (eglot-events-buffer-size 0) ;; Disable logging for performance
+  ;; Eglot 1.16+ renamed `eglot-events-buffer-size' to this plist.
+  ;; The old `:size 0' never reached Emacs 32, so gopls's first
+  ;; semanticTokens/diagnostics dump was pretty-printed into a 2MB
+  ;; events buffer on the command loop and froze the UI for a beat.
+  (eglot-events-buffer-config '(:size 0 :format short))
   ;; Batch buffer changes instead of waking the server on every key.
   (eglot-send-changes-idle-time 0.8)
+  ;; gopls "Loading packages..." progress force-updates the mode line
+  ;; many times during the same first-load window.
+  (eglot-report-progress nil)
+  ;; Drop capabilities that request large or idle-cursor payloads.
+  ;; Hover/completion/definition stay on.
+  (eglot-ignored-server-capabilities
+   '(:documentHighlightProvider
+     :inlayHintProvider
+     :codeLensProvider
+     :documentOnTypeFormattingProvider
+     :documentLinkProvider
+     :semanticTokensProvider))
   :hook (eglot-managed-mode . ltl/eglot-prefer-flymake)
   :config
-  ;; Inlay hints paint overlays on every edit; keep them opt-in.
+  ;; Emacs 32 turns inlay hints and semantic tokens on when a buffer
+  ;; becomes managed. Both paint the whole file at once; keep them opt-in.
   (when (fboundp 'eglot-inlay-hints-mode)
     (add-hook 'eglot-managed-mode-hook
               (lambda () (eglot-inlay-hints-mode -1))
+              90))
+  (when (fboundp 'eglot-semantic-tokens-mode)
+    (add-hook 'eglot-managed-mode-hook
+              (lambda () (eglot-semantic-tokens-mode -1))
               90))
   ;; Explicit TSX registration ensures tsx-ts-mode gets the correct server
   ;; even when default mode/server associations vary by package version.
@@ -189,6 +213,87 @@ so the popup jumps to the frame's upper-left and covers the tree."
     (cons (max left (- right width offset-r))
           (+ top offset-t))))
 
+(defun ltl/eldoc-box-visible-p ()
+  "Return non-nil when an `eldoc-box' child frame is showing."
+  (and (display-graphic-p)
+       (boundp 'eldoc-box--frame)
+       eldoc-box--frame
+       (frame-live-p eldoc-box--frame)
+       (frame-visible-p eldoc-box--frame)))
+
+(defun ltl/eldoc-doc-window ()
+  "Return a window showing the Eldoc help buffer, or nil."
+  (when-let* ((buf (or (and (boundp 'eldoc--doc-buffer)
+                            (buffer-live-p eldoc--doc-buffer)
+                            eldoc--doc-buffer)
+                       (get-buffer "*eldoc*"))))
+    (get-buffer-window buf t)))
+
+(defun ltl/eldoc-hide-hover (&rest _)
+  "Hide the `eldoc-box' popup if it is showing."
+  (when (fboundp 'eldoc-box-quit-frame)
+    (eldoc-box-quit-frame)))
+
+(defun ltl/eldoc-hide-hover-if-doc-open ()
+  "Hide hover while `*eldoc*' is already on screen."
+  (when (ltl/eldoc-doc-window)
+    (ltl/eldoc-hide-hover)))
+
+(defun ltl/eldoc-box-display-unless-doc-open (orig docs interactive)
+  "Skip `eldoc-box' hover when `*eldoc*' is visible.
+ORIG is `eldoc-box--eldoc-display-function'; DOCS and INTERACTIVE
+are passed through from `eldoc-display-functions'."
+  (if (ltl/eldoc-doc-window)
+      (ltl/eldoc-hide-hover)
+    (funcall orig docs interactive)))
+
+(defun ltl/eldoc-scroll (arg)
+  "Scroll hover documentation ARG lines without leaving the source.
+On a graphical display, scroll the `eldoc-box' child frame.  In a
+terminal those frames do not exist, so open or scroll `*eldoc*'
+as an other-window instead."
+  (interactive "p")
+  (cond
+   ((and (ltl/eldoc-box-visible-p)
+         (fboundp 'eldoc-box-scroll-up)
+         (fboundp 'eldoc-box-scroll-down))
+    (if (> arg 0)
+        (eldoc-box-scroll-up arg)
+      (eldoc-box-scroll-down (- arg))))
+   (t
+    (let ((win (or (ltl/eldoc-doc-window)
+                   (when-let* ((buf (eldoc-doc-buffer)))
+                     (display-buffer buf '((display-buffer-reuse-window
+                                            display-buffer-pop-up-window)
+                                           (inhibit-same-window . t)))))))
+      (unless win
+        (user-error "No Eldoc documentation to scroll"))
+      (with-selected-window win
+        (condition-case nil
+            (scroll-up arg)
+          ((beginning-of-buffer end-of-buffer) nil)))))))
+
+(defun ltl/eldoc-scroll-up (arg)
+  "Scroll hover documentation forward ARG lines."
+  (interactive "p")
+  (ltl/eldoc-scroll arg))
+
+(defun ltl/eldoc-scroll-down (arg)
+  "Scroll hover documentation backward ARG lines."
+  (interactive "p")
+  (ltl/eldoc-scroll (- arg)))
+
+(defun ltl/eldoc-help-at-point ()
+  "Show symbol documentation at point.
+Graphical Emacs uses the `eldoc-box' popup.  A terminal has no
+child frames, so this pops the Eldoc buffer instead."
+  (interactive)
+  (if (and (display-graphic-p)
+           (fboundp 'eldoc-box-help-at-point))
+      (eldoc-box-help-at-point)
+    (eldoc-doc-buffer t)
+    (ltl/eldoc-hide-hover)))
+
 (use-package eldoc-box
   :diminish
   ;; At-point child frames were rebuilt on every cursor move while LSP
@@ -213,7 +318,15 @@ so the popup jumps to the frame's upper-left and covers the tree."
   (setf (alist-get 'child-frame-border-width eldoc-box-frame-parameters) 1)
   (setf (alist-get 'left-fringe eldoc-box-frame-parameters) 10)
   (setf (alist-get 'right-fringe eldoc-box-frame-parameters) 10)
-  (setf (alist-get 'line-spacing eldoc-box-frame-parameters) 3))
+  (setf (alist-get 'line-spacing eldoc-box-frame-parameters) 3)
+  ;; `*eldoc*' already shows the full doc. A second hover popup (or the
+  ;; echo area) on top of it is noise, especially in a terminal.
+  (setq eldoc-echo-area-prefer-doc-buffer t)
+  (advice-add 'eldoc-box--eldoc-display-function :around
+              #'ltl/eldoc-box-display-unless-doc-open)
+  (advice-add 'eldoc-doc-buffer :after #'ltl/eldoc-hide-hover)
+  (add-hook 'window-configuration-change-hook
+            #'ltl/eldoc-hide-hover-if-doc-open))
 
 ;; `compile-multi' stores multiple named build/test commands per project,
 ;; which is convenient when one repo has several entry points.
