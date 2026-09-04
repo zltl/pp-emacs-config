@@ -162,6 +162,11 @@
 ;; `nerd-icons' has broader ecosystem support than all-the-icons, so this
 ;; config keeps both available for packages that prefer one or the other.
 (use-package nerd-icons
+  :ensure (nerd-icons :host github
+                      :repo "rainstormstudio/nerd-icons.el"
+                      :files (:defaults "data")
+                      :depth 1
+                      :inherit ignore)
   :defer t)
 ;; Prefer Nerd Font-backed glyphs where possible because a single patched
 ;; font can cover more packages with fewer separate font installs.

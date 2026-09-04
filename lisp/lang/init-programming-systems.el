@@ -85,7 +85,11 @@ Searches upward from current directory for .clang-format file."
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
 
 ;; `protobuf-mode' gives syntax highlighting/editing support for .proto files.
+;; MELPA clones all of protocolbuffers/protobuf for one .el file; the
+;; emacsmirror copy is the editor excerpt only.
 (use-package protobuf-mode
+  :ensure (protobuf-mode :host github :repo "emacsmirror/protobuf-mode"
+                         :depth 1 :inherit ignore)
   :defer t
   :mode "\\.proto\\'")
 

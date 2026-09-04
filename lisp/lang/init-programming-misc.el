@@ -130,7 +130,11 @@
 ;;; Build Systems
 
 ;; `cmake-mode' gives a decent editing experience for CMake build files.
+;; MELPA's recipe clones all of kitware/cmake just for Auxiliary/*.el;
+;; use the emacsmirror excerpt so first-install cannot stall on that repo.
 (use-package cmake-mode
+  :ensure (cmake-mode :host github :repo "emacsmirror/cmake-mode"
+                      :depth 1 :inherit ignore)
   :defer t
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))

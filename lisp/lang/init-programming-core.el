@@ -405,6 +405,8 @@ child frames, so this pops the Eldoc buffer instead."
 ;; `paredit' keeps Lisp structure balanced while editing, which is worth
 ;; the stricter behavior in Lispy modes.
 (use-package paredit
+  :ensure (paredit :host github :repo "emacsmirror/paredit"
+                   :depth 1 :inherit ignore)
   :diminish
   :hook ((emacs-lisp-mode . enable-paredit-mode)
          (lisp-mode . enable-paredit-mode)
