@@ -91,15 +91,28 @@
 
 ;; Window resizing is a property of the Emacs window, independent of
 ;; whether it displays a file, vterm, Treemacs, or an agent session.
+(defun ltl/window--sync-treemacs-width ()
+  "Keep `treemacs-width' aligned with the selected Treemacs window."
+  (when (derived-mode-p 'treemacs-mode)
+    (setq treemacs-width (window-body-width))))
+
 (defun ltl/window-narrower (&optional count)
-  "Shrink the selected window horizontally by COUNT columns."
+  "Shrink the selected window horizontally by COUNT columns.
+Temporarily ignore `window-size-fixed' so a locked Treemacs sidebar can
+still be nudged from the resize menu."
   (interactive "p")
-  (shrink-window-horizontally count))
+  (let ((window-size-fixed nil))
+    (shrink-window-horizontally count))
+  (ltl/window--sync-treemacs-width))
 
 (defun ltl/window-wider (&optional count)
-  "Enlarge the selected window horizontally by COUNT columns."
+  "Enlarge the selected window horizontally by COUNT columns.
+Temporarily ignore `window-size-fixed' so a locked Treemacs sidebar can
+still be nudged from the resize menu."
   (interactive "p")
-  (enlarge-window-horizontally count))
+  (let ((window-size-fixed nil))
+    (enlarge-window-horizontally count))
+  (ltl/window--sync-treemacs-width))
 
 (defun ltl/window-shorter (&optional count)
   "Shrink the selected window vertically by COUNT lines."
@@ -123,21 +136,25 @@ Respect normal minimum/fixed-size constraints.  Return the actual width."
     (user-error "%s window is not visible" label))
   (unless (and (integerp width) (> width 0))
     (user-error "%s width must be a positive integer" label))
-  (let* ((delta (- width (window-width window)))
-         (allowed (if (zerop delta)
-                      0
-                    (or (window-resizable window delta t) 0))))
-    (when (and (not (zerop delta)) (zerop allowed))
-      (user-error "%s window cannot be resized in the current layout" label))
-    (unless (zerop allowed)
-      (window-resize window allowed t))
-    (let ((actual (window-width window)))
-      (message "%s width: %d%s"
-               label actual
-               (if (= actual width)
-                   ""
-                 (format " (requested %d; layout limit)" width)))
-      actual)))
+  ;; Treemacs (and similar sidebars) set buffer-local `window-size-fixed';
+  ;; clear it only while measuring/resizing this WINDOW.
+  (with-selected-window window
+    (let* ((window-size-fixed nil)
+           (delta (- width (window-width window)))
+           (allowed (if (zerop delta)
+                        0
+                      (or (window-resizable window delta t) 0))))
+      (when (and (not (zerop delta)) (zerop allowed))
+        (user-error "%s window cannot be resized in the current layout" label))
+      (unless (zerop allowed)
+        (window-resize window allowed t))
+      (let ((actual (window-width window)))
+        (message "%s width: %d%s"
+                 label actual
+                 (if (= actual width)
+                     ""
+                   (format " (requested %d; layout limit)" width)))
+        actual))))
 
 (defun ltl/window-agent-preset (&optional width)
   "Resize the visible agent pane to its preset WIDTH.
@@ -164,15 +181,19 @@ argument update `treemacs-width' first."
            (prefix-numeric-value current-prefix-arg))))
   (unless (require 'treemacs nil t)
     (user-error "Treemacs is not installed"))
-  (unless (treemacs-get-local-window)
-    (user-error "Treemacs is not visible"))
-  (when width
-    (unless (> width 0)
-      (user-error "Treemacs width must be a positive integer"))
-    (setq treemacs-width width))
-  ;; A non-nil argument applies the configured width without prompting.
-  (treemacs-set-width '(4))
-  (message "Treemacs width: %d" treemacs-width))
+  (let ((window (treemacs-get-local-window)))
+    (unless (window-live-p window)
+      (user-error "Treemacs is not visible"))
+    (when width
+      (unless (> width 0)
+        (user-error "Treemacs width must be a positive integer"))
+      (setq treemacs-width width))
+    ;; `treemacs-set-width'/`treemacs--set-width' resize the *selected*
+    ;; window, so select Treemacs explicitly (C-c t w is usually pressed
+    ;; from another window).
+    (with-selected-window window
+      (treemacs-set-width '(4)))
+    (message "Treemacs width: %d" treemacs-width)))
 
 (defvar-keymap ltl/window-resize-map
   :doc "Resize windows"
